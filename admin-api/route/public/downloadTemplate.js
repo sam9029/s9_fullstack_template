@@ -1,0 +1,11 @@
+var express = require('express');
+var router = express.Router();
+const controller = require('../../controller/public/downloadTemplate');
+const multer = require('multer');
+router.get('/list', controller.list);
+router.post('/save', multer().single('file'), controller.save);
+router.post('/add', multer().single('file'), controller.add);
+router.post('/edit', controller.edit);
+router.get('/download', controller.download);
+router.get('/get', controller.get);
+exports.router = router;

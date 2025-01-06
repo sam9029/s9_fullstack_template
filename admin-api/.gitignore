@@ -1,0 +1,9 @@
+.DS_Store
+*.pem
+node_modules
+.idea
+.git
+/package-lock.json
+.vscode
+/static
+/config/cert

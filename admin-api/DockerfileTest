@@ -1,0 +1,24 @@
+FROM registry.cn-beijing.aliyuncs.com/yoboo/node-16.18.0
+LABEL name="zhangjinlin@bjjiayin.com"
+WORKDIR /home/www/koc-task-node-api
+ADD ./package.json /home/www/koc-task-node-api/
+ADD ssh /root/.ssh/
+RUN chmod 600 /root/.ssh/*
+RUN npm config set sharp_binary_host "https://npmmirror.com/mirrors/sharp"
+RUN npm config set sharp_libvips_binary_host "https://npmmirror.com/mirrors/sharp-libvips"
+RUN npm config set registry https://registry.npmmirror.com
+RUN npm install --registry=https://registry.npmmirror.com
+RUN npm install nodemon -g
+RUN \
+	rm /etc/localtime && \
+	ln -s /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+EXPOSE 3013
+ENV \
+	NODE_ENV=development \
+	REDIS_URL=redis://:@192.168.50.251:6379/10 \
+	DB_MYSQL_URL=mysql://api_developer:lizhideveloper@192.168.50.4:3306/xgfx_base?timezone=+8000&charset=utf8mb4_unicode_ci \
+	MOUNT_URL=http://192.168.50.100:3016 \
+	PORT=3013
+
+ADD . /home/www/koc-task-node-api
+CMD npm run dev

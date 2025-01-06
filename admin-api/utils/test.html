@@ -1,0 +1,29 @@
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-212765800-1"></script>
+<script id="My-Google-Analytics">
+    window.dataLayer = window.dataLayer || [];
+    function getCookie(name) { var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)"); if (arr = document.cookie.match(reg)) return unescape(arr[2]); else return null; }
+    function analyticLiZhiBj() { dataLayer.push(arguments); }
+    var discount_code = getCookie('discount_code');
+    analyticLiZhiBj('js', new Date()); analyticLiZhiBj('config', 'UA-212765800-5'); analyticLiZhiBj('config', 'UA-212765800-1'); analyticLiZhiBj('event', 'discount_code', { 'event_label': discount_code || 'UNUSE_DISCOUNT_CODE', 'event_category': 'discount_code', 'non_interaction': true, 'event_callback': function () { } });
+</script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-212765800-6"></script>
+<script id="self-shopify-analytics">
+    function getCookie(name) { var arr, reg = new RegExp("(^| )" + name + "=([^;]*)(;|$)"); if (arr = document.cookie.match(reg)) return unescape(arr[2]); else return null; };
+    var discount_code = getCookie('discount_code') || 'UNUSE_DISCOUNT_CODE';
+    ga('require', 'ec');
+    ga('ec:addPromo', {'name': discount_code });
+    ga(function (tracker) {
+        var trackers = ga.getAll();
+        console.log(trackers);
+        console.log(tracker.get('clientId'));
+        console.log(tracker.get('referrer'));
+    })
+    ga('ec:setAction', 'promo_click');
+    ga('send', 'event', 'Internal Promotions', 'click', discount_code, {
+        hitCallback: function () {
+            console.log('内部商品优惠事件已发送')
+        }
+    });
+</script>
