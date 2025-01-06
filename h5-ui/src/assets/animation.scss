@@ -1,0 +1,95 @@
+@keyframes moveFromTop {
+  0% {
+    opacity: 0;
+    top: -50px;
+  }
+
+  100% {
+    opacity: 1;
+    top: 0;
+  }
+}
+
+@keyframes moveFromBottom {
+	0% {
+		opacity: 0;
+		bottom: -50px;
+	}
+	
+	100% {
+		opacity: 1;
+		bottom: 0;
+	}
+}
+
+@keyframes outToTop {
+	0% {
+		opacity: 1;
+		top: 0;
+	}
+
+	100% {
+		opacity: 0;
+		top: -50px;
+	}
+}
+
+@keyframes outToBottom {
+	0% {
+		opacity: 1;
+		bottom: 0;
+	}
+
+	100% {
+		opacity: 0;
+		bottom: -50px;
+	}
+}
+
+@keyframes moveFromLeft {
+	0% {
+		opacity: 0;
+		left: -50px;
+	}
+
+	100% {
+		opacity: 1;
+		left: 0;
+	}
+}
+
+@keyframes moveFromRight {
+	0% {
+		opacity: 0;
+		right: -50px;
+	}
+
+	100% {
+		opacity: 1;
+		right: 0;
+	}
+}
+
+@keyframes outToLeft {
+	0% {
+		opacity: 1;
+		left: 0;
+	}
+
+	100% {
+		opacity: 0;
+		left: -50px;
+	}
+}
+
+@keyframes outToRight {
+	0% {
+		opacity: 1;
+		right: 0;
+	}
+
+	100% {
+		opacity: 0;
+		right: -50px;
+	}
+}
