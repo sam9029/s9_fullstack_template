@@ -1,0 +1,8 @@
+/unpackage/cache
+/unpackage/debug
+/unpackage/dist
+/unpackage/resources
+/.hbuilderx
+/node_modules
+/.package-lock.json
+.DS_Store

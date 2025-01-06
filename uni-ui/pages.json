@@ -1,0 +1,786 @@
+{
+	"easycom": {
+		"^u-(.*)": "@/uni_modules/uview-ui/components/u-$1/u-$1.vue",
+		"base-toast": "@/components/base-toast/index.vue"
+	},
+	"pages": [
+		{
+			"path": "pages/novel/novel",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "小说推文",
+				"navigationStyle": "default",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/demand/demand",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "超前点播",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/income/income",
+			"style": {
+				"enablePullDownRefresh": true,
+				"navigationBarTitleText": "收益",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/mine/mine",
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "我的",
+				"navigationStyle": "custom",
+				"app-plus": {
+					"titleNView": false
+				},
+				"h5": {
+					"titleNView": false
+				}
+			}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"app-plus": {
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false,
+					"bounce": "none"
+				}
+			}
+		},
+		{
+			"path": "pages/login/register",
+			"style": {
+				"app-plus": {
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false,
+					"bounce": "none"
+				}
+			}
+		},
+		{
+			"path": "pages/login/forget",
+			"style": {
+				"app-plus": {
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false,
+					"bounce": "none"
+				}
+			}
+		},
+		{
+			"path": "pages/webView/index"
+		},
+		{
+			"path": "pages/parse/index"
+		},
+		{
+			"path": "uni_modules/rt-uni-update/components/rt-uni-update/rt-uni-update",
+			"style": {
+				"app-plus": {
+					"animationDuration": 200,
+					"animationType": "fade-in",
+					"background": "transparent",
+					"backgroundColorTop": "transparent",
+					"popGesture": "none",
+					"scrollIndicator": false,
+					"titleNView": false
+				},
+				"disableScroll": true
+			}
+		}
+],
+	"subPackages": [
+		{
+			"root": "pagesUser",
+			"pages": [
+				{
+					"path": "guide/index",
+					"style": {
+						"navigationStyle": "default",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "mpGuide/index",
+					"style": {
+						"navigationStyle": "default",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "service/agreement/user",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "用户协议",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "用户协议",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "service/agreement/privacy",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "隐私政策",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "隐私政策",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "service/agreement/pay",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "付费服务协议",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "付费服务协议",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "aliRealname/aliRealname",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "setting/index",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "更多设置",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "更多设置",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "invite/index",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "setting/scan",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "invite/record",
+					"style": {
+						"enablePullDownRefresh": true,
+						"navigationStyle": "custom",
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "learningCenter/index",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "学习中心",
+						"enablePullDownRefresh": true,
+						"app-plus": {
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "学习中心",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "cashOut/index",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "提现账户",
+						"enablePullDownRefresh": true,
+						"app-plus": {
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "提现账户",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "cashOut/addCashOut",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "message/index",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": true,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "feedback/index",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "scanLogin/index",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				},
+				{
+					"path": "setting/userInfo",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "个人资料",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "个人资料",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "setting/cancelAcc",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "注销账号",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"background": "#F6F7FB",
+							"bounce": "none"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "注销账号",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "account/addAccount",
+					"style": {
+						"navigationBarTitleText": "添加账号",
+						"app-plus": {
+							"background": "#F6F7FB",
+							"bounce": "none"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "添加账号",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "account/index",
+					"style": {
+						"navigationBarTitleText": "我的账号",
+						"app-plus": {
+							"navigationStyle": "default",
+							"enablePullDownRefresh": true,
+							"backgroundColor": "#F6F7FB",
+							"bounce": "none",
+							"pullToRefresh": {
+								"support": true,
+								"style": "circle",
+								"offset": "44px"
+							}
+						},
+						"enablePullDownRefresh": true,
+						"h5": {
+							"titleNView": {
+								"tileText": "我的账号",
+								"background": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "auth/home",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false,
+						"app-plus": {
+							"bounce": "none"
+						}
+					}
+				}
+			]
+		},
+		{
+			"root": "novel",
+			"pages": [
+				{
+					"path": "xtAndJx",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none",
+							"pullToRefresh": {
+								"support": true,
+								"style": "circle",
+								"offset": "44px"
+							}
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "xingguang",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "xingGuangDetail",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none",
+							"pullToRefresh": {
+								"support": true,
+								"style": "circle",
+								"offset": "44px"
+							}
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "detail/index",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none",
+							"pullToRefresh": {
+								"support": true,
+								"style": "circle",
+								"offset": "44px"
+							}
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "detail/promptDetail",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none",
+							"pullToRefresh": {
+								"support": true,
+								"style": "circle",
+								"offset": "44px"
+							}
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "detail/backfill",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": false,
+							"bounce": "none",
+							"pullToRefresh": {
+								"support": true,
+								"style": "circle",
+								"offset": "44px"
+							}
+						},
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "detail/backfillLog",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none",
+							"pullToRefresh": {
+								"support": true,
+								"style": "circle",
+								"offset": "44px"
+							}
+						},
+						"enablePullDownRefresh": true
+					}
+				}
+			]
+		},
+		{
+			"root": "demand",
+			"pages": [
+				{
+					"path": "index",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "detail",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "book",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				}
+			]
+		},
+		{
+			"root": "income",
+			"pages": [
+				{
+					"path": "activityIncome/home",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "activityIncome/advertiserDetail",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "createIncome/home",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "createIncome/detail",
+					"style": {
+						"navigationBarTitleText": "收益明细",
+						"app-plus": {
+							"navigationStyle": "default",
+							"enablePullDownRefresh": true,
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"enablePullDownRefresh": true,
+						"h5": {
+							"titleNView": {
+								"tileText": "收益明细",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "demandIncome/home",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "demandIncome/advertiserDetail",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "demandIncome/incomeTable",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "default",
+							"enablePullDownRefresh": true,
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"navigationBarTitleText": "收益明细",
+						"enablePullDownRefresh": true,
+						"h5": {
+							"titleNView": {
+								"tileText": "收益明细",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				},
+				{
+					"path": "novelIncome/home",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "novelIncome/advertiserDetail",
+					"style": {
+						"app-plus": {
+							"navigationStyle": "custom",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "novelIncome/incomeDetail",
+					"style": {
+						"navigationBarTitleText": "收益明细",
+						"app-plus": {
+							"navigationStyle": "default",
+							"enablePullDownRefresh": true,
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "收益明细",
+								"backgroundColor": "#F6F7FB"
+							}
+						},
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "withdrawal/withdrawalDetails",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "withdrawal/record",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": true
+					}
+				},
+				{
+					"path": "withdrawal/withdrawOperate",
+					"style": {
+						"navigationStyle": "custom",
+						"enablePullDownRefresh": false
+					}
+				},
+				{
+					"path": "demandIncome/topupOrderDetails",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "充值订单明细",
+						"enablePullDownRefresh": true,
+						"app-plus": {
+							"bounce": "none",
+							"background": "#F6F7FB"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "充值订单明细",
+								"backgroundColor": "#F6F7FB"
+							}
+						}
+					}
+				}
+			]
+		}
+	],
+	"preloadRule": {
+		"pages/mine/mine": {
+			"network": "all",
+			"packages": [
+				"pagesUser"
+			]
+		}
+	},
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "欢乐创",
+		"navigationBarBackgroundColor": "#FFFFFF",
+		"backgroundColor": "#F5F5F5",
+		"h5": {
+			"titleNView": false
+		}
+	},
+	"tabBar": {
+		"list": [
+			{
+				"pagePath": "pages/novel/novel",
+				"text": "小说推文",
+				"iconPath": "static/tabbar/novel_unable.png",
+				"selectedIconPath": "static/tabbar/novel_enable.png"
+			},
+			{
+				"pagePath": "pages/demand/demand",
+				"text": "看点推广",
+				"iconPath": "static/tabbar/demand_unable.png",
+				"selectedIconPath": "static/tabbar/demand_enable.png"
+			},
+			{
+				"pagePath": "pages/income/income",
+				"text": "收益",
+				"iconPath": "static/tabbar/income_unable.png",
+				"selectedIconPath": "static/tabbar/income_enable.png"
+			},
+			{
+				"pagePath": "pages/mine/mine",
+				"text": "我的",
+				"iconPath": "static/tabbar/mine_unable.png",
+				"selectedIconPath": "static/tabbar/mine_enable.png"
+			}
+		]
+	}
+}

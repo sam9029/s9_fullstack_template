@@ -1,0 +1,104 @@
+// 此文件为uView的主题变量，这些变量目前只能通过uni.scss引入才有效，另外由于
+// uni.scss中引入的样式会同时混入到全局样式文件和单独每一个页面的样式中，造成微信程序包太大，
+// 故uni.scss只建议放scss变量名相关样式，其他的样式可以通过main.js或者App.vue引入
+$u-content-color: #989898;
+$u-info: #909399;
+$u-main-color: #1A1A1A;
+$u-light-color: #DDDDDD;
+$u-primary: #408CFF;
+$u-primary-disabled: #cfe2ff;
+$u-primary-light: #F7FAFF;
+$u-primary-dark: #245091;
+$u-info-light: #f4f4f5;
+$u-info-dark: #767a82;
+$u-info-disabled: #c4c6c9;
+$u-tips-color: #989898;
+$u-disabled-color: #989898;
+
+$u-bg-color: #F6F7FB;
+$u-white: #FFFFFF;
+$u-border: #EEEEEE;
+
+$u-primary-1: #ECF4FF;
+$u-primary-2: #D1E3FF;
+$u-primary-3: #ADCEFF;
+$u-primary-4: #87B7FF;
+$u-primary-5: #62A1FF;
+$u-primary-6: #408CFF;
+$u-primary-7: #3677D9;
+$u-primary-8: #2D63B5;
+$u-primary-9: #245091;
+$u-primary-10: #1D3F73;
+
+$u-primary-neutral-1: #FFFFFF;
+$u-primary-neutral-2: #FDFEFF;
+$u-primary-neutral-3: #F7FAFF;
+$u-primary-neutral-4: #F4F8FF;
+$u-primary-neutral-5: #E2EEFF;
+$u-primary-neutral-6: #CFE2FF;
+$u-primary-neutral-7: #A9CBFF;
+$u-primary-neutral-8: #83B4FF;
+$u-primary-neutral-9: #74ABFF;
+$u-primary-neutral-10: #5D9DFF;
+$u-primary-neutral-11: #579AFF;
+$u-primary-neutral-12: #4F95FF;
+$u-primary-neutral-12: #408CFF;
+
+$u-warning: #f9ae3d;
+$u-warning-dark: #f1a532;
+$u-warning-disabled: #f9d39b;
+$u-warning-light: #fdf6ec;
+
+$u-success: #07c160;
+$u-success-dark: #53c21d;
+$u-success-disabled: #a9e08f;
+$u-success-light: #f5fff0;
+
+$u-error: #FF325B;
+$u-error-dark: #B52441;
+$u-error-disabled: #FFA7B8;
+$u-error-light: #FFEBEF;
+
+$u-red-1: #FFEBEF;
+$u-red-2: #FFCED8;
+$u-red-3: #FFA7B8;
+$u-red-4: #FF7E98;
+$u-red-5: #FF5779;
+$u-red-6: #FF325B;
+$u-red-7: #D92B4D;
+$u-red-8: #B52441;
+$u-red-9: #911D34;
+$u-red-10: #731629;
+
+$u-orange-1: #FFF5EE;
+$u-orange-2: #FFDECF;
+$u-orange-3: #FFC5A9;
+$u-orange-4: #FFA980;
+$u-orange-5: #FF8F5A;
+$u-orange-6: #FF7736;
+$u-orange-7: #D9652E;
+$u-orange-8: #B55426;
+$u-orange-9: #91441F;
+$u-orange-10: #733618;
+
+$u-grey-1: #FFFFFF;
+$u-grey-2: #FDFDFD;
+$u-grey-3: #F6F6F6;
+$u-grey-4: #F1F1F1;
+$u-grey-5: #DDDDDD;
+$u-grey-6: #C6C6C6;
+$u-grey-7: #989898;
+$u-grey-8: #6A6A6A;
+$u-grey-9: #585858;
+$u-grey-10: #3C3C3C;
+$u-grey-11: #353535;
+$u-grey-12: #2C2C2C;
+$u-grey-13: #1A1A1A;
+
+// scss混入，为了少写几行#ifndef
+@mixin flex($direction: row) {
+  /* #ifndef APP-NVUE */
+  display: flex;
+  /* #endif */
+  flex-direction: $direction;
+}

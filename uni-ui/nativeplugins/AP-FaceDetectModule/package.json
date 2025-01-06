@@ -1,0 +1,105 @@
+{
+	"name": "APFaceDetectPlugin",
+	"id": "AP-FaceDetectModule",
+	"version": "1.2.7",
+	"description": "阿里云金融级实人认证SDK",
+	"_dp_type": "nativeplugin",
+	"_dp_nativeplugin": {
+		"android": {
+            "plugins": [
+                {
+                    "type": "module",
+                    "name": "AP-FaceDetectModule",
+                    "class": "io.dcloud.uniplugin.FinTechFaceVerifyModule"
+                }
+            ],
+            "integrateType": "aar",
+            "dependencies": [
+                "com.squareup.okhttp3:okhttp:3.11.0",
+                "com.squareup.okio:okio:1.14.0",
+                "com.alibaba:fastjson:1.2.83_noneautotype"
+            ],
+            "compileOptions": { 
+                "sourceCompatibility": "1.8",
+                "targetCompatibility": "1.8"
+            },
+            "abis": [
+                "armeabi",
+                "arm64-v8a",
+                "armeabi-v7a",
+                "x86"
+            ],
+            "minSdkVersion": "15",
+            "permissions": [
+                "android.permission.CAMERA",
+                "android.permission.ACCESS_NETWORK_STATE",
+                "android.permission.INTERNET"
+            ],
+            "parameters": {
+                
+            }
+        },
+		"ios": {
+			"plugins": [
+				{
+					"type": "module",
+					"name": "AP-FaceDetectModule",
+					"class": "FinTechFaceVerifyModule"
+				}
+			],
+            "frameworks": [
+                "AliyunFaceAuthFacade.framework",
+                "APBToygerFacade.framework",
+                "APPSecuritySDK.framework",
+                "BioAuthEngine.framework",
+                "DTFIdentityManager.framework",
+                "DTFNFCIdentityManager.framework",
+                "DTFUtility.framework",
+                "faceguard.framework",
+                "FinTechFaceVerifyModule.framework",
+                "MultiFactorFacade.framework",
+                "OCRDetectSDKForTech.framework",
+                "ToygerNative.framework",
+                "ToygerService.framework",
+				"VerifyNativeAbility.framework",
+                "CoreGraphics.framework",
+                "Accelerate.framework",
+                "SystemConfiguration.framework",
+                "AssetsLibrary.framework",
+                "CoreTelephony.framework",
+                "QuartzCore.framework",
+                "CoreFoundation.framework",
+                "CoreLocation.framework",
+                "ImageIO.framework",
+                "CoreMedia.framework",
+                "CoreMotion.framework",
+                "AVFoundation.framework",
+                "WebKit.framework",
+                "libresolv.tbd",
+                "libz.tbd",
+                "libc++.1.tbd",
+                "libc++abi.tbd",
+                "AudioToolbox.framework",
+                "CFNetwork.framework",
+                "MobileCoreServices.framework",
+                "libz.1.2.8.tbd",
+                "AdSupport.framework",
+                "ReplayKit.framework"
+            ],
+            "resources": [
+                "APBToygerFacade.bundle",
+                "APBToygerFacadeSuitable.bundle",
+                "BioAuthEngine.bundle",
+                "DTFNFCIdentityManager.bundle",
+                "MultiFactorFacade.bundle",
+                "OCRXMedia.bundle",
+                "ToygerService.bundle"
+            ],
+            "privacies": [
+                "NSCameraUsageDescription"
+            ],
+			"integrateType": "framework",
+			"deploymentTarget": "9.0"
+		}
+	}
+}

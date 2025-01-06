@@ -1,0 +1,850 @@
+.u-relative,
+.u-rela {
+  position: relative;
+}
+
+.u-absolute,
+.u-abso {
+  position: absolute;
+}
+
+// nvue不能用标签命名样式，不能放在微信组件中，否则微信开发工具会报警告，无法使用标签名当做选择器
+/* #ifndef APP-NVUE */
+image {
+  display: inline-block;
+}
+
+// 在weex，也即nvue中，所有元素默认为border-box
+view,
+text {
+  box-sizing: border-box;
+}
+
+body {
+  color: #000;
+}
+
+body view.u-flex {
+  flex-direction: row;
+}
+
+body view.u-flex-row {
+  flex-direction: row;
+}
+
+/* #endif */
+
+.u-font-xs {
+  font-size: 22rpx;
+}
+
+.u-font-sm {
+  font-size: 26rpx;
+}
+
+.u-font-md {
+  font-size: 28rpx;
+}
+
+.u-font-lg {
+  font-size: 30rpx;
+}
+
+.u-font-xl {
+  font-size: 34rpx;
+}
+
+.u-font-bold {
+  font-weight: bold;
+}
+
+.u-font-weight {
+  font-weight: 500;
+}
+.u-font-weight-600 {
+  font-weight: 600;
+}
+.u-font-weight-700 {
+  font-weight: 700;
+}
+.u-inline {
+  display: inline-block;
+}
+
+.u-flex {
+  /* #ifndef APP-NVUE */
+  display: flex;
+  /* #endif */
+  flex-direction: row;
+  align-items: center;
+}
+
+.u-flex-wrap {
+  flex-wrap: wrap;
+}
+
+.u-flex-nowrap {
+  flex-wrap: nowrap;
+}
+
+.u-col-center {
+  align-items: center;
+}
+
+.u-col-top {
+  align-items: flex-start;
+}
+
+.u-col-bottom {
+  align-items: flex-end;
+}
+
+.u-row-center {
+  justify-content: center;
+}
+
+.u-row-left {
+  justify-content: flex-start;
+}
+
+.u-row-right {
+  justify-content: flex-end;
+}
+
+.u-row-between {
+  justify-content: space-between;
+}
+
+.u-row-around {
+  justify-content: space-around;
+}
+
+.u-row-evenly {
+  justify-content: space-evenly;
+}
+
+.u-text-left {
+  text-align: left;
+}
+
+.u-text-center {
+  text-align: center;
+}
+
+.u-text-right {
+  text-align: right;
+}
+
+.u-flex-row {
+  /* #ifndef APP-NVUE */
+  display: flex;
+  /* #endif */
+  flex-direction: row;
+}
+
+.u-flex-col {
+  /* #ifndef APP-NVUE */
+  display: flex;
+  /* #endif */
+  flex-direction: column;
+}
+
+.u-flex-reverse {
+  /* #ifndef APP-NVUE */
+  display: flex;
+  /* #endif */
+  flex-direction: row-reverse;
+}
+
+// 定义flex等分
+@for $i from 0 through 12 {
+  .u-flex-#{$i} {
+    flex: $i;
+  }
+}
+
+// 定义字体(px)单位，小于20都为px单位字体
+@for $i from 9 to 20 {
+  .u-font-#{$i} {
+    font-size: $i + px;
+  }
+}
+
+// 定义字体(px)单位，小于20都为px单位字体
+// @for $i from 10 to 30 {
+// 	.font-#{$i} {
+// 		font-size: $i + px !important;
+// 	}
+// }
+
+@for $i from 2 to 60 {
+  .u-gap-#{$i} {
+    gap: $i + rpx;
+  }
+}
+
+@for $i from 20 to 100 {
+  .u-line-h-#{$i} {
+    line-height: $i + rpx !important;
+  }
+}
+
+// 定义字体(rpx)单位，大于或等于20的都为rpx单位字体
+@for $i from 20 through 100 {
+  .u-font-#{$i} {
+    font-size: $i + rpx !important;
+  }
+}
+
+// 定义内外边距，历遍1-100
+@for $i from 0 through 80 {
+  // 只要双数和能被5除尽的数
+  @if $i % 2==0 or $i % 5==0 {
+
+    .u-m-#{$i} {
+      margin: $i + rpx !important;
+    }
+
+    .u-m-x-#{$i} {
+      margin-left: $i + rpx !important;
+      margin-right: $i + rpx !important;
+    }
+
+    .u-m-y-#{$i} {
+      margin-top: $i + rpx !important;
+      margin-bottom: $i + rpx !important;
+    }
+
+    .u-p-#{$i} {
+      padding: $i + rpx !important;
+    }
+
+    .u-p-x-#{$i} {
+      padding-left: $i + rpx !important;
+      padding-right: $i + rpx !important;
+    }
+
+    .u-p-y-#{$i} {
+      padding-top: $i + rpx !important;
+      padding-bottom: $i + rpx !important;
+    }
+
+    @each $short, $long in l left, t top, r right, b bottom {
+      // 缩写版，结果如： u-m-l-30
+      // 定义外边距
+      .u-m-#{$short}-#{$i} {
+        margin-#{$long}: $i + rpx !important;
+      }
+
+      // 定义内边距
+      .u-p-#{$short}-#{$i} {
+        padding-#{$long}: $i + rpx !important;
+      }
+    }
+  }
+}
+
+.u-p-t-100 {
+  padding-top: 100rpx;
+}
+
+.u-m-t-100 {
+  margin-top: 100rpx;
+}
+
+.u-m-b-100 {
+  margin-bottom: 100rpx;
+}
+
+@for $i from 1 to 5 {
+  .u-line-#{$i} {
+    display: -webkit-box !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    -webkit-line-clamp: $i;
+    -webkit-box-orient: vertical !important;
+  }
+}
+
+.u-ellipsis {
+  white-space: nowrap; /* 防止文本换行 */
+  overflow: hidden; /* 隐藏溢出的内容 */
+  text-overflow: ellipsis; /* 显示省略号来代表被隐藏的文本 */
+}
+
+// height
+.u-vh-100 {
+  height: 100vh;
+}
+
+.u-vh-m-100 {
+  min-height: 100vh;
+}
+
+.u-h-100 {
+  height: 100%;
+}
+
+// ms-scroll 外层flex布局时需设置
+.u-m-h-0 {
+  min-height: 0;
+}
+
+// scroll
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.scroll-y {
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.scroll-none {
+  overflow: hidden;
+}
+
+// color
+.color-text-grey {
+  color: $u-grey-8;
+}
+
+.color-text-white {
+  color: #ffffff;
+}
+
+.color-text-less-grey {
+  color: $u-grey-7;
+}
+
+.color-text-orange {
+  color: #ff7736;
+}
+
+.color-text-less-black {
+  color: $u-grey-10;
+}
+
+.color-text-black {
+  color: $u-grey-13;
+}
+
+.color-text-primary {
+  color: $u-primary-6;
+}
+
+.color-text-disabled-primary {
+  color: $u-primary-neutral-6;
+}
+
+.gap-line {
+  display: inline-block !important;
+  width: 0px;
+  height: 16rpx;
+  border-left: 2rpx solid rgba(94, 73, 49, 0.2);
+}
+
+// 新建关键词
+.popularize-add-word-root {
+  .new-word-wraper {
+    padding-top: 65px;
+  }
+
+  .common-word-search {
+    position: fixed;
+    top: 52px;
+    /* #ifndef APP-NVUE */
+    top: 108px;
+    /* #endif */
+    left: 0;
+    right: 0;
+    padding: 10px 10px;
+    z-index: 1;
+  }
+}
+
+// 重置nvue的默认关于flex的样式
+.u-reset-nvue {
+  flex-direction: row;
+  align-items: center;
+}
+
+.mini-tag {
+  .u-tag {
+    height: 16px !important;
+    line-height: 16px !important;
+    font-size: 20rpx !important;
+  }
+}
+
+.mini-tag-circle {
+  .u-tag {
+    height: 14px !important;
+    line-height: 14px !important;
+
+    .u-tag__text {
+      font-size: 10px !important;
+    }
+  }
+}
+
+.u-popup__content__close--top-right {
+  top: 10px !important;
+}
+
+.u-bg-f {
+  background-color: #fff;
+}
+
+.u-bg-default {
+  background: $u-bg-color;
+}
+
+.u-bg-primary {
+  background-color: $u-primary-6;
+}
+
+.u-tabbar__content__item-wrapper {
+  // height: 60px !important;
+  padding-top: 10rpx;
+
+  .u-tabbar-item__icon {
+    .u-icon {
+      > text {
+        font-size: 26px !important;
+        line-height: 26px !important;
+      }
+    }
+  }
+}
+
+.u-border-radius {
+  border-radius: 16rpx;
+}
+
+.cell-boder-radius {
+  .u-cell__body {
+    padding: 13px 0px !important;
+
+    .u-cell__title {
+      padding-left: 20rpx;
+    }
+  }
+
+  .u-cell__left-icon-wrap {
+    .uniicons {
+      color: $u-grey-5 !important;
+    }
+  }
+
+  .u-icon--right {
+    .u-icon__icon {
+      color: $u-grey-5 !important;
+    }
+  }
+}
+
+.u-p-t-150 {
+  padding-top: 150px;
+}
+
+.u-card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  transition: 0.3s;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.center-tabs {
+  .u-tabs__wrapper__nav {
+    border-bottom: 2px solid #e4dddd00;
+
+    .u-tabs__wrapper__nav__item {
+      flex: 1;
+      position: relative;
+    }
+
+    .u-badge {
+      position: absolute;
+      top: 8rpx;
+      right: 8rpx;
+    }
+
+    // .u-tabs__wrapper__nav__line {
+    // 	height: 2px !important;
+    // 	bottom: -2px !important;
+    // }
+  }
+}
+
+.is-dot {
+  .u-tag-wrapper {
+    ::after {
+      content: "";
+      position: absolute;
+      width: 16rpx;
+      height: 16rpx;
+      background-color: $u-primary-6;
+      border-radius: 50%;
+      top: -6rpx;
+      right: -6rpx;
+    }
+  }
+}
+
+.u-position-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.widthAll {
+  width: 100%;
+}
+
+.heightAll {
+  height: 100%;
+}
+
+.u-pointer {
+  cursor: pointer;
+}
+
+.u-text-main {
+  color: $u-grey-13;
+}
+
+.u-text-tips {
+  color: $u-grey-7;
+}
+
+.u-text-waring {
+  color: $u-warning;
+}
+
+.u-text-success {
+  color: $u-success;
+}
+
+.u-text-error {
+  color: $u-error;
+}
+
+.u-nowrap {
+  white-space: nowrap;
+}
+
+.u-primary {
+  color: $u-primary-6;
+}
+
+.u-border-custom {
+  border: 1px solid #eeeeee;
+}
+
+.u-border-primary {
+  border-color: $u-border !important;
+}
+
+.u-border-custom-bottom {
+  border-bottom: 1px solid #eeeeee;
+}
+
+.u-text-decoration {
+  text-decoration: underline;
+}
+
+.empty-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-loading {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.image-loading--dark {
+  background: #17181aea;
+}
+.image-loading--light {
+  background: #ffffffea;
+}
+
+.main-page {
+  display: grid;
+  grid-template-rows: 1fr;
+  font-weight: 500;
+  height: 100vh;
+}
+
+.custom-placeholder {
+  font-size: 24rpx !important;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.warning-text--light {
+  color: #ff1223;
+}
+
+.warning-text--dark {
+  color: #eb1625;
+}
+
+.u-modal .u-modal__content {
+  padding: 32rpx 48rpx !important;
+  .u-modal__content__text {
+    color: $u-grey-10;
+  }
+}
+
+.base-modal-body {
+  width: 100%;
+}
+.base-modal .custom-content,
+.base-modal-body {
+  .confirm--btn,
+  .cancel--btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 76rpx;
+    border-radius: 100px;
+  }
+  .confirm--btn {
+    background-color: $u-primary-6;
+    text {
+      color: #fff;
+    }
+  }
+  .confirm--btn--full {
+    width: 100% !important;
+  }
+  .cancel--btn {
+    background-color: #eaeaea;
+    text {
+      color: #2a2a2a;
+    }
+  }
+  .modal-btns {
+    display: grid;
+    grid-gap: 20rpx;
+  }
+  .modal-btns--single {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .modal-btns--double {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.set-text {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  color: #ffffff;
+  bottom: 0;
+  height: 80rpx;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.8) 100%
+  );
+  padding-bottom: 12rpx;
+  font-weight: bold;
+  border-bottom-left-radius: 16rpx;
+  border-bottom-right-radius: 16rpx;
+  z-index: 2;
+}
+
+.video-playing-animat {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 2rpx;
+  align-items: flex-end;
+  justify-content: flex-start;
+  position: absolute;
+  bottom: 8rpx;
+  left: 8rpx;
+  .video-playing-animat-1 {
+    width: 4rpx;
+    height: 4rpx;
+    border-radius: 2px;
+    background: #685ff5;
+    animation: play-1 1s linear infinite alternate;
+  }
+  .video-playing-animat-2 {
+    width: 4rpx;
+    height: 10rpx;
+    border-radius: 2px;
+    background: #685ff5;
+    animation: play-2 1s linear 0.5s infinite alternate;
+  }
+  .video-playing-animat-3 {
+    width: 4rpx;
+    height: 10rpx;
+    border-radius: 2px;
+    background: #685ff5;
+    animation: play-3 1s linear 0.75s infinite alternate;
+  }
+}
+
+.no-scroll {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.u-form-item__body__right__message {
+  margin-left: 0 !important;
+}
+
+.u-tag-default {
+  border-radius: 8rpx;
+  background-color: #f6f6f6;
+  padding: 0 8rpx;
+  font-size: 20rpx;
+  color: $u-grey-13;
+}
+
+::v-deep .u-modal__title {
+  color: $u-main-color !important;
+}
+
+::v-deep .uni-textarea-textarea {
+  color: $u-main-color !important;
+}
+
+
+@keyframes play-1 {
+  0% {
+    height: 4rpx;
+  }
+
+  100% {
+    height: 20rpx;
+  }
+}
+@keyframes play-2 {
+  0% {
+    height: 10rpx;
+  }
+
+  100% {
+    height: 20rpx;
+  }
+}
+@keyframes play-3 {
+  0% {
+    height: 10rpx;
+  }
+
+  100% {
+    height: 20rpx;
+  }
+}
+
+@keyframes moveFromTop {
+  0% {
+    opacity: 0;
+    top: -50rpx;
+  }
+
+  100% {
+    opacity: 1;
+    top: 0;
+  }
+}
+
+@keyframes moveFromBottom {
+  0% {
+    opacity: 0;
+    bottom: -50rpx;
+  }
+
+  100% {
+    opacity: 1;
+    bottom: 0;
+  }
+}
+
+@keyframes outToTop {
+  0% {
+    opacity: 1;
+    top: 0;
+  }
+
+  100% {
+    opacity: 0;
+    top: -50rpx;
+  }
+}
+
+@keyframes outToBottom {
+  0% {
+    opacity: 1;
+    bottom: 0;
+  }
+
+  100% {
+    opacity: 0;
+    bottom: -50rpx;
+  }
+}
+
+@keyframes moveFromLeft {
+  0% {
+    opacity: 0;
+    left: -50rpx;
+  }
+
+  100% {
+    opacity: 1;
+    left: 0;
+  }
+}
+
+@keyframes moveFromRight {
+  0% {
+    opacity: 0;
+    right: -50rpx;
+  }
+
+  100% {
+    opacity: 1;
+    right: 0;
+  }
+}
+
+@keyframes outToLeft {
+  0% {
+    opacity: 1;
+    left: 0;
+  }
+
+  100% {
+    opacity: 0;
+    left: -50rpx;
+  }
+}
+
+@keyframes outToRight {
+  0% {
+    opacity: 1;
+    right: 0;
+  }
+
+  100% {
+    opacity: 0;
+    right: -50rpx;
+  }
+}
