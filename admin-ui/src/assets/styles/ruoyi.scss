@@ -1,0 +1,431 @@
+/**
+ * 通用css样式布局处理
+ * Copyright (c) 2019 ruoyi
+ */
+
+/** 基础通用 **/
+label {
+  margin-bottom: unset;
+}
+
+p {
+  margin-bottom: unset;
+}
+
+.pt5 {
+  padding-top: 5px;
+}
+
+.pr5 {
+  padding-right: 5px;
+}
+
+.pb5 {
+  padding-bottom: 5px;
+}
+
+.pl5 {
+  padding-left: 5px;
+}
+
+.mt5 {
+  margin-top: 5px;
+}
+
+.mr5 {
+  margin-right: 5px;
+}
+
+.mb5 {
+  margin-bottom: 5px;
+}
+
+.pt8 {
+  padding-top: 8px;
+}
+
+.pb8 {
+  padding-bottom: 8px;
+}
+
+.mt8 {
+  margin-top: 8px;
+}
+
+.mb8 {
+  margin-bottom: 8px;
+}
+
+.ml5 {
+  margin-left: 5px;
+}
+
+.mt10 {
+  margin-top: 10px;
+}
+
+.mr10 {
+  margin-right: 10px;
+}
+
+.mb10 {
+  margin-bottom: 10px;
+}
+
+.ml10 {
+  margin-left: 10px;
+}
+
+.mt20 {
+  margin-top: 20px;
+}
+
+.mr20 {
+  margin-right: 20px;
+}
+
+.mb20 {
+  margin-bottom: 20px;
+}
+
+.ml20 {
+  margin-left: 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+// important 虽然可以给dialog默认margin-top, 但会让dialog除了important外无其他控制方法
+// .el-dialog:not(.is-fullscreen){
+// 	margin-top: 6vh !important;
+// }
+.inline-block {
+  display: inline-block;
+  vertical-align: top;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  background: #f3f4f6;
+}
+
+li {
+  list-style: none;
+}
+
+@media (max-width: 768px) {
+  .pagination-container .el-pagination>.el-pagination__jump {
+    display: none !important;
+  }
+
+  .pagination-container .el-pagination>.el-pagination__sizes {
+    display: none !important;
+  }
+}
+
+/** 主题色改变会生成新的style覆盖此处对element的样式设置 用.app-main提升一下权重 **/
+/** 表单布局 **/
+.form-header {
+  font-size: 15px;
+  color: #6379bb;
+  border-bottom: 1px solid #ddd;
+  margin: 8px 10px 25px 10px;
+  padding-bottom: 5px;
+}
+
+/** 表格布局 **/
+.app-main {
+  .el-table {
+
+    .el-table__header-wrapper,
+    .el-table__fixed-header-wrapper {
+      th {
+        word-break: break-word;
+        background-color: #f8f8f9;
+        color: #515a6e;
+        height: 40px;
+        font-size: 13px;
+      }
+    }
+
+    .el-table__body-wrapper {
+      .el-button [class*='el-icon-']+span {
+        margin-left: 1px;
+      }
+    }
+
+    .fixed-width .el-button--mini {
+      padding-left: 0;
+      padding-right: 0;
+      width: inherit;
+    }
+  }
+}
+
+.el-table {
+  .el-button--text+.el-button--text {
+    margin-left: 0;
+  }
+}
+
+/** tree **/
+.app-main {
+  .el-tree-node__content>.el-checkbox {
+    margin-right: 8px;
+  }
+}
+
+.tree-border {
+  margin-top: 5px;
+  border: 1px solid #e5e6e7;
+  background: #ffffff none;
+  border-radius: 4px;
+}
+
+/** card **/
+.app-main {
+  .el-card__header {
+    padding: 7px 15px;
+    // min-height: 40px;
+  }
+
+  .el-card__body {
+    padding: 15px 20px 20px 20px;
+  }
+}
+
+/** pagination **/
+.app-main {
+  .el-pagination {
+    font-weight: 400;
+  }
+}
+
+/** el-select **/
+// 多选 选中标签文字颜色
+.app-main {
+  .el-select__tags {
+    .el-tag.el-tag--info {
+      color: var(--theme-default);
+    }
+
+    .el-tag__close.el-icon-close {
+      color: var(--theme-default);
+
+      &:hover {
+        background-color: var(--theme-dark3);
+      }
+    }
+  }
+}
+
+/** el-switch **/
+// .el-switch {
+//   // width: 54px;
+//   .el-switch__core {
+//     // width: 54px;
+//     height: 22px;
+//     border-color: #e7e7e7;
+//     background-color: #ffffff;
+//     &::after {
+//       border: 1px solid #dfe4e7;
+//     }
+//     .el-switch__button {
+//       border: 1px solid #e0e5e8;
+//       height: 18px;
+//       width: 18px;
+//     }
+//   }
+//   .el-switch__label {
+//     position: absolute;
+//     z-index: 1;
+//     color: #333;
+//     &.is-active span {
+//       color: #fff;
+//     }
+//     & * {
+//       font-size: 12px;
+//     }
+//   }
+//   .el-switch__label--left {
+//     left: 8px;
+//     top: 0;
+//   }
+//   .el-switch__label--right {
+//     right: 8px;
+//     top: 0;
+//   }
+//   &.is-checked {
+//     .el-switch__label {
+//       color: #fff;
+//     }
+//     .el-switch__core {
+// 	  // width: 54px;
+//       background-color: var(--theme-default);
+//       border-color: var(--theme-default);
+//       .el-switch__button {
+//         border-color: #ffffff;
+//         transform: translate3d(33px, 0px, 0px);
+//       }
+//     }
+//   }
+
+//   .is-active {
+//     display: none;
+//   }
+// }
+
+/** **/
+.list-group-striped>.list-group-item {
+  border-left: 0;
+  border-right: 0;
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.list-group {
+  padding-left: 0px;
+  list-style: none;
+}
+
+.list-group-item {
+  border-bottom: 1px solid #e7eaec;
+  border-top: 1px solid #e7eaec;
+  margin-bottom: -1px;
+  padding: 11px 0px;
+  font-size: 13px;
+}
+
+.pull-right {
+  float: right !important;
+}
+
+.card-box {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-bottom: 10px;
+}
+
+/* button color */
+.el-button--cyan.is-active,
+.el-button--cyan:active {
+  background: #20b2aa;
+  border-color: #20b2aa;
+  color: #ffffff;
+}
+
+.el-button--cyan:focus,
+.el-button--cyan:hover {
+  background: #48d1cc;
+  border-color: #48d1cc;
+  color: #ffffff;
+}
+
+.el-button--cyan {
+  background-color: #20b2aa;
+  border-color: #20b2aa;
+  color: #ffffff;
+}
+
+/* text color */
+.text-navy {
+  color: #1ab394;
+}
+
+.text-primary {
+  color: inherit;
+}
+
+.text-success {
+  color: #67c23a;
+}
+
+.text-info {
+  color: #23c6c8;
+}
+
+.text-warning {
+  color: #f8ac59;
+}
+
+.text-danger {
+  color: #ed5565;
+}
+
+.text-muted {
+  color: #888888;
+}
+
+/* image */
+.img-circle {
+  border-radius: 50%;
+}
+
+.img-lg {
+  width: 100px;
+  height: 100px;
+}
+
+.avatar-upload-preview {
+  position: absolute;
+  top: 50%;
+  transform: translate(50%, -50%);
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  box-shadow: 0 0 4px #ccc;
+  overflow: hidden;
+}
+
+.shape-circle {
+  border-radius: 50% !important;
+
+}
+
+.shape-square {
+  border-radius: 5px !important;
+}
+
+.intro-tooltip-main-div {
+  min-width: 300px !important;
+  max-width: 400px !important;
+  font-size: 14px !important;
+  font-family: Avenir, Helvetica, Arial, sans-serif, '\5FAE\8F6F\96C5\9ED1', PingFang SC-regular !important;
+
+  .introjs-tooltip-header {
+    display: none;
+  }
+
+  .introjs-tooltiptext {
+    padding: 30px !important;
+    color: #555 !important;
+  }
+
+  .introjs-tooltipbuttons {
+    padding: 5px 10px !important;
+  }
+
+  .introjs-button {
+    box-shadow: none !important;
+    color: #fff !important;
+    background-color: var(--theme-default) !important;
+    padding: 4px 10px !important;
+    text-shadow: none !important;
+    border: none !important;
+  }
+}
+
+.el-table th.el-table__cell>.cell {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.text-overflow-hidden {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: inline;
+  font-size: inherit;
+}

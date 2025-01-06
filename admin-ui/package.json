@@ -1,0 +1,111 @@
+{
+  "name": "koc-task",
+  "version": "1.0.0",
+  "description": "小果繁星管理平台",
+  "author": "jusong",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "staging": "vue-cli-service serve --mode staging",
+    "build:prod": "vue-cli-service build",
+    "build:stage": "vue-cli-service build --mode staging",
+    "report:prod": "vue-cli-service build --report",
+    "lint:prettier": "prettier --write  \"src/**/*.{js,json,tsx,css,less,scss,vue,html,md}\"",
+    "preview": "node build/index.js --preview",
+    "lint": "eslint --ext .js,.vue src",
+    "theme": "node build/theme.js",
+    "upload-cdn": "node build/upload_cdn.js upload",
+    "inspect": "vue-cli-service inspect > webpack-config.js"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "src/**/*.{js,vue}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "keywords": [
+    "vue",
+    "admin",
+    "element-ui",
+    "boilerplate",
+    "admin-template",
+    "management-system"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://gitee.com/y_project/RuoYi-Vue.git"
+  },
+  "dependencies": {
+    "@fingerprintjs/fingerprintjs": "^3.3.3",
+    "@riophae/vue-treeselect": "0.4.0",
+    "@wangeditor/editor": "^5.1.14",
+    "@wangeditor/editor-for-vue": "^1.0.2",
+    "ali-oss": "^6.17.1",
+    "axios": "^1.7.7",
+    "core-js": "^3.38.1",
+    "echarts": "4.9.0",
+    "element-ui": "2.15.6",
+    "file-saver": "2.0.4",
+    "fuse.js": "6.4.3",
+    "install": "^0.13.0",
+    "js-beautify": "1.13.0",
+    "js-cookie": "2.2.1",
+    "jsencrypt": "3.0.0-rc.1",
+    "lodash": "^4.17.21",
+    "minio": "^8.0.2",
+    "moment": "^2.29.1",
+    "nprogress": "0.2.0",
+    "print-js": "^1.6.0",
+    "quill": "1.3.7",
+    "screenfull": "5.0.2",
+    "swiper": "^5.4.5",
+    "uuid": "^8.3.2",
+    "vue": "2.6.14",
+    "vue-awesome-swiper": "^4.1.1",
+    "vue-clipboard2": "^0.3.3",
+    "vue-cropper": "0.6.4",
+    "vue-drag-resize": "^1.5.4",
+    "vue-fullscreen": "^2.6.1",
+    "vue-i18n": "^8.26.7",
+    "vue-meta": "^2.4.0",
+    "vue-qr": "^4.0.9",
+    "vue-router": "3.4.9",
+    "vuedraggable": "2.24.3",
+    "vuex": "3.6.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "4.4.6",
+    "@vue/cli-plugin-eslint": "4.4.6",
+    "@vue/cli-service": "4.4.6",
+    "babel-eslint": "10.1.0",
+    "chalk": "4.1.0",
+    "connect": "3.6.6",
+    "css": "^3.0.0",
+    "eslint": "6.8.0",
+    "eslint-plugin-vue": "7.2.0",
+    "lint-staged": "10.5.3",
+    "prettier": "^2.7.1",
+    "runjs": "4.4.2",
+    "sass": "1.32.0",
+    "sass-loader": "10.1.0",
+    "script-ext-html-webpack-plugin": "2.1.5",
+    "socket.io-client": "^4.0.0",
+    "spark-md5": "^3.0.1",
+    "svg-sprite-loader": "5.1.1",
+    "vue-template-compiler": "2.6.14"
+  },
+  "engines": {
+    "node": ">=8.9",
+    "npm": ">= 3.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ]
+}
