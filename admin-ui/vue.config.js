@@ -6,6 +6,7 @@ function resolve(dir) {
 
 const name = process.env.VUE_APP_TITLE || 'KOC推广平台'; // 网页标题
 const port = process.env.PORT || process.env.npm_config_port || 80; // 端口
+const iconfont_url = process.env.VUE_APP_ICONFONT_URL; // iconfont地址--给Index.html用
 
 const { getCdnHost } = require("./build/upload_cdn");
 const cdn_host = getCdnHost(process.env.NODE_ENV);
@@ -45,6 +46,8 @@ const cdn = {
     'https://wangsu.lizhibj.cn/open-img/cdn/js/vue-qr.min.js',
     // 'https://wangsu.lizhibj.cn/open-img/cdn/js/quill.core.min.js'
   ],
+  // icon的js链接
+  iconUrl: iconfont_url,
 };
 // vue.config.js 配置说明
 //官方vue.config.js 参考文档 https://cli.vuejs.org/zh/config/#css-loaderoptions
@@ -73,7 +76,7 @@ module.exports = {
     proxy: {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
-        target: process.env.API_URL || `http://127.0.0.1:3000/api`,
+        target: process.env.API_URL || `http://127.0.0.1:3020/api`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: '',

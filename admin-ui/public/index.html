@@ -7,21 +7,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <link rel="icon" href="/favicon.ico">
 
-  <!-- ICONFONT CDN -->
-  <script language="JavaScript" type="text/javascript" src="//at.alicdn.com/t/c/font_4723198_39a314me5na.js"></script>
-  <!-- JSRSASIGN 依赖库 -->
-  <script language="JavaScript" type="text/javascript"
-    src="https://wangsu.lizhibj.cn/open-img/cdn/js/jsrsasign-latest-all-min.js">
-  </script>
-
   <!-- WEB TITLE -->
   <title>
     <%= webpackConfig.name %>
   </title>
+
+  <!-- ICONFONT CDN -->
+  <script language="JavaScript" type="text/javascript" src="<%= htmlWebpackPlugin.options.cdn.iconUrl %>"></script>
+  
   <!-- externals 依赖CDN -->
   <% for (var i in htmlWebpackPlugin.options.cdn && htmlWebpackPlugin.options.cdn.js) { %>
     <script src="<%= htmlWebpackPlugin.options.cdn.js[i] %>"></script>
   <% } %>
+
+  <!-- JSRSASIGN 依赖库 -->
+  <script language="JavaScript" type="text/javascript"
+    src="https://wangsu.lizhibj.cn/open-img/cdn/js/jsrsasign-latest-all-min.js">
+  </script>
 
   <!--[if lt IE 11
       ]><script>

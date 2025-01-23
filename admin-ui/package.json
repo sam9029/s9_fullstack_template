@@ -15,6 +15,7 @@
     "lint": "eslint --ext .js,.vue src",
     "theme": "node build/theme.js",
     "upload-cdn": "node build/upload_cdn.js upload",
+    "gen:view": "node bin/genView/index.js",
     "inspect": "vue-cli-service inspect > webpack-config.js"
   },
   "husky": {

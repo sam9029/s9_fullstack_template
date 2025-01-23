@@ -590,8 +590,13 @@ export default {
   mounted() {
     // 自适应高度
     if (this.canResize) {
-      this.calcTableHeight();
       this.$nextTick(() => {
+        /**
+         * 由于 basetable 经常和其他的 兄弟组件（如：searchPanel）使用
+         * 但是又无法监听同页面兄弟组件的渲染进度，有时出现高度计算错误的问题
+         * V-DOM渲染是微任务、为确保【初次执行高度计算】一定在整个页面DOM渲染完成之后执行，使用宏任务 
+         * */
+        setTimeout(this.calcTableHeight, 0)
         window.addEventListener('resize', this.calcTableHeight, true);
       });
     }
