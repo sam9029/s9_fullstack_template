@@ -77,7 +77,7 @@
         }}</text>
         <view
           class="u-m-t-16 u-m-b-16 u-p-l-0 u-p-r-0"
-          style="height: 2rpx; background-color: #eee"
+          style="height: 0.5px; background-color: #eee"
         >
         </view>
         <view class="u-flex-row u-row-between">
@@ -112,13 +112,16 @@
     <view v-else class="u-m-t-100">
       <u-empty text="暂无收益数据" :icon="image.no_data_list"></u-empty>
     </view>
-    <u-loadmore
-      v-if="!loading && listData.length > 0"
+    <view v-if="!loading && listData.length > 0" style="height: 40px;">
+      <u-loadmore
+      
       :status="status"
       :loading-text="loadingText"
       :loadmore-text="loadmoreText"
       :nomore-text="nomoreText"
     ></u-loadmore>
+    </view>
+    
     <base-toast ref="toastRef"></base-toast>
   </view>
 </template>
@@ -138,10 +141,9 @@ export default {
       backDelta: 1,
       currentIndex: 0,
       isEnd: false,
-      site: null,
+      next_page_site: null,
       pagesize: 20,
       loading: false,
-      site: null,
       withdraw_amount: 0,
       paid_amount: 0,
       tabData: [
@@ -178,12 +180,14 @@ export default {
   methods: {
     switchTab(index) {
       this.currentIndex = index;
+      this.init();
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
     gotoDetails(item) {
@@ -199,6 +203,7 @@ export default {
 
     init() {
       this.isEnd = false;
+      this.next_page_site = null;
       this.getListData(true);
     },
 
@@ -219,6 +224,7 @@ export default {
       let params = {
         pagesize: this.pagesize,
         tab_type: this.currentIndex + 1,
+        next_page_site : this.next_page_site,
       };
       params.page = this.page;
       this.toastMsg("加载中", "loading", -1);
@@ -259,16 +265,17 @@ export default {
           }
           if (reset) this.listData = list;
           else this.listData.push(...list);
-          this.site = res.data.site;
-          let bool = !(res.data.length < this.pagesize);
-          this.isEnd = !bool;
-          if (!bool) {
+          this.next_page_site = res.data.next_page_site;
+
+          this.isEnd = res.data.next_page_site == null;
+          if (this.isEnd) {
             this.nomoreText = `没有更多了～`;
             this.status = "nomore";
           } else {
             this.loadmoreText = `下拉加载更多`;
             this.status = "loadmore";
           }
+          this.$refs.toastRef?.close();
         })
         .catch((err) => {
           let message = String(err.message || err || "提现记录获取失败");
@@ -276,7 +283,6 @@ export default {
         })
         .finally(async () => {
           uni.stopPullDownRefresh();
-          this.$refs.toastRef?.close();
           this.loading = false;
         });
     },

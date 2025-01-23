@@ -204,6 +204,8 @@
 				// 如果整体被禁用，不允许被点击
 				if (!this.elDisabled) {
 					this.setRadioCheckedStatus()
+				} else {
+					this.$emit('handle')
 				}
 			},
 			// 点击label
@@ -212,6 +214,8 @@
 				// 如果按钮整体被禁用或者label被禁用，则不允许点击文字修改状态
 				if (!this.elLabelDisabled && !this.elDisabled) {
 					this.setRadioCheckedStatus()
+				} else {
+					this.$emit('handle')
 				}
 			},
 			emitEvent() {

@@ -34,7 +34,10 @@
                 disabledColor="#f6f6f6"
                 disabled
                 placeholder="请选择抖音账号"
-              ></u-input>
+              >
+              <u-icon name="arrow-down" color="#989898" size="32rpx" slot="suffix"></u-icon>
+                
+              </u-input>
               <view class="picker-overlay" @click="openSelect" />
             </view>
           </u-form-item>
@@ -142,6 +145,7 @@ export default {
       this.show = false;
       this.reqFlag = true;
       this.model = this.$options.data().model;
+      this.$emit('close');
     },
 
     queryAcc() {
@@ -155,14 +159,12 @@ export default {
               delete el.label;
               return el;
             });
+            this.$refs.toastRef.close()
           }
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         })
-        .finally(() => {
-          this.$refs.toastRef.close();
-        });
     },
 
     selectPlatform(list, item) {
@@ -189,7 +191,7 @@ export default {
               }
             })
             .catch((error) => {
-              this.toastMsg(error, "error");
+              this.toastMsg(error.message || error, "error");
             })
             .finally(() => {
               this.submitLoading = false;
@@ -231,5 +233,8 @@ export default {
   background-color: #f6f6f6;
   border: none;
   padding: 24rpx 32rpx !important;
+}
+::v-deep .u-form-item__body__right__message {
+  padding-left: 160rpx;
 }
 </style>

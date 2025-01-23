@@ -7,7 +7,7 @@
     :style="{ 'background-color': bgColor }"
   >
     <slot name="text"></slot>
-    <view class="btl">
+    <view class="btl" :style="gridStyles">
       <template v-for="(item, index) in list[buttonIndex]">
         <view :key="index" class="btn u-flex-row u-col-center u-row-center" v-if="item.show">
           <u-button
@@ -81,6 +81,10 @@ export default {
     bgColor: {
       type: String,
       default: '#fff'
+    },
+    layout: {
+      type: [String, Number],
+      default: 'auto'  // 'auto' 表示自适应，数字表示固定宽度，'even' 表示均分
     }
   },
   data() {
@@ -99,6 +103,22 @@ export default {
     this.emitHeight();
   },
   computed: {
+    gridStyles() {
+      if (this.layout === 'even') {
+        return {
+          'grid-template-columns': 'repeat(auto-fit, minmax(0, 1fr))'
+        };
+      } else if (typeof this.layout === 'number') {
+
+        return {
+          'grid-template-columns': `${this.layout}rpx repeat(auto-fit, minmax(0, 1fr))`
+        };
+      } else {
+        return {
+          'grid-template-columns': 'repeat(auto-fit, 1fr)'
+        };
+      }
+    },
     classList() {
       const classList = ["bottom"];
       if (this.paddingBottom <= 5) classList.push("u-p-b-24");

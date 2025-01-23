@@ -1,6 +1,7 @@
 // let MainUrl = "http://192.168.108:3020/api";
-// let MainUrl = "http://192.168.50.104:3020/api";
-let MainUrl = 'https://joyful.tuixiaoguo.com/api'
+let MainUrl = "http://192.168.50.104:3020/api";
+//let MainUrl = "http://192.168.50.5:3020/api";
+// let MainUrl = 'https://joyful.tuixiaoguo.com/api'
 // #ifdef  APP-PLUS|H5
 // MainUrl = 'http://192.168.110.2:3020/api'
 // #endif
@@ -31,6 +32,7 @@ function LogOut() {
   // #endif
   if (modeling) return;
   modeling = true;
+  store.dispatch("LogOut");
   uni.showModal({
     title: "登录失效",
     content: "登录失效，请重新登录",
@@ -40,8 +42,9 @@ function LogOut() {
     confirmColor: store.getters.theme_color,
     success: (res) => {
       if (res.confirm) {
+        uni.navigateTo({ url: "/pages/login/login" })
+        modeling = false;
         // 确定
-        store.dispatch("LogOut");
       } else if (res.cancel) {
         // 取消
         modeling = false;

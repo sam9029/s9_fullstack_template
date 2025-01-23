@@ -4,7 +4,7 @@
       <view class="u-p-28">
         <view class="popup-top u-flex-row u-row-between u-col-center u-m-b-32">
           <text class="u-font-32 u-line-h-48 color-text-black u-font-bold"
-            >请选择抖音账号</text
+            >{{ title }}</text
           >
           <u-icon
             @click="onClose"
@@ -14,7 +14,7 @@
         </view>
         <view
           class="u-bg-f u-flex-row u-row-between u-col-center u-p-24 u-m-b-28 u-border-radius"
-          style="border: 2rpx solid #eeeeee"
+          style="border: 1rpx solid #eeeeee"
           @click="jumpAddAcc"
         >
           <view class="u-flex-row u-col-center">
@@ -26,8 +26,14 @@
           </view>
           <u-icon name="arrow-right" size="16" color="#2C2C2C"></u-icon>
         </view>
+        <view v-if="loading" class="skeleton-box" style="height: 472rpx">
+          <BaseSkeleton height="92rpx" round="16rpx" class="u-m-b-16"/>
+          <BaseSkeleton height="92rpx" round="16rpx" class="u-m-b-16"/>
+          <BaseSkeleton height="92rpx" round="16rpx" class="u-m-b-16"/>
+          <BaseSkeleton height="92rpx" round="16rpx"/>
+        </view>
         <view
-          v-if="accountList.length"
+          v-if="!loading && accountList.length"
           class="account-list scroll-y"
           style="height: 472rpx"
         >
@@ -38,14 +44,17 @@
             style="background: #f6f6f6"
             @click="chooseAccount(item)"
           >
-            <text
-              class="u-font-28 u-line-h-44"
-              :class="{
-                'color-text-black': !item.selected,
-                'color-text-primary': item.selected,
-              }"
-              >{{ item.label }}</text
-            >
+            <view class="u-flex-row u-col-center">
+              <u--image :src="item.platform_icon" width="32rpx" height="32rpx"></u--image>
+              <text
+                class="u-font-28 u-line-h-44 u-m-l-8 u-font-bold"
+                :class="{
+                  'color-text-black': !item.selected,
+                  'color-text-primary': item.selected,
+                }"
+                >{{ item.label }}</text
+              >
+            </view>
             <u-icon
               v-if="item.selected"
               :name="`${static_path}radio_seleted.png`"
@@ -59,7 +68,7 @@
             <text class="u-font-24 color-text-less-grey">-到底了-</text>
           </view>
         </view>
-        <view v-else style="height: 472rpx" class="u-p-t-30">
+        <view v-if="!loading && !accountList.length" style="height: 472rpx" class="u-p-t-30">
           <u-empty text="暂无已添加的账号" :icon="image.no_data_list"></u-empty>
         </view>
       </view>
@@ -79,9 +88,26 @@
 import { mapGetters } from "vuex";
 import { getPlatformAcc } from "@/api/public.js";
 import BottomBtn from "@/components/bottom-button/index.vue";
+import BaseSkeleton from '@/components/base-skeleton/index.vue';
+import { sleep } from "@/utils/tools.js";
 export default {
+  props: {
+    title: {
+      type: String,
+      default: "请选择抖音账号"
+    },
+    platform_id: {
+      type: Number,
+      default: 1
+    },
+    extra_params: {
+      type: Object,
+      default: () => ({})
+    }
+  },
   components: {
     BottomBtn,
+    BaseSkeleton
   },
   data() {
     return {
@@ -90,6 +116,7 @@ export default {
       accountList: [],
       popupBtnHeight: "",
       selected: null,
+      loading: true,
       show: false,
     };
   },
@@ -115,16 +142,26 @@ export default {
       this.popupBtnHeight = height * 2 + 30 + "rpx";
     },
 
-    open(task_id) {
+    open(task_id, feedback) {
       this.id = task_id || "";
       this.show = true;
-      this.queryAcc();
+      this.queryAcc().then(() => {
+        if (feedback) {
+          this.accountList.forEach((el) => {
+            if (el.id == feedback) {
+              this.$set(el, "selected", true);
+            }
+          });
+          this.selected = this.accountList.find((el) => el.id == feedback);
+        }
+      })
     },
 
     onClose() {
       this.show = false;
       this.id = null;
       this.selected = null;
+      this.$emit("close");
     },
 
     submitSingUp() {
@@ -139,6 +176,7 @@ export default {
             delete el.label;
             return el;
           }),
+          extra_params: this.extra_params,
         });
         this.onClose();
       } else {
@@ -147,9 +185,11 @@ export default {
     },
 
     jumpAddAcc() {
+      this.$emit('jump')
       uni.navigateTo({
-        url: "/pagesUser/account/addAccount?platform_id=1",
+        url: `/pagesUser/account/addAccount?platform_id=${this.platform_id}`,
       });
+      this.onClose();
     },
 
     chooseAccount(item) {
@@ -167,24 +207,29 @@ export default {
     },
 
     queryAcc() {
-      this.toastMsg("加载中", "loading", -1);
-      getPlatformAcc({ platform_id: 1 })
-        .then((res) => {
-          if (res.code == 0) {
-            this.accountList = res.data.map((el) => {
-              return {
-                ...el,
-                selected: false,
-              };
-            });
-          }
-        })
-        .catch((error) => {
-          this.toastMsg(error, "error");
-        })
-        .finally(() => {
-          this.$refs.toastRef.close();
-        });
+      return new Promise((resolve, reject) => {
+        this.loading = true;
+        getPlatformAcc({ platform_id: this.platform_id })
+          .then((res) => {
+            if (res.code == 0) {
+              this.accountList = res.data.map((el) => {
+                return {
+                  ...el,
+                  selected: false,
+                };
+              });
+            }
+            resolve()
+          })
+          .catch((error) => {
+            this.toastMsg(error.message || error, "error");
+            reject(error)
+          })
+          .finally(async() => {
+            await sleep(300);
+            this.loading = false;
+          })
+      })
     },
 
     toastMsg(message, type = "default", duration = 2000) {

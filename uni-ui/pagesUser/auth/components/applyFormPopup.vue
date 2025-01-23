@@ -55,8 +55,10 @@
                 <view v-if="isSelectedAccount">
                   <view
                     class="u-flex u-gap-28 u-row-between u-col-center u-m-b-20"
+                    @click="onOpenSelectAccout"
                   >
-                    <u-icon :name="selectedAccountIcon" size="48"></u-icon>
+                    
+                    <u-image :src="selectedAccountInfo[0].platform_icon" width="84rpx" height="84rpx"></u-image>
                     <view
                       class="u-flex-1 u-flex-col u-gap-10 u-row-center u-col-left"
                     >
@@ -85,7 +87,6 @@
                     <input
                       class="fan-counts-input u-flex-1"
                       type="number"
-                      dir="rtl"
                       v-model="applyModel.fan_counts"
                       placeholder="请输入账户粉丝数量"
                     />
@@ -124,7 +125,7 @@
     <!-- 账户选取 -->
     <AccountPopup
       ref="accountPopupRef"
-      @close="onCloseSelectAccout"
+      @onClose="onCloseSelectAccout"
       @next="onSelectAccoutCompleted"
     ></AccountPopup>
 
@@ -139,16 +140,11 @@
     ></SlideCode>
 
     <!-- 成功失败提示 -->
-    <BaseModal
-      ref="modalRef"
-      confirmText="我知道了"
-      :showCancelBtn="false"
-      :value="modalShow"
-      :title="modalTitle"
-      :content="modalContent"
-      @input="handleModalShowChange"
-      @confirm="handleModalConfirm"
-    ></BaseModal>
+
+
+    <u-modal :show="modalShow" :showCancelButton="false" :title="modalTitle" :content="modalContent" confirmText="我知道了" :buttonFill="false"
+			:closeOnClickOverlay="true" @close="handleModalConfirm" @confirm="handleModalConfirm">
+		</u-modal>
 
     <base-toast ref="toastRef"></base-toast>
   </view>
@@ -197,6 +193,7 @@ export default {
         platform_primary_id: [
           {
             required: true,
+            type: 'number',
             message: "请选择平台账号",
             trigger: ["change", "blur"],
           },
@@ -234,27 +231,6 @@ export default {
       return this.selectedAccountInfo.length ? true : false;
     },
 
-    selectedAccountIcon() {
-      let icon = `account_selection.png`;
-
-      if (this.selectedAccountInfo.length) {
-        const platform_name = this.selectedAccountInfo[0].list[0].platform_name;
-
-        switch (platform_name) {
-          case "抖音":
-            icon = "douyin_2x.png";
-            break;
-          case "快手":
-            icon = "kuaishou_2x.png";
-            break;
-          default:
-            break;
-        }
-      }
-
-      return `${this.static_path}${icon}`;
-    },
-
     popup_button_list() {
       return [
         [
@@ -289,18 +265,24 @@ export default {
     //#region ===== 账户选取
     onOpenSelectAccout() {
       this.display = false;
-      this.$refs.accountPopupRef.open();
+      this.$refs.accountPopupRef.open(null, this.applyModel.platform_primary_id);
     },
 
     onSelectAccoutCompleted(selected) {
+
+      
       const { id, list } = selected;
       this.selectedAccountInfo = [JSON.parse(JSON.stringify(selected))];
+
       this.applyModel.platform_primary_id = id;
       this.applyModel.fan_counts = list[0].fan_counts;
       this.display = true;
+
+      this.$refs.uForm.validateField('platform_primary_id');
     },
 
     onCloseSelectAccout() {
+
       this.display = true;
     },
     //#endregion
@@ -327,6 +309,8 @@ export default {
     beforeSubmitSingUp() {
       /** 校验 */
       this.$refs.uForm.validate();
+
+
       if (!this.applyModel.platform_primary_id) {
         this.toastMsg("未选中的博主平台账号", "error");
         return;
@@ -444,6 +428,7 @@ $c-text-primary: #989898;
 
   .fan-counts-input {
     font-size: 12px;
+    text-align: right;
   }
 }
 </style>

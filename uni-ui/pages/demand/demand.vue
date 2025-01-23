@@ -1,9 +1,7 @@
 <template>
   <view class="u-relative">
-    <view id="top-navber-area" class="top-navber-area">
+    <view class="top-area">
       <BannerComps :list="bannerList"></BannerComps>
-    </view>
-    <view class="scroll-area">
       <view class="top-content">
         <u--image
           class="top-content--bg"
@@ -21,7 +19,17 @@
           >
         </view>
       </view>
-      <view v-if="listData.length" class="demand-list u-flex-col">
+    </view>
+    <view class="u-relative" style="top: -40rpx;">
+      <view v-if="listLoading" class="skeleton-box u-p-x-28">
+        <BaseSkeleton height="148rpx" round="16rpx" class="u-m-b-16"></BaseSkeleton>
+        <BaseSkeleton height="148rpx" round="16rpx" class="u-m-b-16"></BaseSkeleton>
+        <BaseSkeleton height="148rpx" round="16rpx" class="u-m-b-16"></BaseSkeleton>
+        <BaseSkeleton height="148rpx" round="16rpx" class="u-m-b-16"></BaseSkeleton>
+        <BaseSkeleton height="148rpx" round="16rpx" class="u-m-b-16"></BaseSkeleton>
+        <BaseSkeleton height="148rpx" round="16rpx"></BaseSkeleton>
+      </view>
+      <view v-if="!listLoading && listData.length" class="demand-list u-flex-col">
         <view
           v-for="(item, index) in listData"
           :key="item.advertiser_id"
@@ -78,6 +86,7 @@
 <script>
 import { getPreAppletList } from "@/api/pages/demand.js";
 import TabPageJumpGateMixin from "@/mixins/tab_page_jump_gate.js";
+import BaseSkeleton from '@/components/base-skeleton/index.vue';
 import BannerComps from "@/components/base-banner/index.vue";
 import { getBanner } from "@/api/public.js";
 import { sleep } from "@/utils/tools.js";
@@ -88,6 +97,7 @@ export default {
   },
   components: {
     BannerComps,
+    BaseSkeleton
   },
   mixins: [TabPageJumpGateMixin],
   data() {
@@ -135,7 +145,6 @@ export default {
         pagesize: this.pagesize,
       };
       params.page = this.page;
-      this.toastMsg("加载中", "loading", -1);
       getPreAppletList(params)
         .then((res) => {
           const list = res.data.list;
@@ -157,7 +166,6 @@ export default {
           this.toastMsg(message, "error");
         })
         .finally(async () => {
-          this.$refs.toastRef?.close();
           uni.stopPullDownRefresh();
           await sleep(300);
           this.listLoading = false;
@@ -244,10 +252,11 @@ export default {
     },
 
     // 提示
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },
@@ -265,21 +274,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.scroll-area {
-  position: relative;
-  top: -40rpx;
-  background-color: #f6f8fb;
-  border-top-left-radius: 24rpx;
-  border-top-right-radius: 24rpx;
+.top-area {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 999;
 }
 .top-content {
   background-color: #f6f8fb;
   padding: 28rpx 28rpx 0 28rpx;
   border-top-left-radius: 24rpx;
   border-top-right-radius: 24rpx;
-  position: sticky;
-  z-index: 22;
-  top: 0;
+  position: relative;
+  top: -40rpx;
 }
 .demand-list {
   background-color: #f6f8fb;

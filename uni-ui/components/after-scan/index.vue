@@ -78,7 +78,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         })
         .finally(() => {
           this.SET_SCAN_DATA({ uuid: null, time: null })
@@ -90,10 +90,11 @@ export default {
       this.show = false;
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },

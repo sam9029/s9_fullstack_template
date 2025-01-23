@@ -24,10 +24,10 @@
 				<view style="background-color: #eee;height: 2rpx;"></view>
 				<view class="u-m-t-48 u-flex-row u-row-between">
 					<text class="color-text-less-grey u-font-28">提现方式</text>
-					<text class="color-text-black u-font-28">{{pay_platform=="BANK" ? "银行卡提现" : "支付宝提现"}}</text>
+					<text class="color-text-black u-font-28">{{pay_platform}}</text>
 				</view>
 				<view class="u-m-t-40 u-flex-row u-row-between">
-					<text class="color-text-less-grey u-font-28">到账银行卡</text>
+					<text class="color-text-less-grey u-font-28">{{pay_account_t}}</text>
 					<text class="color-text-black u-font-28">{{pay_account || ""}}</text>
 				</view>
 				<view class="u-m-t-40 u-flex-row u-row-between">
@@ -103,6 +103,7 @@
 				pay_platform: null,
 				people_name: null,
 				pay_account: null,
+				pay_account_t: "",
 				stepData: [],
 			};
 		},
@@ -114,6 +115,19 @@
 		},
 		watch: {},
 		methods: {
+			getDisplayWay(){
+				switch (this.pay_platform) {
+					case "ALIPAY":
+						return "支付宝提现";
+					case "AOMPANY":
+						return "打款验证中";
+					default:
+						return "验证失败 点此查看原因";
+				}
+			},
+			getDisplayDes(){
+				
+			},
 			resetSubmit() {
 				uni.navigateTo({
 					url: `/income/withdrawal/withdrawOperate?id=${this.id}&money=${this.withdrawalMoney}`,
@@ -126,12 +140,24 @@
 						id: this.id
 					})
 					.then((res) => {
-
 						this.$refs.toastRef?.close();
 						this.loadStatus = 1;
 						this.ask_for_amount = unitMoney(res.data["ask_for_amount"], false, true);
 						this.withdrawalMoney = res.data["ask_for_amount"];
-						this.pay_platform = res.data["pay_platform"];
+						switch (res.data["pay_platform"]) {
+							case "ALIPAY":
+								this.pay_platform ="支付宝提现"
+								this.pay_account_t ="到账支付宝"
+								break;
+							case "COMPANY":
+								this.pay_platform ="对公银行提现"
+								this.pay_account_t ="到账银行卡"
+								break;
+							default:
+								this.pay_platform ="银行卡提现"
+								this.pay_account_t ="到账银行卡"
+								break;
+						}
 						this.people_name = res.data["people_name"];
 						this.pay_account = res.data["pay_account"];
 						this.stepData = [];

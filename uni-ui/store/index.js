@@ -100,11 +100,9 @@ const store = new Vuex.Store({
     home_refresh_flag: null,
     // advertiser_mapper: {}
     applet_id: null,
-    open_id: null,
     duolai_account_id: null,
     user_name: null,
     user_avatar: null,
-    open_id: null,
     system: '',
     fingerprint: getStage('USER_LOCAL_DEVICE_ID'),
     local_late: getlocalLate(), //本地延迟，默认5000
@@ -137,25 +135,13 @@ const store = new Vuex.Store({
     // message
   },
   mutations: {
-    LOGOUT(state, relaunch = true) {
+    LOGOUT(state) {
       state.token = null;
-      state.open_id = null;
-      state.duolai_account_id = null;
       state.user_name = null;
       state.user_avatar = null;
       state.userInfo = {};
-      deleteUserInfo();
-      if (state.hasRelunch) return;
-      state.hasRelunch = true;
       state.hasLogin = false;
-      state.button_authority = [];
-      state.router_authority = [];
-      if (relaunch) uni.navigateTo({ url: "/pages/login/login" });
-      uni?.clearStorageSync();
-      let timer = setTimeout(() => {
-        clearTimeout(timer)
-        state.hasRelunch = false;
-      }, 800);
+      deleteUserInfo();
     },
     SET_SYSTEM(state, system) {
       state.system = system

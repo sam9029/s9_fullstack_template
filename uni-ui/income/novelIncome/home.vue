@@ -26,7 +26,7 @@
               unitMoney(topCard.limit_amount, false, true)
             }}</view>
             <view class="u-font-24 u-line-h-40" style="color: #cfe2ff"
-              >可提现</view
+              >近30日入账</view
             >
           </view>
           <view class="u-flex-1">
@@ -34,7 +34,7 @@
               unitMoney(topCard.total_amount, false, true)
             }}</view>
             <view class="u-font-24 u-line-h-40" style="color: #cfe2ff"
-              >累计结算收益</view
+              >累计入账收益</view
             >
           </view>
         </view>
@@ -98,7 +98,7 @@
               >
                 <text class="u-font-24 u-line-h-40">全部</text>
               </view>
-            </view>
+            </view> 
           </template>
         </DatePicker>
       </view>
@@ -121,7 +121,7 @@
             item.advertiser_name
           }}</view>
           <view class="u-flex-row u-line-h-40 u-col-center">
-            <view class="u-font-24 color-text-less-grey">新增收益</view>
+            <view class="u-font-24 color-text-less-grey">新增入账</view>
             <u-line
               class="u-m-l-8 u-m-r-8"
               direction="col"
@@ -149,7 +149,7 @@
           <u-icon
             label="查看明细"
             name="arrow-right"
-            size="24rpx"
+            size="28rpx"
             color="#989898"
             labelColor="#989898"
             labelPos="left"
@@ -159,7 +159,7 @@
             unitMoney(item.total_amount, false, true)
           }}</view>
           <view class="u-font-22 u-line-h-40 color-text-less-grey"
-            >累计收益</view
+            >累计入账</view
           >
         </view>
       </view>
@@ -221,7 +221,6 @@ export default {
       this.isEnd = false;
       this.getTopCard();
       this.getListData();
-      this.$refs.toastRef?.close();
       uni.stopPullDownRefresh();
     },
 
@@ -229,7 +228,7 @@ export default {
       this.$refs.datePickerRef.setDate(value, true);
     },
 
-    getTopCard() {
+    getTopCard(flag = false) {
       totalReq({
         type: 1,
       })
@@ -239,7 +238,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         });
     },
 
@@ -279,6 +278,7 @@ export default {
             this.loadmoreText = `下拉加载更多`;
             this.status = "loadmore";
           }
+          this.$refs.toastRef?.close();
         })
         .catch((err) => {
           let message = String(err.message || err || "项目详情获取失败");
@@ -312,10 +312,11 @@ export default {
       });
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },
@@ -364,8 +365,7 @@ export default {
   }
 
   .date-tabs {
-    display: grid;
-    grid-auto-flow: column;
+    display: flex;
     background: #fff;
     border-radius: 100rpx;
 
@@ -373,7 +373,8 @@ export default {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 96rpx;
+      padding-left: 24rpx;
+	  padding-right: 24rpx;
       height: 56rpx;
     }
 

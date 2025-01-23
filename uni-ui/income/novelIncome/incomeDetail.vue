@@ -1,6 +1,6 @@
 <template>
   <view class="income-detail-page">
-    <view class="u-p-28">
+    <view class="u-p-28 top-card">
       <view class="u-bg-f u-border-radius u-p-24">
         <view class="u-flex-row u-col-top">
           <view
@@ -76,11 +76,12 @@
         </view>
       </view>
     </view>
-    <view class="u-bg-f">
+    <view class="u-bg-f heightAll" style="border-top-left-radius: 16rpx; border-top-right-radius: 16rpx;overflow: hidden;">
       <ZbTable
         :columns="columns"
-        :highlight="true"
+        highlight
         :data="tableData"
+        :stripe="false"
         fit
         :isLoading="tableLoading"
       >
@@ -276,21 +277,22 @@ export default {
             this.loadmoreText = `下拉加载更多`;
             this.status = "loadmore";
           }
+          this.$refs.toastRef?.close();
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         })
         .finally(() => {
-          this.$refs.toastRef?.close();
           uni.stopPullDownRefresh();
           this.tableLoading = false;
         });
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },
@@ -318,7 +320,7 @@ export default {
 
 <style lang="scss" scoped>
 .income-detail-page {
-  min-height: 100vh;
+  height: 100vh;
 }
 .table-grid {
   height: 88rpx;

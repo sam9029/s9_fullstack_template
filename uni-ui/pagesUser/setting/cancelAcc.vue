@@ -2,7 +2,7 @@
   <view class="cancel-acc-page">
     <view class="u-m-t-28 u-p-x-28">
       <view class="u-border-radius u-bg-f u-p-48">
-        <view class="color-text-black u-font-48 u-line-h-64 u-m-b-16"
+        <view class="color-text-black u-font-48 u-line-h-64 u-m-b-16 u-font-weight"
           >账户注销</view
         >
         <view
@@ -51,7 +51,7 @@ export default {
   },
   data() {
     return {
-      checked: null,
+      checked: [],
       btnHeight: 0,
       button_list: [
         [
@@ -72,17 +72,18 @@ export default {
       this.btnHeight = height * 2 + 32;
     },
     handleSubmit() {
-      if(!this.checked) {
+      if(this.checked.length==0) {
         return this.toastMsg('请阅读并同意账号注销说明', 'error')
       }
       uni.redirectTo({
         url: "/pages/login/forget?type=logoff",
       });
     },
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },

@@ -1,8 +1,7 @@
 <template>
   <view class="income-table-page u-bg-default u-vh-100 u-p-28 u-flex-col">
     <view
-      class="contain-box u-border-radius u-border u-bg-f u-flex-1 u-p-24"
-      :class="{ 'contain-box-no-scroll': isShowPop }"
+      class="contain-box u-border-radius u-border u-bg-f u-flex-1 u-p-24" 
       v-if="pageInfo.isLoadComplate && projectInfo && listData.length"
     >
       <view class="top-box">
@@ -14,8 +13,7 @@
             width="104rpx"
             height="104rpx"
             :src="
-              projectInfo.drama_cover_url ||
-              `${static_path}drama_empty_icon.png`
+              projectInfo.drama_cover_url
             "
           ></u-image>
           <view class="u-flex-col u-flex-1 u-row-between">
@@ -50,9 +48,8 @@
         </view>
         <view class="user-header u-flex-row" v-else>
           <view class="u-flex-col u-m-r-16 u-col-center">
-            <view class="user-header-icon u-flex-col u-col-center u-row-center">
-              <u-image :src="income_img" width="60rpx" height="60rpx"></u-image>
-            </view>
+   
+            <u-image  :src="income_img" width="104rpx" height="104rpx"></u-image>
             <text class="color-text-black u-font-24 u-font-weight u-m-t-8"
               >发布佣金</text
             >
@@ -105,7 +102,7 @@
         </view>
         <view
           class="u-m-t-24"
-          style="background-color: #eee; height: 2rpx"
+          style="background-color: #eee; height: 1rpx"
         ></view>
         <view class="top-title u-flex-row color-text-black u-font-24 u-p-t-24">
           <text
@@ -118,8 +115,8 @@
         </view>
       </view>
 
-      <u-list :style="{ height: list_height }" @scrolltolower="loadMoreData">
-        <u-list-item
+      <view :style="{ height: list_height }">
+        <view
           class="income-item"
           v-for="item in listData"
           :key="item.id"
@@ -130,24 +127,24 @@
               >{{ item.date }}</text
             >
             <text
-              class="income-item-text income-item-text-click u-font-22 color-text-primary"
-              v-if="incomeType == 1"
+              class="income-item-text income-item-text-click u-font-22 u-font-weight color-text-primary"
+              v-if="incomeType == 1 && currentTab == 1"
               @click="showTopupData(item)"
               >{{ item.charge_amount }}</text
             >
             <text
               class="income-item-text u-font-22 color-text-less-grey"
               v-else
-              >{{ item.drama_name }}</text
+              >{{currentTab == 0 ? item.pay_time : item.drama_name }}</text
             >
             <text
               class="income-item-text u-font-22 color-text-less-grey u-m-l-16 u-m-r-16"
               >{{
-                `${incomeType == 1 ? item.order_num : item.blogger_amount}`
+                incomeType == 1 ? (currentTab == 0 ? item.charge_amount : item.order_num) : item.blogger_amount
               }}</text
             >
             <text
-              class="income-item-text income-item-text-click u-font-22 color-text-primary"
+              class="income-item-text income-item-text-click u-font-22 u-font-weight color-text-primary"
               @click="showMyIncomeData(item)"
               >{{ item.total_amount }}</text
             >
@@ -156,14 +153,14 @@
             class="u-m-t-24"
             style="background-color: #eee; height: 2rpx"
           ></view>
-        </u-list-item>
-        <u-list-item v-if="pageInfo.showLoadMore" key="loadmorekey">
+        </view>
+        <view v-if="pageInfo.showLoadMore" key="loadmorekey">
           <u-loadmore
             :status="pageInfo.loadmoreStatus"
             @loadmore="loadMoreData"
           />
-        </u-list-item>
-      </u-list>
+        </view>
+      </view>
     </view>
     <view class="u-vh-100 u-flex-col u-col-center u-row-center" v-else>
       <u-empty
@@ -195,6 +192,7 @@ export default {
   },
   data() {
     return {
+      
       list_height: "0px",
       start_date: null,
       end_date: null,
@@ -208,11 +206,12 @@ export default {
         showLoadMore: false,
         loadmoreStatus: "loadmore",
       },
-      isShowPop: false,
       incomeType: 1, //收益类型， 1：单个项目收益， 2：发布佣金收益， 默认为单个项目收益
       planId: 0,
       advertiserType: 0,
       bloggerId: 0,
+      drama_plan_id: 0,
+      currentTab: 0,
 
       projectInfo: {},
       userInfo: {},
@@ -231,9 +230,15 @@ export default {
       return this.static_path + "money_Icon.png";
     },
     headerTitles() {
-      return this.incomeType == 1
-        ? ["日期", "充值金额", "支付订单", "我的收益"]
-        : ["日期", "剧名", "达人收益", "我的收益"];
+      if (this.incomeType == 1) {
+        if (this.currentTab == 0) {
+          return ["充值日期", "充值时间", "充值金额", "预估收益"];
+        } else {
+          return ["日期", "充值金额", "支付订单", "我的收益"];
+        }
+      } else {
+        return ["日期", "剧名", "达人收益", "我的收益"];
+      }
     },
   },
   methods: {
@@ -248,18 +253,25 @@ export default {
       uni.$u.throttle(this.getListData(false), 500);
     },
     getListData(reset = true) {
+
       if (this.pageInfo.loading || this.pageInfo.isEnd) return;
 
       let params = {
         pagesize: this.pageInfo.pagesize,
         start_date: this.start_date,
         end_date: this.end_date,
+        currentTab: this.currentTab,
       };
       params.advertiser_type = this.advertiserType;
       if (this.incomeType == 2) {
         params.blogger_id = this.bloggerId;
       } else {
-        params.plan_id = this.planId;
+        if (this.currentTab == 0) {
+          params.drama_plan_id = this.drama_plan_id;
+        } else {
+          params.plan_id = this.planId;
+        }
+        
       }
 
       this.loading = true;
@@ -271,20 +283,41 @@ export default {
         this.pageInfo.loadmoreStatus = "loading";
       }
 
+      
       let func = this.incomeType == 1 ? getIncomeTable : getBloggerIncomeTable;
       func(params)
         .then((res) => {
           const list = res.data.list;
 
           if (this.incomeType == 1) {
-            this.projectInfo = res.data.info;
-            for (let item of list) {
-              item.id = item.settle_id;
+            if (this.currentTab == 0) {
+              this.projectInfo = res.data.plan_info;
+            } else {
+              this.projectInfo = res.data.info;
+            }
+            
+            for (var i = 0; i < list.length; i++) {
+              let item = list[i];
+              
+              if (this.currentTab == 0) {
+                item.id = (this.pageInfo.page - 1) * this.pageInfo.pagesize + i;
+     
+                item.total_amount = item.publish_amount;
+                item.charge_amount = item.amount;
+
+              } else {
+                item.id = item.settle_id;
+              }
+
+              item.pay_time = item.pay_time?.split(' ').pop() ?? '--';
+
+
               let charge_amount = item["charge_amount"];
               item["charge_amount"] = unitMoney(charge_amount, false, true);
 
               let total_amount = item["total_amount"];
               item["total_amount"] = unitMoney(total_amount, false, true);
+              // item.date = item.pay_time
             }
           } else {
             this.userInfo = res.data.info;
@@ -325,7 +358,7 @@ export default {
             ? "nomore"
             : "loadmore";
         })
-        .catch((error) => {
+        .catch((err) => {
           let message = String(err.message || err || "收益明细获取失败");
           this.toastMsg(message, "error");
         })
@@ -348,8 +381,9 @@ export default {
         charge_amount: item.charge_amount,
         date: item.date,
         drama_cover_url: this.projectInfo.drama_cover_url,
-        start_date: this.start_date,
-        end_date: this.end_date,
+        start_date: item.date,
+        end_date: item.date,
+        currentTab: this.currentTab,
       };
       uni.navigateTo({
         url: `/income/demandIncome/topupOrderDetails?params=${encodeURIComponent(
@@ -358,18 +392,18 @@ export default {
       });
     },
     showMyIncomeData(item) {
-      this.isShowPop = true;
 
-      this.$refs.detailsPopup.openPopup(item.id, item, this.incomeType);
+      this.$refs.detailsPopup.openPopup(item.id, item, this.incomeType, this.currentTab);
     },
     closePopup() {
-      this.isShowPop = false;
+
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },
@@ -378,7 +412,9 @@ export default {
     this.pageInfo.isEnd = false;
     uni.$u.throttle(this.getListData(true), 500);
   },
-
+  onReachBottom() {
+    this.loadMoreData();
+  },
   onLoad(options) {
     this.incomeType = parseInt(options.incomeType);
     this.advertiserType = options.advertiserType;
@@ -386,6 +422,9 @@ export default {
     this.bloggerId = options.bloggerId;
     this.start_date = options.start_date;
     this.end_date = options.end_date;
+    this.currentTab = options["currentTab"] || 0;
+    this.drama_plan_id = options.drama_plan_id;
+
   },
   onReady() {
     this.$nextTick(() => {
@@ -399,18 +438,6 @@ export default {
 .income-table-page {
   .contain-box {
     .user-header {
-      .user-header-icon {
-        border-radius: 20rpx;
-        border: 1rpx solid #ffe0ad;
-        background: linear-gradient(
-          to bottom,
-          rgba(255, 241, 215, 0.1),
-          #ffe0ad
-        );
-        width: 104rpx;
-        height: 104rpx;
-      }
-
       .user-header-data {
         .user-header-data-space {
           background-color: #c6c6c6;
@@ -447,10 +474,6 @@ export default {
         text-decoration-skip-ink: none;
       }
     }
-  }
-
-  .contain-box-no-scroll {
-    overflow-y: hidden;
   }
 }
 </style>

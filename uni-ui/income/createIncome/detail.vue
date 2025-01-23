@@ -1,6 +1,6 @@
 <template>
   <view class="create-income-detail">
-    <view class="top-card u-m-b-28 u-p-x-28 u-m-t-28">
+    <view class="top-card u-p-28">
       <view class="u-bg-f u-flex-row u-col-center u-border-radius u-p-24">
         <u--image
           :src="detailObj.collection_cover_url"
@@ -21,8 +21,7 @@
               @submit="getTopDate"
             />
           </view>
-          <BaseSkeleton v-if="cardLoading" height="116rpx" round="16rpx"/>
-          <view v-else class="price-card u-border-radius">
+          <view class="price-card u-border-radius">
             <view class="u-flex-col u-col-center">
               <text class="color-text-black u-font-28 u-line-h-44">{{
                 detailObj.order_num || "--"
@@ -51,7 +50,9 @@
         </view>
       </view>
     </view>
-    <view class="tabel-navbar u-p-x-28 u-p-t-28 u-p-b-24 u-bg-f">
+    <view
+      class="tabel-navbar u-p-x-28 u-p-t-28 u-p-b-24 u-bg-f u-border-radius"
+    >
       <view class="u-flex-row u-col-center">
         <DatePicker
           title="请选择查询时间段"
@@ -115,34 +116,38 @@
         }}</text>
       </view>
     </view>
-    <ZbTable
-      :columns="columns"
-      :highlight="true"
-      :data="tableData"
-      border
-      fit
-      :isLoading="tableLoading"
-    >
-      <template #account_amount="{ row }">
-        <text
-          class="color-text-primary"
-          style="text-decoration: underline"
-          @click="openIncomePopup(row)"
-          >{{ unitMoney(row.account_amount, false, true) }}</text
-        >
-      </template>
-      <template #source_type="{ row }">
-        <text>{{ SOURCE_TYPE_MAPPER[row.source_type] || '产品引流' }}</text>
-      </template>
-      <template #pay_platform="{ row }">
-        <text>{{ PAY_PLATFORM_MAPPER[row.pay_platform] }}</text>
-      </template>
-      <template #settle_status="{ row }">
-        <text>{{ SETTLE_STATUS_MAPPER[row.settle_status] }}</text>
-      </template>
-    </ZbTable>
+    <view class="u-bg-f heightAll">
+      <ZbTable
+        :columns="columns"
+        :highlight="true"
+        :data="tableData"
+        :stripe="false"
+        border
+        fit
+        :isLoading="tableLoading"
+      >
+        <template #account_amount="{ row }">
+          <text
+            class="color-text-primary"
+            style="text-decoration: underline"
+            @click="openIncomePopup(row)"
+            >{{ unitMoney(row.account_amount, false, true) }}</text
+          >
+        </template>
+        <template #source_type="{ row }">
+          <text>{{ SOURCE_TYPE_MAPPER[row.source_type] || "产品引流" }}</text>
+        </template>
+        <template #pay_platform="{ row }">
+          <text>{{ PAY_PLATFORM_MAPPER[row.pay_platform] }}</text>
+        </template>
+        <template #settle_status="{ row }">
+          <text>{{ SETTLE_STATUS_MAPPER[row.settle_status] }}</text>
+        </template>
+      </ZbTable>
+    </view>
+
     <u-popup :show="showCustomTableCols" round="24rpx">
-      <view class="u-p-28" style="display: grid; grid-gap: 32rpx">
+      <view class="u-p-x-28 u-p-t-28" style="display: grid; grid-gap: 32rpx">
         <view class="select-top u-flex-row u-row-between u-col-center">
           <text class="u-font-bold u-font-32 u-line-h-48"
             >自定义查看更多数据</text
@@ -167,16 +172,18 @@
             <text class="u-font-24 u-line-h-40">{{ item.label }}</text>
           </view>
         </view>
-        <view class="table-cols-bottom-btns u-m-t-64">
+        <view class="table-cols-bottom-btns">
           <view
-            class="u-flex-row u-row-center u-col-center u-p-y-32"
+            class="u-flex-row u-row-center u-col-center u-p-y-32 reset-btn widthAll"
             @click="resetCols"
+            style="height: 108rpx"
           >
             <text class="u-font-28 color-text-less-grey">重置</text>
           </view>
           <view
-            class="u-flex-row u-row-center u-col-center u-p-y-32"
+            class="u-flex-row u-row-center u-col-center u-p-y-32 widthAll"
             @click="tableColsSubmit"
+            style="height: 108rpx"
           >
             <text class="u-font-28 color-text-primary">确定</text>
           </view>
@@ -217,7 +224,9 @@
                 'settle-tag--danger': currentIncome.settle_status == 3,
               }"
             >
-              <text class="u-font-22 u-line-h-40">{{ SETTLE_STATUS_MAPPER[currentIncome.settle_status] }}</text>
+              <text class="u-font-22 u-line-h-40">{{
+                SETTLE_STATUS_MAPPER[currentIncome.settle_status]
+              }}</text>
             </view>
           </view>
           <view class="u-flex-row u-row-between u-col-center u-m-b-16">
@@ -229,10 +238,11 @@
                 class="u-m-r-8"
               ></u--image>
               <text class="color-text-less-grey u-font-24 u-line-h-40"
-              >流量类型</text>
+                >流量类型</text
+              >
             </view>
             <text class="color-text-less-grey u-font-24 u-line-h-40">{{
-              SOURCE_TYPE_MAPPER[currentIncome.source_type] || '产品引流'
+              SOURCE_TYPE_MAPPER[currentIncome.source_type] || "产品引流"
             }}</text>
           </view>
           <view class="u-flex-row u-row-between u-col-center u-m-b-16">
@@ -243,7 +253,9 @@
                 height="32rpx"
                 class="u-m-r-8"
               ></u--image>
-              <text class="color-text-less-grey u-font-24 u-line-h-40">支付平台</text>
+              <text class="color-text-less-grey u-font-24 u-line-h-40"
+                >支付平台</text
+              >
             </view>
             <text class="color-text-less-grey u-font-24 u-line-h-40">{{
               PAY_PLATFORM_MAPPER[currentIncome.pay_platform]
@@ -251,9 +263,10 @@
           </view>
           <view class="income-popup-grid u-p-y-16 widthAll u-border-radius">
             <view class="u-flex-col u-col-center">
-              <text class="color-text-black u-font-28 u-line-h-44">{{
-                unitMoney(currentIncome.order_amount, false, true)
-              }}</text>
+              <text
+                class="color-text-black u-font-bold u-font-28 u-line-h-44"
+                >{{ unitMoney(currentIncome.order_amount, false, true) }}</text
+              >
               <text class="color-text-less-grey u-font-22 u-line-h-40"
                 >充值金额</text
               >
@@ -265,26 +278,31 @@
                   size="28rpx"
                   color="#1A1A1A"
                 ></u-icon>
-                <text class="color-text-black u-m-l-8 u-font-28 u-line-h-44">{{
-                  unitRate(currentIncome.platform_rate)
-                }}</text>
+                <text
+                  class="color-text-black u-font-bold u-m-l-8 u-font-28 u-line-h-44"
+                  >{{ unitRate(currentIncome.platform_rate) }}</text
+                >
               </view>
               <text class="color-text-less-grey u-font-22 u-line-h-40"
                 >通道费率</text
               >
             </view>
             <view class="u-flex-col u-col-center price-border">
-              <text class="color-text-black u-font-28 u-line-h-44">{{
-                unitRate(currentIncome.account_ratio)
-              }}</text>
+              <text
+                class="color-text-black u-font-bold u-font-28 u-line-h-44"
+                >{{ unitRate(currentIncome.account_ratio) }}</text
+              >
               <text class="color-text-less-grey u-font-22 u-line-h-40"
                 >分成比例</text
               >
             </view>
             <view class="u-flex-col u-col-center">
-              <text class="color-text-black u-font-28 u-line-h-44">{{
-                unitMoney(currentIncome.account_amount, false, true)
-              }}</text>
+              <text
+                class="color-text-black u-font-bold u-font-28 u-line-h-44"
+                >{{
+                  unitMoney(currentIncome.account_amount, false, true)
+                }}</text
+              >
               <text class="color-text-less-grey u-font-22 u-line-h-40"
                 >我的收益</text
               >
@@ -301,10 +319,17 @@
 import { unitMoney, unitRate, sleep } from "@/utils/tools.js";
 import BaseSkeleton from "@/components/base-skeleton/index.vue";
 import DatePicker from "@/components/base-datepicker/index.vue";
-import { getCreateDetailTotal, getCreateDetailList } from "../api/create/index.js";
+import {
+  getCreateDetailTotal,
+  getCreateDetailList,
+} from "../api/create/index.js";
 import ZbTable from "../components/zb-table/components/zb-table/zb-table.vue";
 import { mapGetters } from "vuex";
-import { PAY_PLATFORM_MAPPER, SETTLE_STATUS_MAPPER, SOURCE_TYPE_MAPPER } from '@/utils/mappers/public.js';
+import {
+  PAY_PLATFORM_MAPPER,
+  SETTLE_STATUS_MAPPER,
+  SOURCE_TYPE_MAPPER,
+} from "@/utils/mappers/public.js";
 export default {
   components: {
     BaseSkeleton,
@@ -373,7 +398,7 @@ export default {
           align: "center",
           fixed: false,
           type: "custom",
-          slots: { customRender: 'source_type' }
+          slots: { customRender: "source_type" },
         },
         {
           label: "支付平台",
@@ -381,7 +406,7 @@ export default {
           align: "center",
           fixed: false,
           type: "custom",
-          slots: { customRender: 'pay_platform' }
+          slots: { customRender: "pay_platform" },
         },
         {
           label: "结算流程",
@@ -389,18 +414,13 @@ export default {
           align: "center",
           fixed: false,
           type: "custom",
-          slots: { customRender: 'settle_status' }
+          slots: { customRender: "settle_status" },
         },
       ],
       selectedCols: [],
       myIncomePopup: false,
       currentIncome: {},
       collection_id: null,
-      pay_icon_mapper: {
-        'ALIPAY': 'zhifubao-circle-fill',
-        'WXPAY': 'weixin-circle-fill',
-        'BANK': 'coupon-fill',
-      },
 
       cardLoading: false,
       status: "loadmore",
@@ -415,11 +435,20 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['static_path', 'image']),
+    ...mapGetters(["static_path", "image"]),
     showTableDate() {
-      const newList = [...new Set(this.tableDate)]
-      return newList.map(el => el.replace(/\-/g, ".")).join(" - ")
-    }
+      const newList = [...new Set(this.tableDate)];
+      return newList.map((el) => el.replace(/\-/g, ".")).join(" - ");
+    },
+    pay_icon_mapper() {
+      return {
+        ALIPAY: `${this.static_path}alipay_income_icon.png`,
+        WXPAY: `${this.static_path}wechat_pay_icon.png`,
+        BANK: "coupon-fill",
+        DIAMOND: `${this.static_path}tiktok_pay_icon.png`,
+        TTPAY: `${this.static_path}tiktok_pay_icon.png`,
+      };
+    },
   },
   watch: {},
   methods: {
@@ -431,6 +460,7 @@ export default {
     },
 
     getTableDate(date, item) {
+      this.isEnd = false;
       if (item.value != "custom") {
         this.tableDataBtn = item;
       }
@@ -458,7 +488,6 @@ export default {
       this.toastMsg("加载中", "loading", -1);
       this.getDetail();
       this.getCreateTable();
-      this.$refs.toastRef?.close();
       uni.stopPullDownRefresh();
     },
 
@@ -488,22 +517,36 @@ export default {
       getCreateDetailList(params)
         .then((res) => {
           if (res.code == 0) {
-            this.tableData = res.data.list;
-            this.tableLoading = false;
+            const list = res.data.list;
+            if (reset) this.tableData = list;
+            else this.tableData.push(...list);
+            this.site = res.data.site;
+            let bool = !(res.data.length < this.pagesize);
+            this.isEnd = !bool;
+            if (!bool) {
+              this.nomoreText = `没有更多了～`;
+              this.status = "nomore";
+            } else {
+              this.loadmoreText = `下拉加载更多`;
+              this.status = "loadmore";
+            }
+            this.$refs.toastRef?.close();
           }
         })
         .catch((error) => {
+          this.toastMsg(error.message || error, "error");
+        })
+        .finally(() => {
           this.tableLoading = false;
-          this.toastMsg(error, "error");
         });
     },
 
     getDetail() {
       this.cardLoading = true;
-      getCreateDetailTotal({ 
+      getCreateDetailTotal({
         collection_id: this.collection_id,
         start_date: this.topDate[0],
-        end_date: this.topDate[1]
+        end_date: this.topDate[1],
       })
         .then((res) => {
           if (res.code == 0) {
@@ -511,12 +554,12 @@ export default {
           }
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         })
         .finally(async () => {
           await sleep(300);
           this.cardLoading = false;
-        })
+        });
     },
 
     openSeletedCols() {
@@ -529,17 +572,17 @@ export default {
 
     tableColsSubmit() {
       if (!this.selectedCols.length) {
-        return this.toastMsg("请选择数据项", "error");
+        this.resetCols();
+      } else {
+        this.tableLoading = true;
+        const newSelected = this.listBtns.filter((el) =>
+          this.selectedCols.includes(el.name)
+        );
+        this.columns = this.storeCols;
+        this.columns = [...this.columns, ...newSelected];
+        this.tableLoading = false;
+        this.closeSeletedCols();
       }
-      this.tableLoading = true;
-      const newSelected = this.listBtns.filter((el) =>
-        this.selectedCols.includes(el.name)
-      );
-      this.columns = this.storeCols;
-      this.columns = [...this.columns, ...newSelected];
-      console.log(this.columns)
-      this.tableLoading = false;
-      this.closeSeletedCols();
     },
 
     resetCols() {
@@ -566,10 +609,11 @@ export default {
       this.myIncomePopup = true;
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration,
       });
     },
   },
@@ -588,7 +632,7 @@ export default {
 
 <style lang="scss" scoped>
 .create-income-detail {
-  min-height: 100vh;
+  height: 100vh;
   .table-date-picker {
     width: 460rpx;
     height: 64rpx;
@@ -669,6 +713,19 @@ export default {
   grid-template-columns: repeat(2, 1fr);
   justify-items: center;
   align-items: center;
+}
+.reset-btn {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 1rpx;
+    height: 32rpx;
+    background: #eee;
+    transform: translateY(-50%);
+  }
 }
 .income-popup-grid {
   display: grid;

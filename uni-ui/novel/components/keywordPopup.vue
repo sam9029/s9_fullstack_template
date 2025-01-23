@@ -16,7 +16,7 @@
           <view
             v-for="item in list"
             :key="item"
-            class="popup-content--item u-p-y-24 u-p-x-40 color-text-black u-font-28 u-line-h-48"
+            class="popup-content--item u-p-y-24 u-p-x-40 color-text-black u-font-28 u-line-h-48 u-border-radius"
           >{{ item }}</view>
         </view>
       </view>
@@ -45,6 +45,7 @@ export default {
     close() {
       this.show = false;
       this.list = [];
+      this.$emit('close')
     },
   },
 };
@@ -53,7 +54,12 @@ export default {
 <style lang="scss" scoped>
 .popup-content {
   height: 624rpx;
-  display: grid;
-  grid-gap: 32rpx;
+  display: flex;
+  flex-direction: column;
+  .popup-content--item {
+    background: #F6F6F6;
+    height: fit-content;
+    margin-bottom: 32rpx;
+  }
 }
 </style>

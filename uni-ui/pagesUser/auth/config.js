@@ -7,11 +7,11 @@ export const ENTRY_STATUS_MAPPER = {
 };
 
 export const ENTRY_STATUS_TEXT_MAPPER_FOR_BTN = {
-  APPLY_JOIN: { icon: "", content: "申请入驻" },
-  VERIFY: { icon: "c_i_tip_computer.png", content: "平台审核中..." },
-  REJECT: { icon: "c_i_tip_plaint.png", content: "申请未通过 点此查看原因" },
-  WAIT_REALNAME: { icon: "c_i_tip_guard.png", content: "去实名认证" },
-  ENTRIED: { icon: "c_i_tip_check.png", content: "你已入驻 复制链接" },
+  APPLY_JOIN: { icon: "", content: "申请入驻",},
+  VERIFY: { icon: "c_i_tip_computer.png", content: "平台审核中...", },
+  REJECT: { icon: "c_i_tip_plaint.png", content: "申请未通过 点此查看原因",},
+  WAIT_REALNAME: { icon: "c_i_tip_guard.png", content: "去认证", bottom_content: "去实名认证", },
+  ENTRIED: { icon: "c_i_tip_check.png", content: "点击复制链接", bottom_content: "你已入驻 复制链接", },
   LOCAL_QUERY: { icon: "", content: "点击查询入驻状态" },
   // 本地使用
 };
@@ -35,12 +35,12 @@ export const ENTRY_STATUS_TEXT_MAPPER_FOR_HEADER = {
   },
   WAIT_REALNAME: {
     icon: "c_i_tip_guard_primary.png",
-    title: "您的入驻申请正在审核中",
+    title: "您的入驻申请已通过",
     content: "实名认证成功后即可开启创作者权益",
   },
   ENTRIED: {
     icon: "c_i_tip_check_primary.png",
-    title: "您的入驻申请已通过",
+    title: "您已成功入驻创作者平台",
     content:
       "请复制链接后在PC端打开、使用“欢乐创”APP扫码登录创作者后台进行原创剧集的上传与管理",
   },

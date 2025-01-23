@@ -137,8 +137,8 @@
 			}
 
 			&__text {
-				font-size: 14px;
-				color: $u-content-color;
+				font-size: 14rpx;
+				color: #C6C6C6 !important;
 			}
 
 			&__dot-text {

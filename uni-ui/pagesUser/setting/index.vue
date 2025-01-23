@@ -27,40 +27,71 @@
       </view>
     </view>
     <view
+      v-if="has_login"
       class="logout u-bg-f u-border-radius u-flex-row u-col-center u-row-center u-p-28"
       @click="logout"
     >
       <text class="u-font-28 u-text-error">退出登录</text>
     </view>
+    <u-modal
+      :show="showLogoutNotcie"
+      @confirm="confirm"
+      @cancel="cancel"
+      ref="uModal"
+      title="温馨提示"
+      width="404rpx"
+      content="确定要退出当前登录账号吗？"
+      confirmText="取消"
+      cancelText="退出"
+      confirmColor="#408CFF"
+      cancelColor="#6A6A6A"
+      :showCancelButton="true"
+    >
+    </u-modal>
   </view>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data() {
-    return {};
+    return {
+      showLogoutNotcie: false,
+    };
+  },
+  computed: {
+    ...mapGetters(["has_login"]),
   },
   methods: {
-    async logout() {
+    logout() {
+      this.showLogoutNotcie = true;
+    },
+    confirm() {
+      this.showLogoutNotcie = false;
+    },
+    async cancel() {
+      this.showLogoutNotcie = false;
       uni.clearStorageSync();
       this.$store.dispatch("LogOut");
+      uni.switchTab({
+				url: '/pages/mine/mine'
+			})
     },
-
     jumpPage(index) {
       switch (index) {
         case 0:
-          uni.redirectTo({
+          uni.navigateTo({
             url: "/pagesUser/setting/userInfo",
           });
           break;
         case 1:
-          uni.redirectTo({
+          uni.navigateTo({
             url: "/pagesUser/setting/cancelAcc",
           });
           break;
         case 2:
           uni.navigateTo({
-            url: "/pages/login/forget?type=reset",
+            url: "/pages/login/reset",
           });
           break;
         case 3:
@@ -85,6 +116,7 @@ export default {
   justify-content: space-between;
   align-items: center;
 }
+
 .logout {
   &:hover {
     background-color: #eeeeee;

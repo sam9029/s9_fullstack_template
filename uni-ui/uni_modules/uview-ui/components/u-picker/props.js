@@ -74,6 +74,10 @@ export default {
 		immediateChange: {
 			type: Boolean,
 			default: uni.$u.props.picker.immediateChange
-		}
+		},
+        round: {
+            type: [String, Number],
+            default: uni.$u.props.picker.round
+        }
     }
 }

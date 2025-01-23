@@ -1,6 +1,7 @@
 <template>
 	<u-popup
 		:show="show"
+		:round="round"
 		@close="closeHandler"
 	>
 		<view class="u-picker">
@@ -14,6 +15,7 @@
 				@cancel="cancel"
 				@confirm="confirm"
 			></u-toolbar>
+			<slot v-else name="header"></slot>
 			<picker-view
 				class="u-picker__view"
 				:indicatorStyle="`height: ${$u.addUnit(itemHeight)}`"
@@ -49,6 +51,7 @@
 			>
 				<u-loading-icon mode="circle"></u-loading-icon>
 			</view>
+			<slot name="footer"></slot>
 		</view>
 	</u-popup>
 </template>

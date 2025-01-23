@@ -3,11 +3,13 @@
     <GuideToWebsite v-if="showGuide"></GuideToWebsite>
     <template v-else>
       <!-- 导航栏 -->
-      <view class="navbar-box">
-        <view
-          class="navbar u-p-x-28 u-p-y-16 widthAll u-relative"
-          style="background: transparent"
-        >
+      <view
+        :class="[
+          'navbar-box',
+          showNavPureBg ? 'navbar-box--pure-bg' : 'navbar-box--transparent',
+        ]"
+      >
+        <view class="navbar u-p-x-28 u-p-y-16 widthAll u-relative">
           <u-icon name="arrow-left" size="48rpx" @click="goBack"></u-icon>
           <view
             class="color-text-white u-font-32 u-line-h-48 u-position-center u-font-bold"
@@ -15,18 +17,20 @@
           >
         </view>
       </view>
-  
+
       <!-- 页面主体 -->
       <view class="auth-home-page__main-wrapper u-p-x-28">
         <!-- 00 -->
         <view
           class="common-card__wrapper entry-status-card__wrapper scroll-target"
         >
-          <view class="common-card__wrapper-header widthAll u-flex u-row-center">
+          <view
+            class="common-card__wrapper-header widthAll u-flex u-row-center"
+          >
             <u-icon
               :name="`${static_path}${ENTRY_STATUS_TEXT_MAPPER_FOR_HEADER[entry_status].icon}`"
-              width="24"
-              height="24"
+              width="20"
+              height="20"
             ></u-icon>
             <text class="common-card-header-title header-01-title">{{
               ENTRY_STATUS_TEXT_MAPPER_FOR_HEADER[entry_status].title
@@ -36,36 +40,32 @@
             <view class="common-card-content u-text-center">{{
               ENTRY_STATUS_TEXT_MAPPER_FOR_HEADER[entry_status].content
             }}</view>
-  
+          </view>
+          <view class="common-card__wrapper-content">
             <!-- 特殊 -->
             <view
               v-if="entry_status === 'REJECT'"
               class="u-flex u-gap-28 u-row-center"
             >
-              <u-button
-                text="查看原因"
-                @click="handleOpenRejectReasonModal"
-              ></u-button>
-              <u-button
-                type="primary"
-                text="重新申请"
-                loadingText="正在获取用户入驻状态"
-                :loading="submitBtnLoading"
-                @click="handleSubmitClick('topBtn')"
-              ></u-button>
+              <view class="btn-bg-white" @click="handleOpenRejectReasonModal"
+                >查看原因</view
+              >
+              <view class="btn-bg-blue" @click="handleSubmitClick('topBtn')"
+                >重新申请</view
+              >
             </view>
-  
-            <u-button
+
+            <view
               v-else
-              type="primary"
-              :loading="submitBtnLoading"
-              loadingText="正在获取用户入驻状态"
-              :text="entry_status_text"
-              @click="handleSubmitClick"
-            ></u-button>
+              class="btn-bg-blue"
+              @click="handleSubmitClick('topBtn')"
+              >{{
+                submitBtnLoading ? "正在获取用户入驻状态" : entry_status_text
+              }}</view
+            >
           </view>
         </view>
-  
+
         <!-- 01 -->
         <view class="common-card__wrapper" :style="common_card_header_bg_style">
           <view class="common-card__wrapper-header widthAll u-flex u-row-left">
@@ -74,13 +74,17 @@
               width="24"
               height="24"
             ></u-icon>
-            <text class="common-card-header-title">{{ TEXT_DOCS.p1.title }}</text>
+            <text class="common-card-header-title">{{
+              TEXT_DOCS.p1.title
+            }}</text>
           </view>
           <view class="common-card__wrapper-content">
-            <view class="common-card-content">{{ TEXT_DOCS.p1.t1.content }}</view>
+            <view class="common-card-content">{{
+              TEXT_DOCS.p1.t1.content
+            }}</view>
           </view>
         </view>
-  
+
         <!-- 02 -->
         <view class="common-card__wrapper" :style="common_card_header_bg_style">
           <view class="common-card__wrapper-header widthAll u-flex u-row-left">
@@ -89,30 +93,28 @@
               width="24"
               height="24"
             ></u-icon>
-            <text class="common-card-header-title">{{ TEXT_DOCS.p2.title }}</text>
+            <text class="common-card-header-title">{{
+              TEXT_DOCS.p2.title
+            }}</text>
           </view>
           <view class="common-card__wrapper-content">
             <view class="common-card-content u-p-l-10">
               <view class="u-flex u-gap-20">
-                <u-badge :isDot="true" type="info" />
-                <text>{{ TEXT_DOCS.p2.t1.content1 }}</text>
+                <li>{{ TEXT_DOCS.p2.t1.content1 }}</li>
               </view>
               <view class="u-flex u-gap-20">
-                <u-badge :isDot="true" type="info" />
-                <text>{{ TEXT_DOCS.p2.t1.content2 }}</text>
+                <li>{{ TEXT_DOCS.p2.t1.content2 }}</li>
               </view>
               <view class="u-flex u-gap-20">
-                <u-badge :isDot="true" type="info" />
-                <text>{{ TEXT_DOCS.p2.t1.content3 }}</text>
+                <li>{{ TEXT_DOCS.p2.t1.content3 }}</li>
               </view>
               <view class="u-flex u-gap-20">
-                <u-badge :isDot="true" type="info" />
-                <text>{{ TEXT_DOCS.p2.t1.content4 }}</text>
+                <li>{{ TEXT_DOCS.p2.t1.content4 }}</li>
               </view>
             </view>
           </view>
         </view>
-  
+
         <!-- 03 -->
         <view class="common-card__wrapper" :style="common_card_header_bg_style">
           <view class="common-card__wrapper-header widthAll u-flex u-row-left">
@@ -121,7 +123,9 @@
               width="24"
               height="24"
             ></u-icon>
-            <text class="common-card-header-title">{{ TEXT_DOCS.p3.title }}</text>
+            <text class="common-card-header-title">{{
+              TEXT_DOCS.p3.title
+            }}</text>
           </view>
           <view class="common-card__wrapper-content">
             <view class="common-card-content u-flex-col u-gap-28">
@@ -182,7 +186,7 @@
             </view>
           </view>
         </view>
-  
+
         <!-- 04 -->
         <view class="common-card__wrapper" :style="common_card_header_bg_style">
           <view class="common-card__wrapper-header widthAll u-flex u-row-left">
@@ -191,7 +195,9 @@
               width="24"
               height="24"
             ></u-icon>
-            <text class="common-card-header-title">{{ TEXT_DOCS.p4.title }}</text>
+            <text class="common-card-header-title">{{
+              TEXT_DOCS.p4.title
+            }}</text>
           </view>
           <view class="common-card__wrapper-content">
             <view class="common-card-content u-flex-col u-gap-28">
@@ -202,9 +208,10 @@
                     width="24"
                     height="24"
                   ></u-icon>
-                  <view class="common-card-content-title u-font-bold u-font-md">{{
-                    TEXT_DOCS.p4.t1.title
-                  }}</view>
+                  <view
+                    class="common-card-content-title u-font-bold u-font-md"
+                    >{{ TEXT_DOCS.p4.t1.title }}</view
+                  >
                 </view>
                 <view>
                   {{ TEXT_DOCS.p4.t1.content }}
@@ -217,9 +224,10 @@
                     width="24"
                     height="24"
                   ></u-icon>
-                  <view class="common-card-content-title u-font-bold u-font-md">{{
-                    TEXT_DOCS.p4.t2.title
-                  }}</view>
+                  <view
+                    class="common-card-content-title u-font-bold u-font-md"
+                    >{{ TEXT_DOCS.p4.t2.title }}</view
+                  >
                 </view>
                 <view>
                   {{ TEXT_DOCS.p4.t2.content }}
@@ -256,7 +264,7 @@
                     />
                   </svg>
                 </view>
-  
+
                 <view class="common-card__wrapper-header u-flex u-row-center">
                   <u-icon
                     :name="`${static_path}c_i_income.png`"
@@ -316,7 +324,7 @@
             </view>
           </view>
         </view>
-  
+
         <!-- 05 -->
         <view class="common-card__wrapper" :style="common_card_header_bg_style">
           <view class="common-card__wrapper-header widthAll u-flex u-row-left">
@@ -325,7 +333,9 @@
               width="24"
               height="24"
             ></u-icon>
-            <text class="common-card-header-title">{{ TEXT_DOCS.p5.title }}</text>
+            <text class="common-card-header-title">{{
+              TEXT_DOCS.p5.title
+            }}</text>
           </view>
           <view class="common-card__wrapper-content">
             <view class="common-card-content u-flex-col u-gap-18">
@@ -423,7 +433,7 @@
           </view>
         </view>
       </view>
-  
+
       <!-- 按钮 -->
       <BottomBtn
         v-if="showBtn"
@@ -439,13 +449,14 @@
               v-if="entry_status_icon_for_bottom_btn"
               :name="entry_status_icon_for_bottom_btn"
               size="36rpx"
-              
             ></u-icon>
-            <text class="u-font-md">{{ entry_status_text }}</text>
+            <text class="u-font-16">{{
+              entry_status_text_for_bottom_btn
+            }}</text>
           </view>
         </template>
       </BottomBtn>
-  
+
       <BaseModal
         ref="rejectReasonModalRef"
         cancelText="我知道了"
@@ -456,13 +467,13 @@
         @input="handleRejectReasonModalShowChange"
         @confirm="handleRejectReasonModalConfirm"
       ></BaseModal>
-  
+
       <!-- 申请表单 -->
       <ApplyFormPopup
         ref="applyFormPopupRef"
         @queryUserEntryStatus="queryUserEntryStatus"
       ></ApplyFormPopup>
-  
+
       <!-- 消息提示 -->
       <base-toast ref="toastRef"></base-toast>
     </template>
@@ -486,7 +497,7 @@ import { copy, isMiniProgramBrowser } from "@/utils/tools.js";
 import { mapGetters } from "vuex";
 
 /** 接口 */
-import { getUserEntryStatus, postApprovalSubmit } from "../api/auth";
+import { getUserEntryStatus } from "../api/auth";
 
 export default {
   props: {},
@@ -495,7 +506,7 @@ export default {
     BaseModal,
     BottomBtn,
     ApplyFormPopup,
-    GuideToWebsite
+    GuideToWebsite,
   },
 
   data() {
@@ -507,6 +518,8 @@ export default {
       /** 用户入驻状态 */
       submitBtnLoading: true,
       entry_status: "LOCAL_QUERY",
+      /** 创作者后台链接 */
+      creator_host: null,
 
       /** 账户选取 */
       accountList: [],
@@ -524,6 +537,7 @@ export default {
       targetTop: 0,
       targetHeight: 0,
       showBtn: false,
+      showNavPureBg: false,
 
       showGuide: false,
     };
@@ -541,6 +555,11 @@ export default {
 
     entry_status_text() {
       return this.ENTRY_STATUS_TEXT_MAPPER_FOR_BTN[this.entry_status].content;
+    },
+
+    entry_status_text_for_bottom_btn() {
+      const item = this.ENTRY_STATUS_TEXT_MAPPER_FOR_BTN[this.entry_status];
+      return item?.bottom_content || item?.content;
     },
 
     header_bg_style() {
@@ -568,7 +587,7 @@ export default {
           {
             type: "primary",
             shape: "square",
-            text: this.entry_status_text,
+            text: this.entry_status_text_for_bottom_btn,
             loading: this.submitBtnLoading,
             loading_text: "正在获取用户入驻状态",
             onClick: "handel",
@@ -582,7 +601,7 @@ export default {
   methods: {
     goBack() {
       uni.switchTab({
-        url: '/pages/mine/mine'
+        url: "/pages/mine/mine",
       });
     },
 
@@ -625,14 +644,17 @@ export default {
 
     // 复制后台登录链接
     handleCopyBackEndManagementLoginUrl() {
-      /** 后台地址 */
-      copy("https://joyful.tuixiaoguo.com/login");
+      /** 创作者后台地址 */
+      if (this.creator_host) {
+        copy({ content: this.creator_host }, this);
+      }
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration,
       });
     },
 
@@ -661,6 +683,7 @@ export default {
         if (res && res.code == 0) {
           this.entry_status = res.data.entry_status;
           this.rejectReasonContent = res.data?.verify_suggest;
+          this.creator_host = res.data?.url;
         } else {
           this.entry_status = null;
           throw res;
@@ -680,8 +703,8 @@ export default {
   },
 
   created() {
-    if(isMiniProgramBrowser()) {
-      return this.showGuide = true
+    if (isMiniProgramBrowser()) {
+      return (this.showGuide = true);
     }
     this.queryUserEntryStatus();
   },
@@ -699,6 +722,14 @@ export default {
 
   onPageScroll(e) {
     const scrollTop = e.scrollTop;
+    /** 顶部导航栏背景色变换 */
+    if (scrollTop > 40) {
+      this.showNavPureBg = true;
+    } else {
+      this.showNavPureBg = false;
+    }
+
+    /** 底部按钮展示 */
     if (scrollTop > this.targetTop + this.targetHeight) {
       this.showBtn = true;
     } else {
@@ -710,6 +741,7 @@ export default {
 
 <style lang="scss" scoped>
 $c-white: #ffffff;
+$c-page_nav_pure_bg: rgba(22, 24, 31, 1);
 $c-page-primary: rgb(22, 27, 31);
 $c-page-primary-lucency: rgba(22, 27, 31, 0.8);
 $c-card-bg: #f4f8ff;
@@ -743,7 +775,14 @@ $c-warning-content: #ff7736;
     position: sticky;
     top: 0;
     z-index: 100;
-    background: $c-page-primary-lucency;
+
+    &.navbar-box--transparent {
+      background: transparent;
+    }
+
+    &.navbar-box--pure-bg {
+      background: $c-page_nav_pure_bg;
+    }
 
     /* #ifdef APP || MP */
     padding-top: 88rpx;
@@ -759,7 +798,10 @@ $c-warning-content: #ff7736;
 
   // 页面主体
   .auth-home-page__main-wrapper {
-    margin-top: 400rpx;
+    margin-top: 360rpx;
+    /* #ifdef APP */
+    margin-top: 260rpx;
+    /* #endif */
 
     // 页面主体通用卡片
     .common-card__wrapper {
@@ -796,7 +838,6 @@ $c-warning-content: #ff7736;
         font-size: 24rpx;
         font-style: normal;
         line-height: 40rpx;
-        margin-bottom: 20rpx;
         letter-spacing: 2rpx; // 字体间距
       }
 
@@ -839,7 +880,7 @@ $c-warning-content: #ff7736;
         .horizontal-line-dash {
           width: 40%;
           height: 2rpx;
-          border: 1px dashed $c-primary-content;
+          border-bottom: 1px dashed $c-primary-content;
           opacity: 0.3;
         }
       }
@@ -896,5 +937,27 @@ $c-warning-content: #ff7736;
     position: fixed;
     bottom: 0;
   }
+}
+
+%btn-base {
+  flex: 1;
+  line-height: 44rpx;
+  padding-top: 24rpx;
+  padding-bottom: 24rpx;
+  text-align: center;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+}
+
+.btn-bg-white {
+  @extend %btn-base;
+  background: #ffffff;
+  color: $u-main-color;
+}
+
+.btn-bg-blue {
+  @extend %btn-base;
+  background: #408cff;
+  color: $u-white;
 }
 </style>

@@ -6,14 +6,14 @@
       class="list-item u-p-y-32"
       :style="{
         'border-bottom':
-          index != listData.length - 1 ? '2rpx solid #eee' : 'none',
+          index != listData.length - 1 ? '1rpx solid #eee' : 'none',
       }"
       @click="goDetail(item)"
     >
       <view class="u-flex-col" v-if="type == 0">
         <view class="u-flex-row u-col-center u-m-b-16">
           <u--image
-            :src="item.drama_cover_url || `${static_path}drama_empty_icon.png`"
+            :src="item.drama_cover_url || item.cover_url"
             radius="16rpx"
             width="104rpx"
             height="104rpx"
@@ -72,10 +72,10 @@
           </view>
           <view class="u-flex-col u-col-center">
             <text class="color-text-black u-font-28 u-line-h-44 u-font-bold">{{
-              unitMoney(item.total_amount, false, true)
+              unitMoney(currentTab == 0 ? item.publish_amount : item.total_amount, false, true)
             }}</text>
             <text class="color-text-less-grey u-font-22 u-line-h-40"
-              >我的收益</text
+              >{{currentTab == 0 ? '预估收益' : '我的收益'}}</text
             >
           </view>
         </view>
@@ -127,10 +127,10 @@
             <view class="u-flex-col u-col-bottom">
               <text
                 class="color-text-black u-font-28 u-line-h-44 u-font-bold"
-                >{{ unitMoney(item.total_amount, false, true) }}</text
+                >{{ unitMoney(currentTab == 0 ? item.publish_amount : item.total_amount, false, true) }}</text
               >
               <text class="color-text-less-grey u-font-22 u-line-h-40"
-                >我的收益</text
+                >{{currentTab == 0 ? '预估收益' : '我的收益'}}</text
               >
             </view>
           </view>
@@ -145,6 +145,10 @@ import { unitMoney } from "@/utils/tools.js";
 import { mapGetters } from "vuex";
 export default {
   props: {
+    currentTab: {
+      type: Number,
+      default: 1,
+    },
     item: {
       type: Object,
       default: () => {},
@@ -189,15 +193,20 @@ export default {
         incomeType: this.type == 0 ? 1 : 2,
         start_date: this.date[0],
         end_date: this.date[1],
+        currentTab: this.currentTab,
       } 
       if (this.type == 0) {
-        params['planId'] = item.plan_id;
+        if (this.currentTab == 0) {
+          params['drama_plan_id'] = item.drama_plan_id;
+        } else {
+          params['planId'] = item.plan_id;
+        }
+        
       } else {
         params['bloggerId'] = item.blogger_id;
       }
-      console.log(params);
       let queryUrl = uni.$u.queryParams(params);
-      
+    
       uni.navigateTo({
         url: "/income/demandIncome/incomeTable" + queryUrl,
       });

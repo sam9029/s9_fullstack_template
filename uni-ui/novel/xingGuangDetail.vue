@@ -1,5 +1,5 @@
 <template>
-  <view class="detail-page">
+  <view class="detail-page" :class="{ 'no-scroll': no_scroll }">
     <view class="top-area">
       <view class="navbar u-p-x-28 u-p-y-16 u-flex-row u-col-center">
         <u--image
@@ -8,9 +8,10 @@
           height="48rpx"
           @click="goBack"
         ></u--image>
-        <text class="u-font-32 u-line-h-48 color-text-black u-m-l-16">{{
-          detailObj.advertiser_name || "--"
-        }}</text>
+        <text
+          class="u-font-32 u-font-weight-600 u-line-h-48 color-text-black u-m-l-16"
+          >{{ detailObj.advertiser_name || "--" }}</text
+        >
       </view>
     </view>
     <view class="u-p-x-28">
@@ -24,9 +25,10 @@
           radius="28rpx"
         ></u--image>
         <view class="u-flex-col u-row-center u-m-l-24">
-          <text class="color-text-black u-font-28 u-line-h-44 u-m-b-16">{{
-            detailObj.task_name || "--"
-          }}</text>
+          <text
+            class="color-text-black u-font-28 u-font-weight-600 u-line-h-44 u-m-b-16"
+            >{{ detailObj.task_name || "--" }}</text
+          >
           <view
             class="color-text-less-grey u-font-24 u-line-h-40 u-flex-row u-col-center u-m-b-16"
           >
@@ -74,27 +76,43 @@
             <text class="u-font-32 u-line-h-48 color-text-black u-font-bold">{{
               policys_2.show_value || "--"
             }}</text>
-            <text class="u-font-24 u-line-h-40 u-nowrap">{{
-              policys_2.show_name || "--"
-            }}</text>
+            <view class="u-font-24 u-line-h-40 u-flex-row u-col-center">
+              <text class="u-nowrap">{{ policys_2.show_name || "--" }}</text>
+              <u-icon
+                class="u-m-l-8 u-nowrap"
+                v-if="policys_2.show_name === '广告消耗分成'"
+                name="question-circle"
+                size="14"
+                color="#989898"
+                @click="openModal(2)"
+              ></u-icon>
+            </view>
           </view>
           <view class="color-text-less-grey u-flex-col u-row-center u-m-r-16">
             <text class="u-font-32 u-line-h-48 color-text-black u-font-bold">{{
               policys_3.show_value || "--"
             }}</text>
-            <text class="u-font-24 u-line-h-40 u-nowrap">{{
-              policys_3.show_name || "--"
-            }}</text>
+            <view class="u-font-24 u-line-h-40 u-flex-row u-col-center">
+              <text class="u-nowrap">{{ policys_3.show_name || "--" }}</text>
+              <u-icon
+                class="u-m-l-8 u-nowrap"
+                v-if="policys_3.show_name === '广告消耗分成'"
+                name="question-circle"
+                size="14"
+                color="#989898"
+                @click="openModal(2)"
+              ></u-icon>
+            </view>
           </view>
           <view class="color-text-less-grey u-flex-col u-row-center">
             <text class="u-font-32 u-line-h-48 color-text-black u-font-bold">{{
               policys_4.show_value || "--"
             }}</text>
             <view class="u-font-24 u-line-h-40 u-flex-row u-col-center">
-              <text class="u-m-r-8 u-nowrap">{{
-                policys_4.show_name || "--"
-              }}</text>
+              <text class="u-nowrap">{{ policys_4.show_name || "--" }}</text>
               <u-icon
+                class="u-m-l-8 u-nowrap"
+                v-if="policys_4.show_name === '广告消耗分成'"
                 name="question-circle"
                 size="14"
                 color="#989898"
@@ -118,81 +136,90 @@
         <u-collapse :border="false">
           <u-collapse-item>
             <view slot="title" class="u-flex-row u-col-center">
-              <u-icon :name="`${static_path}task_icon.png`" size="24" style="position: relative;top: 2rpx;"></u-icon>
-              <text class="u-font-bold u-font-28 u-line-h-44 u-m-l-8">任务详情</text>
+              <u-icon
+                :name="`${static_path}task_icon.png`"
+                size="24"
+                style="position: relative; top: 2rpx"
+              ></u-icon>
+              <text class="u-font-bold u-font-28 u-line-h-44 u-m-l-8"
+                >任务详情</text
+              >
             </view>
             <u-parse :content="detailObj.describe"></u-parse>
           </u-collapse-item>
         </u-collapse>
       </view>
-      <view class="u-m-t-48">
-        <text class="u-font-32 u-line-h-48 color-text-black u-font-bold"
-          >我的报名</text
-        >
-        <view
-          v-if="
-            detailObj.join_platform_accounts &&
-            detailObj.join_platform_accounts.length
-          "
-          class="sing-list u-m-t-28"
-        >
-          <view
-            v-for="item in detailObj.join_platform_accounts"
-            :key="item.id"
-            class="list-item u-flex-row u-row-between u-col-center u-bg-f u-border-radius u-p-24 u-m-b-28"
-          >
-            <view class="u-flex-row u-col-centr">
-              <u-avatar
-                class="u-m-r-16"
-                size="46"
-                :src="item.platform_icon"
-              ></u-avatar>
-              <view class="u-flex-col u-row-center">
-                <view class="u-flex-row u-col-center">
-                  <text class="color-text-black u-font-28 u-line-h-44 u-line-1">{{
-                    item.platform_account_name
-                  }}</text>
-                  <text class="color-text-less-grey u-font-24 u-line-h-44 u-nowrap">{{
-                    `(粉丝量: ${item.fan_counts})`
-                  }}</text>
-                </view>
-                <text
-                  class="color-text-less-grey u-font-24 u-line-h-40 u-line-1"
-                  >{{ `星图ID: ${item.xingtu_id}` }}</text
-                >
-              </view>
-            </view>
-            <view class="item-status">
-              <view
-                v-if="item.verify_status != 3 && item.verify_status != 4"
-                class="orange u-font-22 u-line-h-40"
-                >审核中</view
+    </view>
+    <view class="u-m-t-48 u-p-b-28 u-p-x-28 title-sticky">
+      <text class="u-font-32 u-line-h-48 color-text-black u-font-bold"
+        >我的报名</text
+      >
+    </view>
+    <view
+      v-if="
+        detailObj.join_platform_accounts &&
+        detailObj.join_platform_accounts.length
+      "
+      class="sing-list u-p-x-28"
+    >
+      <view
+        v-for="(item, index) in detailObj.join_platform_accounts"
+        :key="index"
+        class="list-item u-flex-row u-row-between u-col-center u-bg-f u-border-radius u-p-24 u-m-b-28"
+      >
+        <view class="u-flex-row u-col-centr">
+          <u-avatar
+            class="u-m-r-16"
+            size="46"
+            :src="item.platform_icon"
+          ></u-avatar>
+          <view class="u-flex-col u-row-center">
+            <view class="u-flex-row u-col-center">
+              <text
+                class="color-text-black u-font-28 u-font-weight-600 u-line-h-44 u-line-1"
+                >{{ item.platform_account_name }}</text
               >
-              <view
-                v-if="item.verify_status == 3"
-                class="primary u-font-22 u-line-h-40 u-nowrap"
-                @click="setVerifySuggest(item)"
-              >审核成功 查看后续操作</view>
-              <view
-                v-if="item.verify_status == 4"
-                class="danger u-font-22 u-line-h-40 u-nowrap"
-                @click="setVerifySuggest(item)"
-                >审核失败 点击查看原因</view
+              <text
+                class="color-text-less-grey u-font-24 u-line-h-44 u-nowrap"
+                >{{ `(粉丝量: ${item.fan_counts})` }}</text
               >
             </view>
-          </view>
-          <view :style="{ height: btnHeight }" class="u-flex-row u-row-center">
-            <text class="u-font-24 color-text-less-grey">-到底了-</text>
+            <text class="color-text-less-grey u-font-24 u-line-h-40 u-line-1">{{
+              `星图ID: ${item.xingtu_id}`
+            }}</text>
           </view>
         </view>
-        <view v-else class="u-m-t-60">
-          <u-empty text="暂无数据" :icon="image.no_data_list"></u-empty>
+        <view class="item-status">
+          <view
+            v-if="item.verify_status != 3 && item.verify_status != 4"
+            class="orange u-font-22 u-line-h-40"
+            >审核中</view
+          >
+          <view
+            v-if="item.verify_status == 3"
+            class="primary u-font-22 u-line-h-40 u-nowrap"
+            @click="setVerifySuggest(item)"
+            >审核成功 查看后续操作</view
+          >
+          <view
+            v-if="item.verify_status == 4"
+            class="danger u-font-22 u-line-h-40 u-nowrap"
+            @click="setVerifySuggest(item)"
+            >审核失败 点击查看原因</view
+          >
         </view>
       </view>
+      <view :style="{ height: btnHeight }" class="u-flex-row u-row-center">
+        <text class="u-font-24 color-text-less-grey">-到底了-</text>
+      </view>
+    </view>
+    <view v-else class="u-m-t-60">
+      <u-empty text="暂无数据" :icon="image.no_data_list"></u-empty>
     </view>
     <BottomBtn
       :data="button_list"
       :buttonIndex="0"
+      layout="even"
       @account="onAccount"
       @singUp="onSingUp"
       @height="getBtnHeight"
@@ -200,54 +227,35 @@
     <u-modal
       :show="showModal"
       :showCancelButton="false"
-      :showConfirmButton="false"
+      :showConfirmButton="true"
+      :title="modalTitle"
       confirmText="我知道了"
-      width="520rpx"
+      :buttonFill="false"
+      :content="modalContent"
       :closeOnClickOverlay="false"
+      @confirm="showModal = false"
     >
-      <view class="u-flex-col u-col-center">
-        <view
-          class="u-font-bold widthAll u-font-32 u-line-h-48 u-m-b-32 u-text-left"
-          >{{ modalTitle }}</view
-        >
-        <text class="u-font-28 u-line-h-44 u-m-b-32" style="color: #3c3c3c">{{
-          modalContent
-        }}</text>
-        <view
-          class="modal-btn widthAll u-border-radius u-p-x-28 u-p-y-20 color-text-white u-text-center"
-          style="background: #408cff"
-          @click="showModal = false"
-          >我知道了</view
-        >
-      </view>
     </u-modal>
     <u-modal
       :show="showRefuse"
       :showCancelButton="false"
-      :showConfirmButton="false"
+      :showConfirmButton="true"
+      :title="`${verify_status == 3 ? '审核成功' : '审核失败'}`"
+      :content="verify_suggest"
       confirmText="我知道了"
-      width="520rpx"
+      :buttonFill="false"
       :closeOnClickOverlay="false"
+      @confirm="showRefuse = false"
     >
-      <view class="u-flex-col u-col-center">
-        <view
-          class="u-font-bold widthAll u-font-32 u-line-h-48 u-m-b-32 u-text-left"
-          >{{ verify_status == 3 ? "审核成功" : "审核失败" }}</view
-        >
-        <text class="u-font-28 u-line-h-44 u-m-b-32" style="color: #3c3c3c">{{
-          verify_suggest
-        }}</text>
-        <view
-          class="modal-btn widthAll u-border-radius u-p-x-28 u-p-y-20 color-text-white u-text-center"
-          style="background: #408cff"
-          @click="showRefuse = false"
-          >我知道了</view
-        >
-      </view>
     </u-modal>
-    <AccountPopup ref="accountPopupRef" @next="closeAccPopup"></AccountPopup>
+    <AccountPopup 
+      ref="accountPopupRef" 
+      @next="closeAccPopup"
+      @close="iconCloseAccPopup" 
+    />
     <SingupPopup
       ref="singupPopupRef"
+      @close="no_scroll = false"
       @next="openAccPopup"
       @refresh="queryDetail"
     ></SingupPopup>
@@ -266,7 +274,7 @@ export default {
   components: {
     BottomBtn,
     AccountPopup,
-    SingupPopup
+    SingupPopup,
   },
   data() {
     return {
@@ -288,6 +296,8 @@ export default {
       loadingText: "努力加载中",
       loadmoreText: "下拉加载更多",
       nomoreText: "没有更多了～",
+      acc_feedback: null,
+      no_scroll: false,
     };
   },
   computed: {
@@ -313,11 +323,11 @@ export default {
         ],
       ];
     },
-    ...mapGetters(['static_path', 'image']),
+    ...mapGetters(["static_path", "image"]),
   },
   methods: {
     getBtnHeight(height) {
-      this.btnHeight = height * 2 + 30 + "rpx";
+      this.btnHeight = height * 2 + 40 + "rpx";
     },
 
     onCopy(str) {
@@ -332,20 +342,20 @@ export default {
       this.toastMsg("加载中", "loading", -1);
       getXGDetail({ id: this.id })
         .then((res) => {
-          if (res.code == 0) {
+          if (res.code == 0) { 
             this.detailObj = res.data;
             if (this.detailObj.policys?.length) {
               this.detailObj.policys.forEach((item) => {
                 this[`policys_${item.id}`] = item;
               });
             }
+            this.$refs.toastRef?.close();
           }
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         })
         .finally(() => {
-          this.$refs.toastRef?.close();
           uni.stopPullDownRefresh();
         });
     },
@@ -357,15 +367,22 @@ export default {
     },
 
     openAccPopup() {
-      this.$refs.accountPopupRef.open(this.id);
+      this.$refs.accountPopupRef.open(this.id, this.acc_feedback);
     },
 
     closeAccPopup(target) {
-      this.$refs.singupPopupRef.open(this.id, { label: target.label, value: target.id, list: target.list })
+      this.no_scroll = true;
+      this.acc_feedback = target.id;
+      this.$refs.singupPopupRef.open(this.id, {
+        label: target.label,
+        value: target.id,
+        list: target.list,
+      });
     },
 
-    onSingUp() {  
-      this.$refs.singupPopupRef.open(this.id)
+    onSingUp() {
+      this.no_scroll = true;
+      this.$refs.singupPopupRef.open(this.id);
     },
 
     openModal(type) {
@@ -386,6 +403,10 @@ export default {
       this.verify_suggest = item.verify_suggest;
     },
 
+    iconCloseAccPopup() {
+      this.$refs.singupPopupRef.open(this.id);
+    },
+ 
     toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
@@ -404,7 +425,11 @@ export default {
   },
 
   onPullDownRefresh() {
-    this.queryDetail();
+    if(!this.no_scroll) {
+      this.queryDetail();
+    } else {
+      uni.stopPullDownRefresh();
+    }
   },
 };
 </script>
@@ -414,6 +439,23 @@ export default {
   /* #ifdef APP || MP */
   padding-top: 88rpx;
   /* #endif */
+  top: 0;
+  width: 100%;
+  position: sticky;
+  background: #F6F7FB;
+  z-index: 999;
+}
+.title-sticky {
+  /* #ifdef APP || MP */
+  top: 164rpx;
+  /* #endif */
+  /* #ifdef H5 */
+  top: 80rpx;
+  /* #endif */
+  width: 100%;
+  position: sticky;
+  background: #F6F7FB;
+  z-index: 998;
 }
 .detail-page {
   min-height: 100vh;

@@ -1,20 +1,22 @@
 <template>
-  <view class="novel-detail-page">
-    <MyNavbar
-      :leftIcon="`${static_path}circular_back.png`"
-      :rightIcon="`${static_path}nav_btn_icon.png`"
-      rightBtn
-      rightBtnText="推广说明"
-      :rightClick="goPromoteDetail"
-    >
-      <template #navbarData>
-        <text
-          class="u-font-32 color-text-black u-font-bold"
-          style="margin-left: 16rpx"
-          >{{ advertiser_name }}</text
-        >
-      </template>
-    </MyNavbar>
+  <view class="novel-detail-page" :class="{ 'no-scroll': no_scroll }">
+    <view class="top-area">
+      <MyNavbar
+        :leftIcon="`${static_path}circular_back.png`"
+        :rightIcon="`${static_path}nav_btn_icon.png`"
+        rightBtn
+        rightBtnText="推广说明"
+        :rightClick="goPromoteDetail"
+      >
+        <template #navbarData>
+          <text
+            class="u-font-32 color-text-black u-font-bold"
+            style="margin-left: 16rpx"
+            >{{ advertiser_name }}</text
+          >
+        </template>
+      </MyNavbar>
+    </view>
     <view class="u-m-t-28 u-p-x-28">
       <view
         class="u-border-radius u-bg-f u-p-32"
@@ -32,6 +34,8 @@
               height: '72rpx',
               'background-color': '#f6f6f6',
             }"
+            @search="init"
+            @clear="init"
           ></u-search>
           <view
             class="u-m-l-32 u-flex-row u-row-center u-col-center u-border-radius"
@@ -39,13 +43,25 @@
             @click="changeSort"
           >
             <u-icon
-              :name="this.sort ? `${static_path}record_sort_positive.png` : `${static_path}record_sort_default.png`"
+              :name="
+                this.sort == 'desc'
+                  ? `${static_path}record_sort_positive.png`
+                  : `${static_path}record_sort_default.png`
+              "
               size="32rpx"
             ></u-icon>
             <text class="u-m-l-8 u-font-24 u-line-h-40 color-text-less-black"
               >创建时间</text
             >
           </view>
+        </view>
+        <view v-if="loading" class="skeleton-box">
+          <BaseSkeleton height="160rpx" round="16rpx" class="u-m-b-32" />
+          <BaseSkeleton height="160rpx" round="16rpx" class="u-m-b-32" />
+          <BaseSkeleton height="160rpx" round="16rpx" class="u-m-b-32" />
+          <BaseSkeleton height="160rpx" round="16rpx" class="u-m-b-32" />
+          <BaseSkeleton height="160rpx" round="16rpx" class="u-m-b-32" />
+          <BaseSkeleton height="160rpx" round="16rpx" />
         </view>
         <view v-if="!loading && listData.length" class="list-box">
           <view
@@ -57,20 +73,21 @@
               <view class="u-flex-row u-col-center">
                 <text
                   class="u-font-bold u-font-28 u-line-h-40 color-text-black u-line-1"
-                  >{{ item.title || "--" }}</text
+                  >{{ item.keyword || "--" }}</text
                 >
                 <u-icon
                   v-if="item.verify_status == 2"
                   class="u-m-l-8"
                   :name="`${static_path}copy_icon.png`"
                   size="28rpx"
-                  @click="onCopy()"
+                  @click="onCopy(item.keyword)"
                 ></u-icon>
                 <view
                   class="u-flex-row u-row-center u-col-center u-m-l-8 u-p-x-8"
                   :class="{
                     'tag--primary': item.verify_status == 2,
-                    'tag--warning': item.verify_status == 1,
+                    'tag--warning':
+                      item.verify_status == 1 || item.verify_status == 4,
                     'tag--danger': item.verify_status == 3,
                   }"
                 >
@@ -89,7 +106,7 @@
                 </view>
               </view>
               <text class="color-text-less-grey u-font-24 u-line-h-40">{{
-                `提词时间: ${item.date}`
+                `提词时间: ${item.create_time}`
               }}</text>
             </view>
             <view
@@ -106,18 +123,20 @@
                 v-if="item.verify_status == 2"
                 class="u-p-y-4 u-p-x-24 u-font-24 u-line-h-40 u-m-l-16 color-text-white"
                 style="background: #408cff; border-radius: 100px"
+                @click="goBackfill(item)"
                 >回填</view
               >
             </view>
+
             <u-checkbox-group
               v-if="buttonIndex == 1"
               v-model="item.selected"
               placement="column"
               @change="checkboxChange($event, item)"
               shape="circle"
-              :disabled="item.verify_status != 3"
+              :disabled="item.verify_status == 1 || item.verify_status == 2"
             >
-              <u-checkbox :name="true"> </u-checkbox>
+              <u-checkbox @handle="handleCheckbox(item)" :name="true"> </u-checkbox>
             </u-checkbox-group>
           </view>
         </view>
@@ -129,6 +148,7 @@
     <BottomBtn
       :data="button_list"
       :buttonIndex="buttonIndex"
+      :layout="188"
       @manage="hanleManage"
       @create="handleCreate"
       @cancel="handleCancel"
@@ -138,26 +158,14 @@
     <u-modal
       :show="showModal"
       :showCancelButton="false"
-      :showConfirmButton="false"
+      :showConfirmButton="true"
       confirmText="我知道了"
-      width="520rpx"
+      title="审核失败"
+      :content="verify_suggest"
+      :buttonFill="false"
       :closeOnClickOverlay="false"
+      @confirm="showModal = false"
     >
-      <view class="u-flex-col u-col-center widthAll">
-        <view
-          class="u-font-bold widthAll u-font-32 u-line-h-48 u-m-b-32 u-text-left"
-          >审核失败</view
-        >
-        <text class="u-font-28 u-line-h-44 u-m-b-32 u-text-left widthAll" style="color: #3c3c3c">{{
-          verify_suggest
-        }}</text>
-        <view
-          class="modal-btn widthAll u-border-radius u-p-x-28 u-p-y-20 color-text-white u-text-center"
-          style="background: #408cff"
-          @click="showModal = false"
-          >我知道了</view
-        >
-      </view>
     </u-modal>
     <u-modal
       :show="showDelModal"
@@ -170,25 +178,31 @@
       @confirm="handleDel"
       @cancel="showDelModal = false"
     ></u-modal>
-    <PromotePopup ref="promoteRef"/>
+    <PromotePopup
+      @open="no_scroll = true"
+      @close="no_scroll = false"
+      :id="advertiser_type"
+      ref="promoteRef"
+    />
     <base-toast ref="toastRef"></base-toast>
   </view>
 </template>
 
 <script>
 import { LIBRARY_VERIFY_STATUS } from "@/utils/mappers/novel.js";
-import { getDetailList, postDeleteLibray } from "../api/detail";
-import { copy } from "@/utils/tools.js";
+import { copy, sleep } from "@/utils/tools.js";
 import MyNavbar from "@/components/my-navbar/index.vue";
 import BottomBtn from "@/components/bottom-button/index.vue";
 import PromotePopup from "../components/promotePopup.vue";
+import BaseSkeleton from "@/components/base-skeleton/index.vue";
+import { getLibraryList, postLibraryDel } from "../api/keyword.js";
 import { mapGetters } from "vuex";
 export default {
-  props: {},
   components: {
     MyNavbar,
     BottomBtn,
-    PromotePopup
+    PromotePopup,
+    BaseSkeleton
   },
   data() {
     return {
@@ -202,6 +216,7 @@ export default {
       loading: false,
       isEnd: false,
 
+      no_scroll: false,
       showModal: false,
       showDelModal: false,
       buttonIndex: 0,
@@ -210,25 +225,25 @@ export default {
       advertiser_name: null,
       advertiser_type: null,
       btnHeight: "0",
-      currentTab: "libray",
+      currentTab: 1,
       verify_suggest: "",
-      sort: false,
+      sort: "asc",
       tabList: [
         {
           name: "我的词库",
-          value: "libray",
+          value: 1,
         },
         {
           name: "待审核",
-          value: "un_process",
+          value: 2,
         },
         {
           name: "未回填",
-          value: "un_sign",
+          value: 3,
         },
         {
           name: "已回填",
-          value: "is_sign",
+          value: 4,
         },
       ],
       listData: [],
@@ -245,6 +260,7 @@ export default {
             onClick: "manage",
             btnType: "button",
             color: "#f1f1f1",
+            disabled: this.listData.length == 0 ? true : false,
             customStyle: { color: "#1a1a1a" },
           },
           {
@@ -280,15 +296,21 @@ export default {
         ],
       ];
     },
-    ...mapGetters(['static_path', 'image']),
+    ...mapGetters(["static_path", "image"]),
   },
   methods: {
-    clickTab(index, tab) {
+    clickTab(tab) {
       this.currentTab = tab.value;
+      this.init();
     },
 
     changeSort() {
-      this.sort = !this.sort;
+      if (this.sort == "desc") {
+        this.sort = "asc";
+      } else {
+        this.sort = "desc";
+      }
+      this.init();
     },
 
     openModal(item) {
@@ -304,31 +326,48 @@ export default {
       }
     },
 
-    handleDelete() {
-      postDeleteLibray({
-        ids: this.selected
+    handleDel() {
+      postLibraryDel({
+        ids: this.selected,
       })
-        .then(res => {
-          if(res.code == 0) {
-            this.toastMsg("删除成功", 'success');
-            this.queryList();
-          } 
+        .then(async (res) => {
+          if (res.code == 0) {
+            this.selected = [];
+            this.showDelModal = false;
+            this.toastMsg(res.data.message, "success");
+            this.init();
+          }
         })
-        .catch(error => {
-          this.toastMsg(error, "error");
-        })
+        .catch((error) => {
+          this.toastMsg(error.message || error, "error");
+        });
     },
 
     handleCreate() {
       uni.navigateTo({
-        url: `/novel/detail/promptDetail`
-      })
+        url: `/novel/detail/promptDetail`,
+      });
     },
 
     goDetail(item) {
       uni.navigateTo({
-        url: `/novel/detail/promptDetail?id=${item.id}`
-      })
+        url: `/novel/detail/promptDetail?id=${item.id}`,
+      });
+    },
+
+    goBackfill(item) {
+      uni.navigateTo({
+        url: `/novel/detail/backfill?keyword_id=${item.id}`,
+      });
+    },
+
+    handleCheckbox({ verify_status }) {
+      switch(verify_status) {
+        case 1:
+          return this.toastMsg("审核中的关键词不可删除", "error");
+        case 2:
+          return this.toastMsg("审核成功的关键词不可删除", "error");
+      }
     },
 
     onCopy(str) {
@@ -359,6 +398,11 @@ export default {
       this.$refs.promoteRef.open();
     },
 
+    init() {
+      this.isEnd = false;
+      this.queryList();
+    },
+
     queryList(reset = true) {
       if (this.loading) return;
       reset && (this.loading = true);
@@ -376,10 +420,13 @@ export default {
 
       let params = {
         pagesize: this.pagesize,
+        advertiser_type: this.advertiser_type,
+        page_type: this.currentTab,
+        keyword: this.keyword || undefined,
+        sort: this.sort,
       };
       params.page = this.page;
-      this.toastMsg('加载中', 'loading', -1)
-      getDetailList()
+      getLibraryList(params)
         .then((res) => {
           if (res.code == 0) {
             const list = res.data.list.map((el) => {
@@ -403,32 +450,43 @@ export default {
           }
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         })
-        .finally(() => {
-          this.loading = false;
+        .finally(async () => {
           uni.stopPullDownRefresh();
-          this.$refs.toastRef?.close();
+          await sleep(300);
+          this.loading = false;
         });
     },
 
-    toastMsg(message, type = "default") {
+    handleCheckboxClick(item) {
+      console.log(item);
+      switch (item.verify_status) {
+        case 1:
+          return this.toastMsg("审核中的关键词不可删除", "error");
+        case 2:
+          return this.toastMsg("审核成功的关键词不可删除", "error");
+      }
+    },
+
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration,
       });
     },
   },
-  onLoad() {
+  onReady() {
     const { advertiser_name, advertiser_id } = JSON.parse(
       uni.getStorageSync("SET_JUMP_QUERY")
     );
     this.advertiser_name = advertiser_name || null;
     this.advertiser_type = advertiser_id || null;
-    this.queryList();
+    this.init();
   },
   onPullDownRefresh() {
-    this.queryList();
+    this.init();
   },
   onReachBottom() {
     uni.$u.throttle(this.queryList(false), 500);
@@ -439,6 +497,16 @@ export default {
 <style lang="scss" scoped>
 .novel-detail-page {
   min-height: 100vh;
+  .top-area {
+    z-index: 999;
+    width: 750rpx;
+    position: sticky;
+    top: 0;
+    background: #F6F7FB;
+    /* #ifdef APP */
+    padding-top: 88rpx;
+    /* #endif */
+  }
 }
 .tag--primary {
   border-radius: 8rpx;
@@ -465,5 +533,9 @@ export default {
 ::v-deep .u-checkbox__icon-wrap--disabled {
   background-color: #d1e3ff !important;
   border-color: #d1e3ff !important;
+}
+::v-deep .u-tabs__wrapper__nav {
+  display: grid !important;
+  grid-auto-flow: column !important;
 }
 </style>

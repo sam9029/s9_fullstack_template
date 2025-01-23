@@ -1,14 +1,14 @@
 <template>
-	<view class="income-details-popup u-bg-f">
+	<view class="income-details-popup u-bg-f" @touchmove.stop.prevent="">
 		<u-popup :show="show" mode="bottom" closeOnClickOverlay @close="onClose" round="24rpx">
 			<view class="u-p-28">
 				<view class="popup-top u-flex-row u-row-between u-col-center u-m-b-32">
-					<text class="u-font-32 u-line-h-48 color-text-black u-font-bold">我的收益明细</text>
+					<text class="u-font-32 u-line-h-48 color-text-black u-font-bold">{{ topTitle }}</text>
 					<!-- 			<u-icon @click="onClose" name="close-circle" size="24"></u-icon> -->
 					<u-icon :name="`${static_path}close_circle_grey.png`" size="48rpx" @click="onClose"></u-icon>
 				</view>
-				<view class="popup-contain u-border-radius">
-					<view class="u-flex-row u-bg-default u-p-l-28 u-p-r-28 u-p-t-24 u-p-b-24">
+				<view class="popup-contain u-border-radius u-border">
+					<view class="popup-contain-header u-flex-row u-bg-default u-p-l-28 u-p-r-28 u-p-t-24 u-p-b-24">
 						<text class="popup-contain-title u-flex-1 u-font-24 u-font-weight color-text-black u-text-left"
 							:class="{'popup-contain-right-title' : index == headerTitles.length - 1}"
 							v-for="(item, index) in headerTitles" :key="index">{{item}}</text>
@@ -21,7 +21,7 @@
 									:class="{'popup-contain-right-title' : titleIndex == item.length - 1}"
 									v-for="(title, titleIndex) in item" :key="titleIndex">{{title}}</text>
 							</view>
-							<view class="u-m-t-24" style="background-color: #eee; height: 2rpx; "></view>
+							<view class="u-m-t-24" :style="{'background-color': '#eee', 'height': index < listData.length - 1 ? '2rpx' : '0rpx' }"></view>
 						</view>
 					</scroll-view>
 
@@ -43,23 +43,19 @@
 		data() {
 			return {
 				show: false,
-				popupType: 1, //弹框类型: 1、发布收益明细  2、佣金收益明细，默认发布收益明细 		
+				headerTitles:[], //弹框类型: 1、发布收益明细  2、佣金收益明细，默认发布收益明细 		
+				topTitle: "",
 				listData: [],
 
 			};
 		},
 		computed: {
 			...mapGetters(['static_path']),
-			headerTitles() {
-				let oneTitle = this.popupType == 2 ? "达人收益" : "充值金额";
-				return [oneTitle, "分成比例", "我的收益", "结算状态"];
-			}
+
+			
 		},
 		methods: {
-			openPopup(id = "", item = {}, popupType = 1) {
-				this.listData = [];
-				this.popupType = popupType;
-				console.log(item);
+			openPopup(id = "", item = {}, popupType = 1, currentTab=0) {
 				const statusMap = {
 					1: "待结算",
 					2: "结算中",
@@ -68,17 +64,47 @@
 					5: "无流程"
 				};
 				let settleStatus = statusMap[item.settle_status] || "";
-
-
 				let oneAmount = popupType == 2 ? `¥${item.blogger_amount}` : `¥${item.charge_amount}`;
 				let publishRatio = popupType == 2 ? `${item.service_ratio / 100.0}%` : `${item.publish_ratio / 100.0}%`;
+				this.listData = [];
+				this.topTitle = currentTab == 0 ? "预估收益明细" : "我的收益明细";
 
-				this.listData.push([
-					oneAmount,
-					publishRatio,
-					`¥${item.total_amount}`,
-					settleStatus,
-				]);
+				if (popupType == 2) {
+
+					this.headerTitles = ["达人收益", "分成比例", "我的收益", "结算状态"];
+					this.listData.push([
+						oneAmount,
+						publishRatio,
+						`¥${item.total_amount}`,
+						settleStatus,
+					]);
+				} else {
+					 if (currentTab == 0) {
+						this.headerTitles = ["充值金额", "是否退款", "分成比例", "预估收益"];
+						this.listData.push([
+							oneAmount,
+							item.refund_status == 1 ? "是" : "否",
+							publishRatio,
+							`¥${item.total_amount}`,
+						]);
+					 } else {
+						this.headerTitles = ["充值金额", "分成比例", "我的收益", "结算状态"];
+						this.listData.push([
+							oneAmount,
+							publishRatio,
+							`¥${item.total_amount}`,
+							settleStatus,
+						]);
+					 }
+				}
+				
+				
+
+
+
+				
+
+	
 
 				this.show = true;
 			},
@@ -100,10 +126,15 @@
 
 <style lang="scss" scoped>
 	.popup-contain {
-		border: 2rpx solid #eee;
+
+		.popup-contain-header {
+			border-top-left-radius: 16rpx;
+			border-top-right-radius: 16rpx;
+
+
+		}
 
 		.popup-contain-title {
-
 			margin-right: 32rpx;
 		}
 
@@ -118,5 +149,9 @@
 			white-space: nowrap;
 			text-overflow: ellipsis;
 		}
+
+		
 	}
+
+	
 </style>

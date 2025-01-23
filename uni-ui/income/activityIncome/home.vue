@@ -19,7 +19,7 @@
             v-for="(item, index) in topCarData"
             :key="index"
           >
-            <view class="u-font-32 color-text-white u-line-1">{{
+            <view class="u-font-32 u-font-weight-600 color-text-white u-line-1">{{
               item.data
             }}</view>
             <view class="u-font-24" style="color: #cfe2ff">{{
@@ -37,6 +37,7 @@
           :type="['custom']"
           :baseBtn="false"
           @submit="getDate"
+          @reset="resetDate"
         >
           <template #default="{ label, value }">
             <view class="switch-bg">
@@ -99,7 +100,7 @@
             radius="24rpx"
             width="132rpx"
             height="132rpx"
-            style="border: 2rpx solid #eeeeee; border-radius: 24rpx"
+            style="border-radius: 24rpx"
           ></u-image>
           <view class="u-flex-1 u-m-r-32 u-m-l-24 u-flex-col u-row-between">
             <view class="u-font-28 u-text-main u-line-1">{{
@@ -109,7 +110,7 @@
               <view
                 class="u-line-1 u-font-24 color-text-less-grey"
                 style="flex-shrink: 0"
-                >新增收益
+                >新增入账
               </view>
               <u-line
                 class="u-m-l-8 u-m-r-8"
@@ -117,7 +118,7 @@
                 length="16rpx"
                 color="#C6C6C6"
               ></u-line>
-              <view class="u-font-24 color-text-orange">{{
+              <view class="u-font-24 u-font-weight color-text-orange">{{
                 item.new_income_amount
               }}</view>
             </view>
@@ -134,7 +135,7 @@
                 color="#C6C6C6"
               ></u-line>
               <view class="u-font-24 color-text-less-grey">{{
-                item.new_income_date
+                `${item.new_income_date || '--'}`
               }}</view>
             </view>
           </view>
@@ -145,15 +146,16 @@
             <u-icon
               label="查看明细"
               name="arrow-right"
-              size="24rpx"
+			  labelSize="24rpx"
+              size="28rpx"
               color="#989898"
               labelColor="#989898"
               labelPos="left"
             ></u-icon>
-            <view class="u-line-1 u-text-main u-font-32">{{
+            <view class="u-line-1 u-text-main u-font-32 u-font-weight">{{
               item.total_amount
             }}</view>
-            <view class="u-font-22 color-text-less-grey">累计收益</view>
+            <view class="u-font-22 color-text-less-grey">累计入账</view>
           </view>
         </view>
       </view>
@@ -214,7 +216,7 @@ export default {
           data: unitMoney(0, false, true),
         },
         {
-          title: "累计结算收益",
+          title: "累计入账收益",
           data: unitMoney(0, false, true),
         },
       ],
@@ -226,7 +228,6 @@ export default {
   methods: {
     changeStatus(index, value) {
       this.willSwitchIndex = index;
-
       if (index == 1) {
         this.$refs.datePickerRef.switchComps();
       } else {
@@ -234,10 +235,12 @@ export default {
       }
     },
     getDate(date) {
-      if (date.length == 2) {
-        this.date = date;
-        this.switchIndex = this.willSwitchIndex;
-      }
+      this.date = date;
+      this.switchIndex = this.willSwitchIndex;
+      if(date.length) this.init();
+    },
+    resetDate() {
+      this.changeStatus(4, "3months");
     },
     goDetail(item) {
       uni.setStorageSync(
@@ -252,6 +255,7 @@ export default {
       });
     },
     getTotalData() {
+      if (this.loading) return;
       let params = {
         type: 5,
       };
@@ -275,8 +279,8 @@ export default {
         .catch((error) => {
           this.mescroll.endErr();
           let message = String(err.message || err || "获取失败");
-          this.toastMsg(message, "error");
-        });
+          this.toastMsg(message, "error"); 
+        }); 
     },
 
     init() {
@@ -331,6 +335,7 @@ export default {
             this.loadmoreText = `下拉加载更多`;
             this.status = "loadmore";
           }
+          this.$refs.toastRef?.close();
         })
         .catch((err) => {
           let message = String(err.message || err || "获取失败");
@@ -338,23 +343,21 @@ export default {
         })
         .finally(async () => {
           uni.stopPullDownRefresh();
-          this.$refs.toastRef?.close();
           this.loading = false;
         });
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },
-  onLoad() {
-    this.init();
-  },
   onPullDownRefresh() {
-    this.init();
+
+    this.init(); 
   },
   onReachBottom(e) {
     uni.$u.throttle(this.getListData(), 500);

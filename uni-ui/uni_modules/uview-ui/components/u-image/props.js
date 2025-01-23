@@ -1,3 +1,4 @@
+import errorIcon from '@/static/images/icon_place.svg'
 export default {
     props: {
         // 图片地址
@@ -48,7 +49,7 @@ export default {
         // 加载失败的图标，或者小图片
         errorIcon: {
             type: String,
-            default: uni.$u.props.image.errorIcon
+            default: errorIcon
         },
         // 是否显示加载中的图标或者自定义的slot
         showLoading: {

@@ -86,7 +86,7 @@
 				<text class="color-text-white u-nowrap u-font-24 u-nowrap">推广</text>
 			</view>
 		</view>
-		<view v-if="tab == 3" class="u-p-16 u-bg-f u-border-radius">
+		<view v-if="tab == 3" class="u-p-16 u-bg-f u-border-radius u-relative">
 			<view class="u-flex-row u-col-center">
 				<u--image class="u-m-r-16" width="168rpx" height="232rpx" radius="16rpx"
 					:src="row.cover_url"></u--image>
@@ -141,11 +141,13 @@
 				<text class="color-text-less-grey u-font-24">{{
           row.create_time
         }}</text>
-				<view class="item--btn u-flex-row u-col-center u-row-center">
+				<view class="item--btn u-flex-row u-col-center u-row-center" :class="{ 'item--btn-check': row.type == 3 && row.self_operated==1&&row.verify_status==4 }" :style="{opacity: row.type == 3 && row.self_operated==1&&(row.verify_status!=3&&row.verify_status!=4)?0.5:1,}">
 					<text
-						class="color-text-white u-nowrap u-font-24 u-nowrap u-p-l-24 u-p-r-24">{{ row.button_text }}</text>
+						class="color-text-white u-nowrap u-font-24 u-nowrap u-p-l-24 u-p-r-24" :class="{ 'color-text-black': row.type == 3 && row.self_operated==1&&row.verify_status==4 }">{{row.type == 3 && row.self_operated==1&&row.verify_status==4?'查看原因':row.button_text }}</text>
 				</view>
 			</view>
+			<u-icon v-if="row.type==3&&row.self_operated==1" :name="`${static_path}${getDisplayLabel(row)}.png`"
+				width="80rpx" height="80rpx" class="u-absolute" style="top: 0rpx; right: 0rpx;"></u-icon>
 		</view>
 	</view>
 </template>
@@ -165,7 +167,9 @@
 		copy,
 		unitMoney
 	} from "@/utils/tools.js";
-	import { mapGetters } from "vuex";
+	import {
+		mapGetters
+	} from "vuex";
 	export default {
 		options: {
 			styleIsolation: "shared",
@@ -211,6 +215,13 @@
 					});
 				}
 			},
+			getDisplayLabel(row) {
+				const statusMap = {
+					3: "icon_audit_status_success",
+					4: "icon_audit_status_fail"
+				};
+				return statusMap[row.verify_status] || "icon_audit_status_ing";
+			},
 			getResult1(row) {
 				return row.charge_data ? unitMoney(row.charge_data.charge_price, false, false) : unitMoney(row.cpm_data
 					?.total_price, false, false);
@@ -248,10 +259,33 @@
 							break;
 
 						case 3: // 复制口令
+							
 							if (row.type === 3) {
-								copy({
-									content: row.search_code
-								}, this);
+								if(row.self_operated==1){
+									switch(row.verify_status){
+										case 3 :
+										copy({
+											content: row.search_code
+										}, this);
+										break
+										case 4:
+										this.$emit("des", {
+											message: row.verify_suggest,
+										});
+										break
+										default:
+										this.$emit("toast", {
+											message: "口令审核中，待通过后可进行复制",
+											type: "error"
+										});
+										break
+									}
+									
+								}else{
+									copy({
+										content: row.search_code
+									}, this);
+								}
 							}
 							break;
 
@@ -262,10 +296,10 @@
 									scheme: row.publish_info?.schema_url ?? "",
 									platformType: row.platform_id == 2 ? 2 : 1
 								};
-								if(row.publish_info?.show_qr){
+								if (row.publish_info?.show_qr) {
 									data.qrcode = row.publish_info?.qr_url ?? ""
 								}
-								this.$emit("actionData",data)
+								this.$emit("actionData", data)
 							}
 							break;
 
@@ -275,7 +309,7 @@
 								const data = {
 									qrcode: row.qr_link ?? "",
 								};
-								this.$emit("actionData",data)
+								this.$emit("actionData", data)
 							}
 							break;
 					}
@@ -301,7 +335,12 @@
 			background-color: #408cff;
 			border-radius: 50rpx;
 		}
-
+		.item--btn-check {
+			min-width: 96rpx;
+			height: 48rpx;
+			background-color: #F6F6F6;
+			border-radius: 50rpx;
+		}
 		.price-area {
 			display: flex;
 			justify-items: center;

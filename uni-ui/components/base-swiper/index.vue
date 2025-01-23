@@ -51,7 +51,8 @@
           object-fit="cover"
           enable-danmu
           danmu-btn
-          controls
+          controls 
+          controlslist="nodownload noremoteplayback"
           class="u-border-radius"
           :style="{
             width: '100%',
@@ -120,7 +121,7 @@ export default {
       }
     },
     videoSource() {
-      return `<video src="${this.currentVideo}" poster="${this.currentVideoPoster}" object-fit="cover" enable-danmu  danmu-btn controls class="video-area"></video>`;
+      return `<video src="${this.currentVideo}" poster="${this.currentVideoPoster}" object-fit="cover" enable-danmu  danmu-btn controls controlslist="nodownload noremoteplayback" class="video-area"></video>`;
     },
   },
   methods: {
@@ -263,10 +264,11 @@ export default {
       }
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },

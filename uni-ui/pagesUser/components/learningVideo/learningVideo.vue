@@ -31,7 +31,7 @@
 		},
 		computed: {
 			videoSource() {
-				return `<video src="${this.videoUrl}" poster="${this.poster}" name="${this.name}" object-fit="cover"  controls class="u-border-radius  widthAll heightAll"></video>`;
+				return `<video src="${this.videoUrl}" poster="${this.poster}" name="${this.name}" object-fit="cover"  controls controlslist="nodownload noremoteplayback" class="u-border-radius  widthAll heightAll"></video>`;
 			},
 		},
 	}

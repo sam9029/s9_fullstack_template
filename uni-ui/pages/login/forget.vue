@@ -1,6 +1,6 @@
 <template>
   <view class="edit-page">
-    <MyNavbar bgColor="transparent" :routerMode="routerMode" :targetUrl="targetUrl">
+    <MyNavbar bgColor="transparent">
       <template #navbarData>
         <view class="u-flex-row u-row-center u-col-center">
           <text class="u-text-center u-font-32 color-text-black">{{
@@ -9,105 +9,91 @@
         </view>
       </template>
     </MyNavbar>
-    <view
-      v-show="step == 1"
-      class="u-p-t-20 u-p-b-20 u-p-l-80 u-p-r-80 edit-step-1"
-    >
-      <view class="top-title u-m-b-40 u-flex-col u-row-center">
-        <text class="u-font-48 color-text-black u-m-b-16">验证身份</text>
-        <text class="u-font-24 color-text-less-grey">验证注册手机号</text>
-      </view>
-      <u-form :model="model" ref="form_1_ref" :rules="rules_1">
-        <u-form-item prop="telephone" borderBottom>
-          <u-input
-            :placeholder="input_placeholder"
-            clearable
-            type="number"
-            v-model="model.telephone"
-            placeholderStyle="color: #989898;font-size: 24rpx;"
-          >
-          </u-input>
-        </u-form-item>
-        <u-form-item prop="code" borderBottom>
-          <u-input
-            placeholder="请输入短信验证码"
-            clearable
-            type="number"
-            v-model="model.code"
-            placeholderStyle="color: #989898;font-size: 24rpx;"
-          >
-            <template slot="suffix">
-              <u-code
-                ref="uCode"
-                @change="codeChange"
-                :seconds="model.seconds"
-                changeText="X秒后重新获取"
-              ></u-code>
-              <u--text
-                @click="getCode"
-                class="u-pointer u-font-14"
-                type="primary"
-                :text="model.tips"
-              ></u--text>
-            </template>
-          </u-input>
-        </u-form-item>
-        <view class="u-p-t-48 u-p-b-32"
-          ><u-button
-            type="primary"
-            :text="type == 'logoff' ? '注销账号' : '下一步'"
-            @click="jumpStep"
-          />
-        </view>
-      </u-form>
-    </view>
-    <view
-      v-show="step == 2"
-      class="u-p-t-20 u-p-b-20 u-p-l-80 u-p-r-80 edit-step-2"
-    >
+    <view class="u-p-t-20 u-p-b-20 u-p-l-80 u-p-r-80 edit-step-1">
       <view class="top-title u-m-b-40 u-flex-col u-row-center">
         <text class="u-font-48 color-text-black u-m-b-16">{{
-          setp_2_title
+          setp_title
         }}</text>
-        <text class="u-font-24 color-text-less-grey">请设置新密码</text>
+        <text class="u-font-24 color-text-less-grey">{{ set_sub_title }}</text>
       </view>
-      <u-form :model="model" ref="form_2_ref" :rules="rules_2">
-        <u-form-item prop="password" borderBottom>
-          <u-input
-            :placeholder="type == 'reset' ? '请输入原密码' : '请输入密码'"
-            v-model.trim="model.password"
-            :password="eyeShow"
+      <u-form :model="model" ref="formRef" :rules="rules">
+        <template v-if="type != 'confirm'">
+          <u-form-item prop="telephone" borderBottom>
+            <u-input
+              :placeholder="input_placeholder"
+              clearable
+              type="number"
+              v-model="model.telephone"
+              placeholderStyle="color: #989898;font-size: 24rpx;"
+            >
+            </u-input>
+          </u-form-item>
+          <u-form-item prop="code" borderBottom>
+            <u-input
+              placeholder="请输入短信验证码"
+              clearable
+              type="number"
+              v-model="model.code"
+              placeholderStyle="color: #989898;font-size: 24rpx;"
+            >
+              <template slot="suffix">
+                <u-code
+                  ref="uCode"
+                  @change="codeChange"
+                  :seconds="model.seconds"
+                  changeText="X秒后重新获取"
+                ></u-code>
+                <u--text
+                  @click="getCode"
+                  class="u-pointer u-font-14"
+                  type="primary"
+                  :text="model.tips"
+                ></u--text>
+              </template>
+            </u-input>
+          </u-form-item>
+        </template>
+        <template v-if="type == 'confirm'">
+          <u-form-item prop="password" borderBottom>
+            <u-input
+              placeholder="请输入新密码"
+              v-model.trim="model.password"
+              :password="eyeShow_1"
+            >
+              <template slot="suffix">
+                <i
+                  class="uniicons u-font-36"
+                  :style="{ color: '#929292' }"
+                  @click="eyeShow_1 = !eyeShow_1"
+                >
+                  {{ eyeShow_1 ? "&#xe63a;" : "&#xe639;" }}
+                </i>
+              </template>
+            </u-input>
+          </u-form-item>
+          <u-form-item prop="check_psd" borderBottom>
+            <u-input
+              placeholder="请再次输入新密码"
+              v-model.trim="model.check_psd"
+              :password="eyeShow_2"
+            >
+              <template slot="suffix">
+                <i
+                  class="uniicons u-font-36"
+                  :style="{ color: '#929292' }"
+                  @click="eyeShow_2 = !eyeShow_2"
+                >
+                  {{ eyeShow_2 ? "&#xe63a;" : "&#xe639;" }}
+                </i>
+              </template>
+            </u-input>
+          </u-form-item>
+          <text class="color-text-less-grey u-font-24 u-line-h-40 u-m-t-16"
+            >密码应由8-20位数字、字母或符号组成</text
           >
-            <template slot="suffix">
-              <i
-                class="uniicons u-font-36"
-                :style="{ color: '#929292' }"
-                @click="eyeShow = !eyeShow"
-              >
-                {{ eyeShow ? "&#xe63a;" : "&#xe639;" }}
-              </i>
-            </template>
-          </u-input>
-        </u-form-item>
-        <u-form-item prop="check_psd" borderBottom>
-          <u-input
-            placeholder="请输入新密码"
-            v-model.trim="model.check_psd"
-            :password="eyeShow"
-          >
-            <template slot="suffix">
-              <i
-                class="uniicons u-font-36"
-                :style="{ color: '#929292' }"
-                @click="eyeShow = !eyeShow"
-              >
-                {{ eyeShow ? "&#xe63a;" : "&#xe639;" }}
-              </i>
-            </template>
-          </u-input>
-        </u-form-item>
+        </template>
         <view class="u-p-t-48 u-p-b-32"
-          ><u-button type="primary" text="完成" @click="onSubmit" />
+          ><u-button type="primary" :text="btn_text" @click="jumpStep" />
         </view>
       </u-form>
     </view>
@@ -169,7 +155,77 @@ export default {
         seconds: 120,
         sms_id: null,
       },
-      rules_1: {
+      step: 1,
+      showSlideCode: false,
+      captcha_code: null,
+
+      eyeShow_1: true,
+      eyeShow_2: true,
+      eyeNewShow: true,
+
+      type: "forget", // forget 忘记密码 reset 重置密码 logoff注销
+      showLogoffModal: false,
+      code_start_time: null
+    };
+  },
+  computed: {
+    ...mapGetters(["theme_color"]),
+    nav_title() {
+      switch (this.type) {
+        case "forget":
+        case "confirm":
+          return "忘记密码";
+        case "logoff":
+          return "注销账号";
+      }
+    },
+    input_placeholder() {
+      switch (this.type) {
+        case "forget":
+          return "请输入需验证的手机号";
+        case "logoff":
+          return "请输入需注销的手机号";
+      }
+    },
+    sms_type() {
+      switch (this.type) {
+        case "confirm":
+        case "forget":
+          return 3;
+        case "logoff":
+          return 7;
+      }
+    },
+    setp_title() {
+      switch(this.type) {
+        case 'forget':
+        case 'logoff':
+        return "验证身份";
+        default:
+        return "验证成功"
+      }
+    },
+    set_sub_title() {
+      switch(this.type) {
+        case 'forget':
+        case 'logoff':
+        return '验证注册手机号';
+        default:
+        return '请设置新密码';
+      }
+    },
+    btn_text() {
+      switch(this.type) {
+        case 'forget':
+        return '下一步';
+        case 'logoff':
+        return '注销账号';
+        case 'confirm':
+        return '完成'
+      }
+    },
+    rules() {
+      return {
         telephone: [
           {
             required: true,
@@ -191,8 +247,6 @@ export default {
             trigger: ["change", "blur"],
           },
         ],
-      },
-      rules_2: {
         password: [
           {
             required: true,
@@ -213,7 +267,7 @@ export default {
           },
           {
             validator: (rule, value, callback) => {
-              if (this.type !== "reset" && this.model.password != value) {
+              if (value != this.model.password) {
                 // 如果不一致，调用回调并传入false
                 callback(false);
               } else {
@@ -225,70 +279,34 @@ export default {
             trigger: ["change", "blur"],
           },
         ],
-      },
-      step: 1,
-      showSlideCode: false,
-      captcha_code: null,
-
-      eyeShow: true,
-      eyeNewShow: true,
-      routerMode: "redirect",
-      targetUrl: "/pages/login/login",
-
-      type: "forget", // forget 忘记密码 reset 重置密码 logoff注销
-      showLogoffModal: false,
-      code_start_time: null
-    };
-  },
-  computed: {
-    ...mapGetters(["theme_color"]),
-    nav_title() {
-      switch (this.type) {
-        case "forget":
-          return "忘记密码";
-        case "reset":
-          return "修改密码";
-        case "logoff":
-          return "注销账号";
       }
-    },
-    input_placeholder() {
-      switch (this.type) {
-        case "forget":
-        case "reset":
-          return "请输入需修改的手机号";
-        case "logoff":
-          return "请输入需注销的手机号";
-      }
-    },
-    sms_type() {
-      switch (this.type) {
-        case "forget":
-        case "reset":
-          return 3;
-        case "logoff":
-          return 7;
-      }
-    },
-    setp_2_title() {
-      if (this.type == "reset") {
-        return "修改密码";
-      }
-      return "验证成功";
-    },
+    }
   },
   methods: {
     ...mapMutations(["SET_CURRENT_USER", "SET_AUTHORITY"]),
     ...mapActions(["SetAvatar"]),
 
     jumpStep() {
-      this.$refs.form_1_ref.validate().then(() => {
-        if (this.type != "logoff") {
-          this.step = 2;
-        } else {
-          this.showLogoffModal = true;
-        }
-      });
+      switch(this.type) {
+        case 'forget':
+        this.$refs.formRef.validate()
+          .then(() => {
+            this.type = 'confirm';
+            this.$refs.formRef.clearValidate();
+          })
+          .catch(() => {})
+        break;
+        case 'logoff':
+        this.$refs.formRef.validate()
+          .then(() => {
+            this.showLogoffModal = true;
+          })
+          .catch(() => {})
+        break;
+        case 'confirm':
+        this.onSubmit()
+        break;
+      }
     },
 
     logOffFunc() {
@@ -316,8 +334,8 @@ export default {
         });
     },
 
-    onSubmit: throttle(function func() {
-      this.$refs.form_2_ref
+    onSubmit() {
+      this.$refs.formRef
         .validate()
         .then(() => {
           if (this.type == "reset") {
@@ -350,7 +368,7 @@ export default {
             });
         })
         .catch((err) => {});
-    }, 500),
+    },
 
     codeChange(text) {
       this.model.tips = text;
@@ -426,30 +444,6 @@ export default {
       }
     },
 
-    setNewPad() {
-      const params = {
-        old_password: this.model.password,
-        password: this.model.check_psd,
-        captcha_code: this.captcha_code,
-      };
-      postChangePad(params)
-        .then(async (res) => {
-          if (res.code == 0) {
-            this.showSlideCode = false;
-            this.toastMsg("修改成功，请重新登录！", "success");
-            await sleep(1000);
-            uni.redirectTo({
-              url: "/pages/login/login",
-            });
-          }
-        })
-        .catch((err) => {
-          this.toastMsg(err.message || err, "error");
-          this.showSlideCode = false;
-          this.captcha_code = null;
-        });
-    },
-
     /**
      * @description: 显示成功通知
      * @param {string} sms_id - 短信ID
@@ -480,26 +474,16 @@ export default {
     },
 
     // 提示
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },
   onLoad({ type }) {
     this.type = type || "forget";
-    switch (type) {
-      case "reset":
-        this.routerMode = "redirect";
-        this.targetUrl = "/pagesUser/setting/index";
-        this.step = 2;
-        break;
-      case "logoff":
-        this.routerMode = "redirect";
-        this.targetUrl = "/pagesUser/setting/index";
-        break;
-    }
   },
 };
 </script>
@@ -528,6 +512,6 @@ export default {
   border-radius: 16rpx;
 }
 ::v-deep .app-grid {
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
 }
 </style>

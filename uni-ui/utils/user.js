@@ -42,7 +42,7 @@ export function getUserInfo() {
 
 export function deleteUserInfo() {
   try {
-    uni.removeStorageSync(stage_key);
+    uni.clearStorageSync();
   } catch (e) {
     // error
   }

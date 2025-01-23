@@ -21,7 +21,7 @@
       <view
         class="record-count-data u-p-32 u-m-l-28 u-m-r-28 u-border-radius u-bg-f"
       >
-        <text class="u-m-28 u-font-32 color-text-black">我邀请的好友</text>
+        <text class="u-m-y-28 u-font-32 color-text-black">我邀请的好友</text>
         <view class="u-flex-row u-row-between u-m-t-32">
           <view class="record-count-data-item u-flex-col u-m-r-32">
             <text class="u-font-48 u-font-weight-600 color-text-black">{{
@@ -74,14 +74,11 @@
         </view>
       </view>
     </view>
-    <view class="record-box u-m-l-28 u-m-r-28">
-      <u-list v-if="listData.length" :showScrollbar="false">
-        <u-list-item v-for="(item, index) in listData" :key="item.invite_id">
+    <view class="record-box u-bg-f u-m-l-28 u-m-r-28" :style="{'min-height': list_height}">
+      <view v-if="listData.length">
+        <view v-for="(item, index) in listData" :key="item.invite_id">
           <view
-            class="record-list-item u-p-l-32 u-p-r-32 u-p-t-32 u-p-b-64 u-flex-row u-bg-f"
-            :class="{
-              'record-list-item-last': index === listData.length - 1,
-            }"
+            class="record-list-item u-p-l-32 u-p-r-32 u-p-t-32 u-p-b-64 u-flex-row"
           >
             <u-image
               v-if="item.avatar"
@@ -114,18 +111,12 @@
               </view>
             </view>
           </view>
-        </u-list-item>
-      </u-list>
-      <view class="u-m-t-100" v-if="!listData.length">
+        </view>
+      </view>
+
+      <view class="u-p-t-100" v-if="!listData.length">
         <u-empty text="暂无数据" :icon="image.no_data_list"></u-empty>
       </view>
-      <u-loadmore
-        v-if="!loading && listData.length > 0"
-        :status="status"
-        :loading-text="loadingText"
-        :loadmore-text="loadmoreText"
-        :nomore-text="nomoreText"
-      ></u-loadmore>
     </view>
     <base-toast ref="toastRef"></base-toast>
   </view>
@@ -140,10 +131,8 @@ import { mapGetters } from "vuex";
 export default {
   data() {
     return {
-      status: "loadmore",
-      loadingText: "努力加载中",
-      loadmoreText: "下拉加载更多",
-      nomoreText: "没有更多了～",
+
+
       showGate: false,
       /* 共计邀请 */
       totalInvite: 0,
@@ -157,6 +146,7 @@ export default {
       pagesize: 20,
       loading: false,
       next_page_site: "",
+      list_height: "0rpx"
     };
   },
   computed: {
@@ -184,10 +174,11 @@ export default {
     // 	this.getListData(true);
     // },
     // 提示
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
     back() {
@@ -201,7 +192,6 @@ export default {
     },
     stopLoad() {
       uni.stopPullDownRefresh();
-      this.$refs.toastRef?.close();
       this.loading = false;
     },
 
@@ -216,7 +206,7 @@ export default {
           this.todayInvite = res.data.today_invite_total;
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         });
     },
 
@@ -254,16 +244,12 @@ export default {
           const list = res.data.list;
           if (reset) this.listData = list;
           else this.listData.push(...list);
+
+          
           this.site = res.data.site;
-          let bool = !(res.data.list.length < this.pagesize);
-          this.isEnd = !bool;
-          if (!bool) {
-            this.nomoreText = `没有更多了～`;
-            this.status = "nomore";
-          } else {
-            this.loadmoreText = `下拉加载更多`;
-            this.status = "loadmore";
-          }
+
+          this.isEnd = res.data.list.length < this.pagesize;
+          this.$refs.toastRef?.close();
         })
         .catch((err) => {
           let message = String(err.message || err);
@@ -273,10 +259,22 @@ export default {
           this.stopLoad();
         });
     },
-  },
+    async computedHeight() {
 
-  onLoad() {
+      const containBoxRect = await this.$u.getRect(`.page-box`);
+
+				const topBoxRect = await this.$u.getRect(`.top-navbar-box`);
+
+				this.list_height = (containBoxRect.height - topBoxRect.height - 8) + "px";
+
+
+    },
+  },
+  onReady() {
     this.init();
+    this.$nextTick(() => {
+      this.computedHeight();
+    });
   },
 	onPullDownRefresh() {
     this.init();
@@ -356,17 +354,14 @@ export default {
   }
 
   .record-box {
+    border-bottom-left-radius: 16rpx;
+    border-bottom-right-radius: 16rpx;
     .record-list-item {
       .record-list-item-img {
         width: 92rpx;
         height: 92rpx;
         border-radius: 92rpx;
       }
-    }
-
-    .record-list-item-last {
-      border-bottom-left-radius: 16rpx;
-      border-bottom-right-radius: 16rpx;
     }
   }
 

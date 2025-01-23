@@ -285,7 +285,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "../uni_modules/uview-ui/libs/css/components.scss";
+@import "@/uni_modules/uview-ui/libs/css/components.scss";
 
 .u-toolbar {
   height: 42px;

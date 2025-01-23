@@ -1,14 +1,16 @@
 <template>
-  <view class="prompt-detail-page">
-    <MyNavbar :leftIcon="`${static_path}circular_back.png`">
-      <template #navbarData>
-        <text
-          class="u-font-32 color-text-black u-font-bold"
-          style="margin-left: 16rpx"
-          >{{ is_view ? "提词详情" : "新建关键词" }}</text
-        >
-      </template>
-    </MyNavbar>
+  <view class="prompt-detail-page" :class="{ 'no-scroll': no_scroll }">
+    <view class="top-area">
+      <MyNavbar :leftIcon="`${static_path}circular_back.png`">
+        <template #navbarData>
+          <text
+            class="u-font-32 color-text-black u-font-bold"
+            style="margin-left: 16rpx"
+            >{{ is_view ? "提词详情" : "新建关键词" }}</text
+          >
+        </template>
+      </MyNavbar>
+    </view>
     <view class="u-m-t-28 u-p-x-28">
       <view class="u-bg-f u-border-radius u-p-32 u-m-b-28">
         <view
@@ -20,31 +22,33 @@
           <view class="u-flex-row u-col-center">
             <text
               class="u-font-bold color-text-black u-font-28 u-line-h-40 u-m-r-8"
-              >{{ model.title || "--" }}</text
+              >{{ detailObj.keyword || "--" }}</text
             >
             <view
               class="u-flex-row u-row-center u-col-center u-m-l-8 u-p-x-8"
               :class="{
-                'tag--primary': model.verify_status == 2,
-                'tag--warning': model.verify_status == 1,
-                'tag--danger': model.verify_status == 3,
+                'tag--primary': detailObj.verify_status == 2,
+                'tag--warning':
+                  detailObj.verify_status == 1 || detailObj.verify_status == 4,
+                'tag--danger': detailObj.verify_status == 3,
               }"
             >
               <text class="u-font-22 u-line-h-40 u-nowrap">{{
-                LIBRARY_VERIFY_STATUS[model.verify_status]
+                LIBRARY_VERIFY_STATUS[detailObj.verify_status]
               }}</text>
               <u-icon
-                v-if="model.verify_status == 3"
+                v-if="detailObj.verify_status == 3"
                 class="u-m-l-8"
                 name="question-circle"
                 size="24rpx"
                 color="#FF325B"
                 style="position: relative; top: 2rpx"
+                @click="openSuggest"
               ></u-icon>
             </view>
           </view>
           <view class="color-text-less-grey u-font-24 u-line-h-40">{{
-            `提词时间: ${model.date}`
+            `提词时间: ${detailObj.create_time}`
           }}</view>
         </view>
         <u--form
@@ -54,41 +58,58 @@
           labelWidth="160rpx"
           ref="formRef"
         >
-          <u-form-item label="书籍名称" prop="book_name">
+          <u-form-item
+            v-for="(item, index) in configList"
+            :key="item.prop"
+            :label="item.label"
+            :prop="item.prop"
+            :labelPosition="item.comp_type == 2 ? 'left' : 'top'"
+          >
+            <u--textarea
+              v-if="item.prop == 'link' || item.prop == 'describe'"
+              v-model.trim="model[item.prop]"
+              :disabled="is_view"
+              :placeholder="`请输入${item.label}`"
+              maxlength="-1"
+              @input="handleInput($event, item)"
+            ></u--textarea>
             <u-input
-              v-model="model.book_name"
+              v-else-if="item.comp_type == 1"
+              v-model="model[item.prop]"
               disabledColor="#f6f6f6"
               :disabled="is_view"
-              placeholder="请选择书籍名称"
+              clearable
+              :placeholder="`请输入${item.label}`"
             ></u-input>
-          </u-form-item>
-          <u-form-item label="作者" prop="auth">
-            <u-input
-              v-model.trim="model.auth"
+            <view
+              v-else-if="item.comp_type == 2"
+              class="u-flex-row u-row-right u-col-center widthAll"
+            >
+              <u-radio-group
+                v-model="model[item.prop]"
+                :placeholder="`请选择${item.label}`"
+                :disabled="is_view"
+              >
+                <u-radio
+                  v-for="radio in item.dicts"
+                  :key="radio.id"
+                  :name="radio.value"
+                  :label="radio.label"
+                  class="u-m-l-32"
+                ></u-radio>
+              </u-radio-group>
+            </view>
+            <SelectComps
+              v-else-if="item.comp_type == 3"
+              v-model="detailObj[item.prop]"
+              :view="is_view"
+              :title="`请选择${item.label}`"
+              :item="item"
               :disabled="is_view"
-              placeholder="请输入作者"
-            ></u-input>
-          </u-form-item>
-          <u-form-item label="书籍ID" prop="book_id">
-            <u-input
-              v-model.trim="model.book_id"
-              :disabled="is_view"
-              placeholder="请输入书籍ID"
-            ></u-input>
-          </u-form-item>
-          <u-form-item label="书籍链接" prop="book_link">
-            <u--textarea
-              v-model.trim="model.book_link"
-              :disabled="is_view"
-              placeholder="请输入书籍链接"
-            ></u--textarea>
-          </u-form-item>
-          <u-form-item label="书籍简介" prop="desc">
-            <u--textarea
-              v-model.trim="model.desc"
-              :disabled="is_view"
-              placeholder="请输入书籍简介"
-            ></u--textarea>
+              :needPicker="item.prop == 'platform_account_id' ? false : true"
+              @submit="getSelectVal($event, { item, index })"
+              @open="openSelect(item, index)"
+            ></SelectComps>
           </u-form-item>
         </u--form>
       </view>
@@ -98,55 +119,54 @@
           class="color-text-black u-font-32 u-line-h-48 u-font-bold u-m-b-32"
           >请创建推广关键词</view
         >
-        <view class="u-flex-row u-col-center u-m-b-32">
-          <u-input
-            v-model.trim="keyword"
-            placeholder="请填写4个汉字，不含字母和特殊符号"
-          ></u-input>
-          <view
-            class="u-border-radius u-m-l-16 u-flex-row u-col-center u-row-center"
-            style="width: 120rpx; height: 88rpx; background: #408cff"
-            @click="handleKeyword"
-          >
-            <text class="color-text-white u-font-28 u-line-h-44">添加</text>
-          </view>
-        </view>
-        <view
-          v-if="keywordList.length"
-          class="keyword-pond u-border-radius u-p-32"
+        <u--form
+          ref="keywordFormRef"
+          :model="keywordModel"
+          :rules="keywordRules"
+          labelPosition="left"
+          labelWidth="240rpx"
         >
-          <view
-            v-for="(item, index) in keywordList"
-            :key="index"
-            class="keyword-pond--item u-bg-f u-border-radius u-flex-row u-row-center u-col-center u-p-x-16 u-p-y-8"
-          >
-            <text class="color-text-less-black u-font-24 u-line-h-40 u-m-r-8">{{
-              item
-            }}</text>
-            <u-icon
-              :name="`${static_path}close_circle_grey.png`"
-              size="36rpx"
-              @click="delKeyword(index)"
-            ></u-icon>
-          </view>
-        </view>
-        <view class="u-flex-row u-row-between u-col-center widthAll">
-          <text class="color-text-black u-font-24 u-line-h-40">是否视频号发布</text>
-          <u-radio-group
-            v-model="is_video"
-            placement="row"
-          >
-            <u-radio
-              label="是"
-              name="1"
-              class="u-m-r-32"
-            />
-            <u-radio
-              label="否"
-              name="2"
-            />
-          </u-radio-group>
-        </view>
+          <u-form-item prop="keywords">
+            <view class="u-flex-col widthAll">
+              <view class="u-flex-row u-col-center u-m-b-32">
+                <u-input
+                  v-model.trim="keyword"
+                  clearable
+                  placeholder="请输入关键词"
+                ></u-input>
+                <view
+                  class="u-border-radius u-m-l-16 u-flex-row u-col-center u-row-center"
+                  style="width: 120rpx; height: 88rpx; background: #408cff"
+                  @click="handleKeyword"
+                >
+                  <text class="color-text-white u-font-28 u-line-h-44"
+                    >添加</text
+                  >
+                </view>
+              </view>
+              <view
+                v-if="keywordModel.keywords.length"
+                class="keyword-pond u-border-radius u-p-32 scroll-y widthAll"
+              >
+                <view
+                  v-for="(item, index) in keywordModel.keywords"
+                  :key="index"
+                  class="keyword-pond--item u-bg-f u-border-radius u-flex-row u-row-center u-col-center u-p-x-16 u-p-y-8 u-m-r-16 u-m-b-16"
+                >
+                  <text
+                    class="color-text-less-black u-font-24 u-line-h-40 u-m-r-8 u-nowrap"
+                    >{{ item.keyword }}</text
+                  >
+                  <u-icon
+                    :name="`${static_path}close_circle_grey.png`"
+                    size="36rpx"
+                    @click="delKeyword(index)"
+                  ></u-icon>
+                </view>
+              </view>
+            </view>
+          </u-form-item>
+        </u--form>
       </view>
       <view
         v-if="!is_view"
@@ -155,6 +175,7 @@
       ></view>
     </view>
     <BottomBtn
+      v-if="!is_view"
       :data="button_list"
       :buttonIndex="0"
       @submit="handleSubmit"
@@ -163,29 +184,24 @@
     <u-modal
       :show="showModal"
       :showCancelButton="false"
-      :showConfirmButton="false"
+      :showConfirmButton="true"
       confirmText="我知道了"
-      width="520rpx"
+      title="审核失败"
+      :content="verify_suggest"
+      :buttonFill="false"
       :closeOnClickOverlay="false"
+      @confirm="showModal = false"
     >
-      <view class="u-flex-col u-col-center widthAll">
-        <view
-          class="u-font-bold widthAll u-font-32 u-line-h-48 u-m-b-32 u-text-left"
-          >审核失败</view
-        >
-        <text
-          class="u-font-28 u-line-h-44 u-m-b-32 u-text-left widthAll"
-          style="color: #3c3c3c"
-          >{{ verify_suggest }}</text
-        >
-        <view
-          class="modal-btn widthAll u-border-radius u-p-x-28 u-p-y-20 color-text-white u-text-center"
-          style="background: #408cff"
-          @click="showModal = false"
-          >我知道了</view
-        >
-      </view>
     </u-modal>
+    <KeywordPopup ref="keywordPopupRef" @close="no_scroll = false" />
+    <AccountPopup
+      ref="accountPopupRef"
+      title="请选择平台账号"
+      :platform_id="platform_id"
+      :extra_params="extra_params"
+      @next="getPlatformAcc"
+      @close="no_scroll = false"
+    />
     <base-toast ref="toastRef"></base-toast>
   </view>
 </template>
@@ -194,47 +210,97 @@
 import { mapGetters } from "vuex";
 import MyNavbar from "@/components/my-navbar/index.vue";
 import BottomBtn from "@/components/bottom-button/index.vue";
-import { getSingKeywordDef } from "../api/detail.js";
+import KeywordPopup from "../components/keywordPopup.vue";
+import SelectComps from "../components/selectComps.vue";
+import AccountPopup from "../components/accountPopup.vue";
+import {
+  postLibraryAdd,
+  getLibraryContentConfig,
+  getLibraryConfig,
+  postLibraryContentKeywordAdd,
+  getKeywordLibraryDef,
+  getAnalysisLink,
+} from "../api/keyword.js";
 import { LIBRARY_VERIFY_STATUS } from "@/utils/mappers/novel.js";
+import { sleep, throttle, queryUrlParams } from "@/utils/tools.js";
 export default {
   props: {},
   components: {
     MyNavbar,
     BottomBtn,
+    KeywordPopup,
+    SelectComps,
+    AccountPopup,
   },
   data() {
     return {
       LIBRARY_VERIFY_STATUS,
       id: null,
       showModal: false,
-      is_video: 1,
       keyword: "",
       verify_suggest: "",
       keywordList: [],
       btnHeight: "0",
       submitLoading: false,
+      advertiser_type: null,
+      content_id: null,
+      content_relation_id: null,
+      no_scroll: false,
+      configList: [],
+      keywordConfig: [],
+      detailObj: {},
+      selectCols: [],
+      extra_params: {},
+      platform_id: null,
+      customLinkMapper: {
+        1009: '掌阅',
+        1008: '起点',
+        1001: '番茄小说',
+        1004: '番茄畅听'
+      },
       model: {
-        book_name: "",
-        auth: "",
+        title: "",
+        book_author: "",
         book_id: "",
-        book_link: "",
-        desc: "",
+        link: "",
+        describe: "",
+        is_video: "1",
+        platform_account_id: "",
       },
       rules: {
+        title: [{ required: true, message: "请输入书籍名称", trigger: "blur" }],
         book_name: [
           { required: true, message: "请输入书籍名称", trigger: "blur" },
         ],
-        auth: [{ required: true, message: "请输入作者", trigger: "blur" }],
-        book_id: [{ required: true, message: "请输入书籍ID", trigger: "blur" }],
-        book_link: [
-          { required: true, message: "请输入书籍链接", trigger: "blur" },
+        book_author: [
+          { required: true, message: "请输入作者", trigger: "blur" },
         ],
-        desc: [{ required: true, message: "请输入书籍简介", trigger: "blur" }],
+        book_id: [{ required: true, message: "请输入书籍ID", trigger: "blur" }],
+        link: [{ required: true, message: "请输入书籍链接", trigger: "blur" }],
+        describe: [
+          { required: true, message: "请输入书籍简介", trigger: "blur" },
+        ],
+        is_video: [
+          {
+            validator: (rule, value, callback) => {
+              if (!value) {
+                callback(false);
+              } else {
+                callback();
+              }
+            },
+            message: "请选择是否视频号发布",
+            trigger: "change",
+          },
+        ],
+      },
+      keywordModel: {
+        keywords: [],
       },
     };
   },
   computed: {
-    ...mapGetters(['static_path', 'image']),
+    ...mapGetters(["static_path", "image"]),
     button_list() {
       return [
         [
@@ -252,51 +318,234 @@ export default {
     is_view() {
       return this.id ? true : false;
     },
+    keywordRules() {
+      return {
+        keywords: [
+          {
+            validator: (rule, value, callback) => {
+              if (!value.length) {
+                callback(false);
+              } else {
+                callback();
+              }
+            },
+            message: "请添加关键词",
+            trigger: ["change", "blur"],
+          },
+        ],
+      };
+    },
   },
   methods: {
     getBtnHeight(height) {
       this.btnHeight = height * 2;
     },
 
+    openSuggest() {
+      this.verify_suggest = this.model.verify_suggest;
+      this.showModal = true;
+    },
+
     getDetial() {
-      getSingKeywordDef()
+      this.toastMsg("加载中", "loading", -1);
+      getKeywordLibraryDef({ id: this.id })
         .then((res) => {
           if (res.code == 0) {
-            Object.assign(this.model, res.data);
+            this.detailObj = res.data;
+            this.$refs.toastRef.close();
           }
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
-        })
-        .finally(() => {
-          uni.stopPullDownRefresh();
+          his.toastMsg(error.message || error, "error");
         });
     },
 
-    handleSubmit() {
-      this.$refs.formRef
-        .validate()
-        .then(() => {
-          const params = {
-            ...this.model,
-            keywords: this.keywordList,
-          };
-          this.submitLoading = true;
-          console.log(params);
-        })
-        .catch(() => {});
+    /**
+     * @description: 提交校验
+     * @return {*}
+     */
+    async validSubmit() {
+      const results = await Promise.all([
+        this.$refs.formRef
+          .validate()
+          .then(() => true)
+          .catch(() => false),
+        this.$refs.keywordFormRef
+          .validate()
+          .then(() => true)
+          .catch(() => false),
+      ]);
+      return results[0] && results[1];
     },
 
+    async handleSubmit() {
+      if (await this.validSubmit()) {
+        this.addLibraryContent();
+      }
+    },
+
+    /**
+     * @description: 最后提交
+     * @return {*}
+     */
+    addLibraryContent() {
+      const params = {
+        ...this.model,
+        ...this.keywordModel,
+        keywords: this.keywordModel.keywords.map((el) => el.keyword),
+        advertiser_type: this.advertiser_type,
+      };
+      postLibraryContentKeywordAdd(params)
+        .then((res) => {
+          if (res.code == 0) {
+            this.toastMsg(
+              res.data.message,
+              res.data.message.indexOf("失败") ? "error" : "success"
+            );
+            if (res.data.unmatch_data.length) {
+              this.keywordModel.keywords = res.data.unmatch_data;
+              this.no_scroll = true;
+              this.$refs.keywordPopupRef.open(this.handleErrorStr());
+            } else {
+              uni.redirectTo({
+                url: "/novel/detail/index",
+              });
+            }
+          }
+        })
+        .catch((error) => {
+          this.toastMsg(error.message || error, "error");
+        });
+    },
+
+    /**
+     * @description: 书籍相关配置
+     * @return {*}
+     */
+    libraryContentConfig() {
+      const params = {
+        advertiser_type: this.advertiser_type,
+      };
+      getLibraryContentConfig(params)
+        .then((res) => {
+          if (res.code == 0) {
+            this.configList = res.data.list.map((el) => {
+              return {
+                ...el,
+                value: "",
+                inputValue: "",
+              };
+            });
+            if (!this.is_view) {
+              const obj = Object.fromEntries(
+                res.data.list.map((el) => [el.prop, null])
+              );
+              this.model = obj;
+            } else {
+              this.model = this.detailObj;
+            }
+          }
+        })
+        .catch((error) => {
+          his.toastMsg(error.message || error?.message || error, "error");
+        });
+    },
+
+    /**
+     * @description: 添加关键词接口
+     * @return {*}
+     */
+    addKeyword() {
+      const params = {
+        keywords: this.keywordList,
+        content_id: this.content_id,
+        content_relation_id: this.content_relation_id,
+        advertiser_type: this.advertiser_type,
+        is_video: this.is_video,
+      };
+      postLibraryAdd(params)
+        .then((res) => {
+          if (res.code == 0) {
+            this.toastMsg(res.data.message, "success");
+            if (res.data.unmatch_data.length) {
+              this.keywordList = res.data.unmatch_data;
+              this.no_scroll = true;
+              this.$refs.keywordPopupRef.open(this.handleErrorStr());
+            } else {
+              uni.redirectTo({
+                url: "/novel/detail/index",
+              });
+            }
+          }
+        })
+        .catch((error) => {
+          his.toastMsg(error.message || error, "error");
+        });
+    },
+
+    /**
+     * @description: 处理关键词数据
+     * @return {*}
+     */
     handleKeyword() {
-      if (this.keywordList.find((el) => el == this.keyword)) {
+      if (!this.keyword) return;
+      if (this.keywordModel.keywords.find((el) => el == this.keyword)) {
         return this.toastMsg("关键词已存在", "error");
       }
-      this.keywordList.push(this.keyword);
+      this.keywordModel.keywords = [
+        ...this.keywordModel.keywords,
+        {
+          keyword: this.keyword,
+          message: "",
+        },
+      ];
+      this.keyword = "";
     },
 
     delKeyword(index) {
-      const newList = this.keywordList.splice(index, 1);
-      this.keywordList = newList;
+      this.keywordModel.keywords = [
+        ...this.keywordModel.keywords.slice(0, index),
+        ...this.keywordModel.keywords.slice(index + 1),
+      ];
+    },
+
+    /**
+     * @description: 关键词限制要求及绑定配置
+     * @return {*}
+     */
+    libraryConfig() {
+      this.toastMsg("加载中", "loading", -1);
+      getLibraryConfig({ advertiser_type: this.advertiser_type })
+        .then((res) => {
+          if (res.code == 0) {
+            this.configList = [
+              ...this.configList,
+              ...res.data.bind_config.map((el) => {
+                return { ...el, value: "", inputValue: "" };
+              }),
+            ];
+            // 将绑定相关配置追加到动态表单中
+            if (!this.is_view) {
+              const obj = Object.fromEntries(
+                res.data.bind_config.map((el) => [el.prop, null])
+              );
+              this.model = { ...this.model, ...obj };
+            }
+            this.keywordConfig = res.data.keyword_config;
+            this.$refs.toastRef.close();
+          }
+        })
+        .catch((error) => {
+          his.toastMsg(error.message || error, "error");
+        });
+    },
+
+    handleErrorStr() {
+      let errorList = [];
+      this.keywordModel.keywords.forEach((el, index) => {
+        errorList.push(`关键词《${el.keyword}》${el.message}`);
+      });
+      return errorList;
     },
 
     resetPage() {
@@ -304,19 +553,91 @@ export default {
       this.model = this.$options.data().model;
     },
 
-    toastMsg(message, type = "default") {
+    /**
+     * @description: 筛选组件处理
+     * @param {Object} val 当前选中值
+     * @param {Object} item 当前回填数据
+     * @return {*}
+     */
+    getSelectVal(val, { item, index }) {
+      item.inputValue = val.label;
+      item.value = val.value;
+      this.$set(this.configList[index], "value", val.value + "");
+      this.$set(this.configList[index], "inputValue", val.label);
+      if (item.prop == "platform_account_id") {
+        this.platform_id = val.value;
+      }
+    },
+
+    openSelect(item, index) {
+      if (item.prop == "platform_account_id") {
+        this.extra_params = { item, index };
+        this.$refs.accountPopupRef.open(this.id, model.platform_account_id);
+        this.no_scroll = true;
+      }
+    },
+
+    getPlatformAcc(obj) {
+      const { extra_params, id, label } = obj;
+      this.model.platform_account_id = id;
+      this.$set(this.configList[extra_params.index], "value", id + "");
+      this.$set(this.configList[extra_params.index], "inputValue", label);
+    },
+
+    // 针对项目处理book_id回显
+    handleInput: throttle(function func(val, item) {
+      const list = Object.keys(this.customLinkMapper);
+      if(list.includes(this.advertiser_type+'')) {
+        let obj = queryUrlParams(val);
+        switch(this.advertiser_type+'') {
+          case '1009':
+          this.model.book_id = obj.bid;
+          break;
+          case '1008':
+          this.model.book_id = obj.bookId;
+          break;
+          case '1001':
+          case '1004':
+          this.model.book_id = obj.book_id;
+          break;
+        }
+      } else {
+        getAnalysisLink({ 
+          link: val, 
+          advertiser_type: this.advertiser_type 
+        })
+          .then((res) => {
+            if(res.code == 0) {
+              if(res.data.book_id) {
+                this.model.book_id = res.data.book_id;
+              }
+            }
+          })
+          .catch((error) => {
+            this.toastMsg(error.message || error, "error");
+          });
+      }
+    }, 800),
+
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration,
       });
     },
   },
   onLoad({ id }) {
+    const { advertiser_id } = JSON.parse(uni.getStorageSync("SET_JUMP_QUERY"));
+    this.advertiser_type = advertiser_id || null;
     this.resetPage();
     this.id = id || null;
+
     if (id) {
       this.getDetial();
     }
+    this.libraryContentConfig();
+    this.libraryConfig();
   },
 };
 </script>
@@ -324,12 +645,20 @@ export default {
 <style lang="scss" scoped>
 .prompt-detail-page {
   min-height: 100vh;
+  .top-area {
+    z-index: 999;
+    width: 750rpx;
+    position: sticky;
+    top: 0;
+    background: #f6f7fb;
+    /* #ifdef APP */
+    padding-top: 88rpx;
+    /* #endif */
+  }
 }
 .keyword-pond {
-  display: grid;
-  grid-auto-flow: column;
-  justify-content: start;
-  grid-gap: 16rpx;
+  display: flex;
+  flex-wrap: wrap;
   width: 100%;
   height: 280rpx;
   background: #f6f6f6;

@@ -111,6 +111,10 @@ export default {
         defaultIndex: {
             type: Array,
             default: uni.$u.props.datetimePicker.defaultIndex
+        },
+        round: {
+            type: [String, Number],
+            default: 0
         }
     }
 }

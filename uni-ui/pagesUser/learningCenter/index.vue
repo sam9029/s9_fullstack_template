@@ -57,7 +57,6 @@
 			},
 			stopLoad() {
 				uni.stopPullDownRefresh();
-				this.$refs.toastRef?.close();
 				this.loading = false;
 			},
 			getListData(reset = false) {
@@ -87,12 +86,13 @@
 						this.isEnd = list?.length < this.pagesize;
 						this.loadMoreStatus = this.isEnd ? "noMore" : "more";
 						this.site = res.data.site || null;
-						this.stopLoad();
+						this.$refs.toastRef?.close();
 					}).catch((err) => {
-						this.stopLoad();
 						let message = String(err.message || err || "学习课程获取失败");
 						this.toastMsg(message, "error");
-					});
+					}).finally(() => {
+						this.stopLoad();
+					})
 
 
 			},

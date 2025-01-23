@@ -31,12 +31,13 @@
                 height: '72rpx',
                 'background-color': '#f6f6f6',
               }"
+              clearable
+              @search="resetTable"
+              @clear="resetTable"
             ></u-search>
             <DateFilter
               title="请选择查询时间段"
-              :type="['list']"
               baseBtn
-              :showBottomBtns="false"
               @submit="getDate"
             >
             </DateFilter>
@@ -49,27 +50,33 @@
           </view>
         </view>
       </view>
-      <TableCard
-        v-if="account_type == 1"
-        :data="tableData"
-        :loading="tableLoading"
-      />
-      <view v-if="account_type == 2" class="u-p-x-28">
-        <listComps
-          v-if="!loading && listData.length"
-          :listData="listData"
-          :static_path="static_path"
-        />
-        <view v-if="!loading && !listData.length" class="u-m-t-100">
-          <u-empty text="暂无数据" :icon="image.no_data_list"></u-empty>
-        </view>
-        <view v-if="!loading && listData.length > 0" class="u-p-b-48">
-          <u-loadmore
-            :status="status"
-            :loading-text="loadingText"
-            :loadmore-text="loadmoreText"
-            :nomore-text="nomoreText"
-          ></u-loadmore>
+      <view class="u-p-x-28">
+        <view class="u-bg-f" style="min-height: calc(100vh - 744rpx)">
+          <TableCard
+            v-if="account_type == 1"
+            :data="listData"
+            :loading="tableLoading"
+          />
+          <view v-if="account_type == 2" class="u-p-x-28">
+            <view class="u-bg-f">
+              <listComps
+                v-if="!loading && listData.length"
+                :listData="listData"
+                :static_path="static_path"
+              />
+              <view v-if="!loading && !listData.length" style="padding-top: 100rpx;">
+                <u-empty text="暂无数据" :icon="image.no_data_list"></u-empty>
+              </view>
+              <view v-if="!loading && listData.length > 0" class="u-p-b-48">
+                <u-loadmore
+                  :status="status"
+                  :loading-text="loadingText"
+                  :loadmore-text="loadmoreText"
+                  :nomore-text="nomoreText"
+                ></u-loadmore>
+              </view>
+            </view>
+          </view>
         </view>
       </view>
     </view>
@@ -114,7 +121,7 @@ export default {
       totalDate: [],
       detailObj: {},
       listData: [],
-      tableData: [],
+      // tableData: [],
       tableLoading: false,
       advertiser_type: null,
       advertiser_name: null,
@@ -141,11 +148,15 @@ export default {
       this.isEnd = false;
       this.getTopCard();
       this.getListData();
-      this.$refs.toastRef?.close();
       uni.stopPullDownRefresh();
     },
 
-    getTopCard() {
+    resetTable() {
+      this.isEnd = false;
+      this.getListData();
+    },
+
+    getTopCard(flag = false) {
       getAdvertiserTotal({ 
         type: 1, 
         advertiser_type: this.advertiser_type,
@@ -155,10 +166,11 @@ export default {
         .then((res) => {
           if (res.code == 0) {
             this.detailObj = res.data;
+            if(flag) this.$refs.toastRef?.close();
           }
         })
         .catch((error) => {
-          this.toastMsg(error, "error");
+          this.toastMsg(error.message || error, "error");
         });
     },
 
@@ -178,10 +190,11 @@ export default {
       this.status = "loading";
 
       let params = {
+        keyword: this.keyword,
         pagesize: this.pagesize,
         advertiser_type: this.advertiser_type,
         start_date: this.date[0],
-        end_date: this.date[1],
+        end_date: this.date[1], 
       };
       params.page = this.page;
       let func = this.account_type == 1 ? getBloggerList : getConsultantList;
@@ -200,6 +213,7 @@ export default {
             this.loadmoreText = `下拉加载更多`;
             this.status = "loadmore";
           }
+          this.$refs.toastRef?.close();
         })
         .catch((err) => {
           let message = String(err.message || err || "项目详情获取失败");
@@ -212,19 +226,23 @@ export default {
     },
 
     getDate(date) {
+      this.toastMsg("加载中", 'loading', -1)
       this.date = date;
-      uni.$u.throttle(this.getListData());
+      this.isEnd = false;
+      uni.$u.throttle(this.getListData(), 500);
     },
 
     getTotalDate(date) {
+      this.toastMsg("加载中", 'loading', -1)
       this.totalDate = date;
-      uni.$u.throttle(this.getTopCard());
+      uni.$u.throttle(this.getTopCard(true), 500);
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },

@@ -119,6 +119,7 @@
         class="register-btn"
         type="primary"
         text="注册"
+        :loading="submitLoading"
         @click="beforeRegister"
       ></u-button>
     </view>
@@ -232,6 +233,7 @@ export default {
         },
       },
       showSlideCode: false,
+      submitLoading: false,
       captcha_code: null,
       sms_type: 2,
       type: "DEFAULT",
@@ -368,11 +370,7 @@ export default {
      * @return {*}
      */
     async register(params) {
-      // 显示加载提示框，提示用户正在注册中
-      uni.showLoading({
-        title: "注册中...",
-      });
-
+      this.submitLoading = true;
       // 选择相应的请求接口，默认情况下使用kocRegister
       let operation = this.type == "DEFAULT" ? kocRegister : checkSms;
 
@@ -424,7 +422,7 @@ export default {
             this.code_start_time = null;
             delSmsIdFromLocal()
           }
-          uni.hideLoading();
+          this.submitLoading = false;
         });
     },
 
@@ -585,10 +583,11 @@ export default {
       });
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },

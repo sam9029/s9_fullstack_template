@@ -558,7 +558,7 @@ export function appCheckUpdate() {
         let data = {
           describe: res.data.remark.replace(/\n/g, "<br>"),
           edition_url: res.data.url, //apk、wgt包下载地址或者应用市场地址  安卓应用市场 market://details?id=xxxx
-          edition_force: 0, //是否强制更新 0代表否 1代表是
+          edition_force: res.data.edition_force == 1 ? 0 : 1, //是否强制更新 0代表否 1代表是
           package_type: 0, //0是整包升级（apk或者appstore或者安卓应用市场） 1是wgt升级
           edition_issue: 1, //是否发行  0否 1是 为了控制上架应用市场审核时不能弹出热更新框
           edition_number: res.data.version_code, //版本号 最重要的manifest里的版本号

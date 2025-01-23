@@ -787,8 +787,7 @@ export default {
     },
     sortData(item) {
       let key = item.name;
-
-      if (item.sorterMode === "_asc") {
+      if (item.sorterMode === "_asc" || item.sorterMode === undefined) {
         this.data.sort((a, b) => {
           if (this.checkNumber(a[key])) {
             return a[key] - b[key];
@@ -1057,6 +1056,7 @@ export default {
     //height: 41px;
   }
   .item-td {
+    background: #fff;
     flex-shrink: 0;
     width: 100px;
     padding-left: 8px;
@@ -1071,6 +1071,7 @@ export default {
     overflow-wrap: break-word;
     border-bottom: 1px solid #e8e8e8;
     //transition: background 0.3s;
+    color: #989898;
   }
 
   .zb-table-fixed-left .zb-table-header {
@@ -1078,7 +1079,7 @@ export default {
   }
   .zb-table-header {
     overflow: hidden;
-    background: #fafafa;
+    background: #fff;
     .item-th {
       padding-left: 8px;
       line-height: 39px;
@@ -1153,6 +1154,7 @@ export default {
     //height: 41px;
   }
   .item-td {
+    background: #fff;
     flex-shrink: 0;
     width: 100px;
     padding-left: 8px;
@@ -1166,6 +1168,7 @@ export default {
     text-overflow: ellipsis; /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
     overflow-wrap: break-word;
     border-bottom: 1px solid #e8e8e8;
+    color: #989898;
     //transition: background 0.3s;
   }
   .zb-table-header {
@@ -1179,7 +1182,7 @@ export default {
       line-height: 39px;
       height: 40px;
       box-sizing: border-box;
-      background: #fafafa;
+      background: #fff;
     }
     .zb-stick-side {
       position: sticky;
@@ -1188,7 +1191,7 @@ export default {
       z-index: 2;
       //border-right: solid 1rpx #dbdbdb;
       box-sizing: border-box;
-      background: #fafafa;
+      background: #fff;
       //box-shadow: 6px 0 6px -4px #ccc;
     }
   }
@@ -1249,13 +1252,13 @@ export default {
   }
   .current-row {
     .item-td {
-      background-color: #ecf5ff;
+      background-color: #fff;
     }
   }
 }
 .current-row {
   .item-td {
-    background-color: #ecf5ff;
+    background-color: #fff;
   }
 }
 .zb-table-header {

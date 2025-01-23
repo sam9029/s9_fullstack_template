@@ -11,15 +11,16 @@
 			<view class="u-text-main u-font-weight u-font-28">提现金额</view>
 			<view class="u-flex-row u-col-center u-m-t-32">
 				<view class="u-font-36 u-text-main u-font-weight-700">¥</view>
-				<u-input class="u-font-24 color-text-black u-m-l-8" v-model.trim="withdrawAmount" type="number"
-					border="none" :disabled="resubmitId? true:false" disabledColor="transparent" :clearable="true"
-					style="height: 80rpx;" :placeholder="`可提现金额${enableAmount}元`"
-					placeholderStyle="color: #989898;font-size: 24rpx;" @change="editChange"></u-input>
+				<u-input class="color-text-black u-m-l-8 u-font-weight-700 money-text" fontSize="56rpx"
+					v-model.trim="withdrawAmount" type="number" border="none" :disabled="resubmitId? true:false"
+					disabledColor="transparent" :clearable="true" style="height: 80rpx;"
+					:placeholder="`可提现金额${enableAmount}元`" placeholderStyle="color: #989898;font-size: 24rpx;"
+					@change="editChange"></u-input>
 			</view>
 			<u-line color="#EEEEEE" v-if="!resubmitId"></u-line>
 			<view class="u-flex-row u-row-between u-m-t-32" v-if="!resubmitId">
-				<view class="color-text-less-grey u-font-24">每次最少可提现10元</view>
-				<view class="color-text-primary u-font-24" @click="showWithDrawRule(true)">提现规则</view>
+				<view class="color-text-less-grey u-font-24">{{showCom?"提现金额在发起提现后7个工作日内到账，若未到账可联系在线客服反馈":"每次最少可提现10元"}}</view>
+				<view v-if="!showCom" class="color-text-primary u-font-24" @click="showWithDrawRule(true)">提现规则</view>
 			</view>
 			<view class="u-flex-row u-row-between u-m-t-32" v-if="!resubmitId">
 				<view class="percent-btn-normal" :class="{'percent-btn-active':percentIndex===1}"
@@ -34,7 +35,7 @@
 		</view>
 		<view class="card-bg u-m-t-24 u-m-l-28 u-m-r-28">
 			<view class="tab-area u-border-radius u-m-b-48">
-				<view class="tab-item u-p-24 u-border-radius" @click="changeTab('BANK')"
+				<view v-if="showBank" class="tab-item u-p-24 u-border-radius" @click="changeTab('BANK')"
 					:class="{ active: currentTab == 'BANK' }">
 					<u--image v-if="currentTab == 'BANK'" :src="`${static_path}bank_icon.png`" width="40rpx"
 						height="40rpx"></u--image>
@@ -42,7 +43,7 @@
 						height="40rpx"></u--image>
 					<text class="u-font-28 u-line-h-44 u-m-l-16">银行卡</text>
 				</view>
-				<view class="tab-item u-p-24 u-border-radius" @click="changeTab('ALIPAY')"
+				<view v-if="showAli" class="tab-item u-p-24 u-border-radius" @click="changeTab('ALIPAY')"
 					:class="{ active: currentTab == 'ALIPAY' }">
 					<u--image v-if="currentTab == 'ALIPAY'" :src="`${static_path}alipay_icon.png`" width="40rpx"
 						height="40rpx"></u--image>
@@ -50,13 +51,22 @@
 						height="40rpx"></u--image>
 					<text class="u-font-28 u-line-h-44 u-m-l-16">支付宝</text>
 				</view>
+				<view v-if="showCom" class="tab-item u-p-24 u-border-radius" @click="changeTab('COMPANY')"
+					:class="{ active: currentTab == 'COMPANY' }">
+					<u--image v-if="currentTab == 'COMPANY'" :src="`${static_path}bank_icon.png`" width="40rpx"
+						height="40rpx"></u--image>
+					<u--image v-else :src="`${static_path}bank_icon_disable.png`" width="40rpx"
+						height="40rpx"></u--image>
+					<text class="u-font-28 u-line-h-44 u-m-l-16">对公银行账户</text>
+				</view>
 			</view>
 			<view class="u-text-main u-font-32 u-font-weight">填写提现信息</view>
 			<view class="u-text-main u-font-24 u-m-t-48">{{selectNotice}}</view>
 			<view class="box-input u-flex-row u-flex-between u-m-t-16" @click="doSelect">
 				<text class="u-font-24 u-flex-1"
-					:style="{'color':selectedAccount=='请选择到账银行卡'||'请选择到账支付宝'?'#989898':'#1A1A1A'}">{{selectedAccount}}</text>
-				<u-icon size="16rpx" name="arrow-down" color="#989898"></u-icon>
+					:style="{color:(selectedAccount=='请选择到账银行卡'||selectedAccount=='请选择到账支付宝')?'#989898':'#1A1A1A'}">{{selectedAccount}}</text>
+				<u-icon :name="`${static_path}arrow_down_gray.png`" color="#989898" width="32rpx"
+					height="32rpx"></u-icon>
 			</view>
 			<view class="u-text-main u-font-24 u-m-t-32">收款人</view>
 			<view class="box-input u-m-t-32" style="display: flex; justify-content: start;">
@@ -68,7 +78,7 @@
 			<view class="u-p-48" style="width: 520rpx;">
 				<view class="u-font-32 u-font-weight u-text-main u-m-b-32">提现规则</view>
 				<text
-					class="u-font-28 color-text-less-black">{{`1.提现金额在发起提现后7个工作日内到账，若未到账可联系在线客服反馈\n 2.单人单月提现金额不可超过8w，若超出部分请于次月进行提现`}}</text>
+					class="u-font-28 color-text-less-black">{{'1.提现金额在发起提现后7个工作日内到账，若未到账可联系在线客服反馈\n 2.单人单月提现金额不可超过8w，若超出部分请于次月进行提现'}}</text>
 				<view class="u-font-28 color-text-white u-m-t-32"
 					style="background: #408CFF; border-radius: 16rpx; line-height: 44rpx; padding-top: 20rpx; padding-bottom: 20rpx; text-align: center;"
 					@click="showWithDrawRule(false)"> 我知道了</view>
@@ -103,7 +113,9 @@
 	import BottomBtn from "@/components/bottom-button/index.vue";
 	import AccountPopup from "./components/accountPopup.vue";
 	import SlideCode from "@/components/slide-code/index.vue";
-	import { mapGetters } from "vuex";
+	import {
+		mapGetters
+	} from "vuex";
 	import {
 		throttle,
 		abMul,
@@ -116,6 +128,9 @@
 		doWithdraw,
 		doReWithdraw
 	} from "../api/withdraw/withdraw.js";
+	import {
+		getBankConfig,
+	} from "@/api/public.js";
 	export default {
 		components: {
 			MyNavbar,
@@ -133,7 +148,7 @@
 				percentIndex: null,
 				selectNotice: '选择到账银行卡',
 				selectedAccount: '请选择到账银行卡',
-				currentTab: "BANK",
+				currentTab: "",
 				btnHeight: null,
 				loading: false,
 				accountId: null,
@@ -142,6 +157,9 @@
 				resubmitId: null,
 				showWithdrawResult: false,
 				showSelectPop: false,
+				showCom: false,
+				showAli: false,
+				showBank: false
 			}
 		},
 		computed: {
@@ -212,18 +230,45 @@
 						let message = String(err.message || err);
 						this.toastMsg(message, "error");
 					})
-					.finally(() => {
-						this.$refs.toastRef?.close();
-					})
+				getBankConfig().then((res) => {
+					if (res.code == 0) {
+						if (res.data.list.length > 0) {
+							this.currentTab = res.data.list[0]
+							let tabs = ["BANK", "ALIPAY", "COMPANY"]
+							res.data.list.forEach(tab => {
+								if (tabs.includes(tab)) {
+									switch (tab) {
+										case "BANK":
+											this.showBank = true
+											break;
+										case "ALIPAY":
+											this.showAli = true
+											break;
+										case "COMPANY":
+											this.showCom = true
+											break;
+										default:
+											break;
+									}
+								}
+							})
+							this.changeTab(this.currentTab)
+						}
+						
+					}
+				}).catch(error => {
+					this.toastMsg(error.message || error, "error");
+				}).finally(()=>{
+					this.$refs.toastRef?.close();
+				})
 			},
-
 			editChange() {
 				if (this.withdrawAmount.length == 0) {
 					this.percentIndex = null
 				}
 			},
 			openAccPopup() {
-				this.$refs.accountPopupRef.open(this.accountId);
+				this.$refs.accountPopupRef.open(this.accountId, this.accountId);
 			},
 			closeAccPopup(target) {
 				this.accountId = target.id;
@@ -253,12 +298,12 @@
 			changeTab(index) {
 				this.currentTab = index;
 				this.accountId = null;
-				if (index === 'BANK') {
-					this.selectedAccount = '请选择到账银行卡'
-					this.selectNotice = '选择到账银行卡'
-				} else {
+				if (index === 'ALIPAY') {
 					this.selectedAccount = '请选择到账支付宝'
 					this.selectNotice = '选择到账支付宝'
+				}else {
+					this.selectedAccount = '请选择到账银行卡'
+					this.selectNotice = '选择到账银行卡'
 				}
 			},
 			choosePercent(index) {
@@ -326,6 +371,15 @@
 </script>
 
 <style lang="scss" scoped>
+	@font-face {
+		font-family: "DINPro-Bold";
+		src: url("@/static/fonts/DINPro-Bold.otf") format("truetype");
+	}
+
+	.money-text {
+		font-family: "DINPro-Bold";
+	}
+
 	.page-content {
 		min-height: 100vh;
 		/* #ifdef APP || MP */

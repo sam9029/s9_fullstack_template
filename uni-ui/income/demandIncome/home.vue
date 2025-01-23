@@ -14,53 +14,79 @@
         <view class="u-font-32 color-text-white">收益总览</view>
         <view class="u-flex-row u-m-t-28">
           <view class="u-flex-1 u-m-r-16">
-            <view class="u-font-32 color-text-white u-line-1">{{
+            <view class="u-font-32 color-text-white u-line-1 u-font-weight-600">{{
               totalData.advertiser_num
             }}</view>
             <view class="u-font-24" style="color: #cfe2ff">推广小程序</view>
           </view>
           <view class="u-flex-1 u-m-r-16">
-            <view class="u-font-32 color-text-white u-line-1">
+            <view class="u-font-32 color-text-white u-line-1 u-font-weight-600">
               {{ unitMoney(totalData.be_credited_amount, false, true) }}
             </view>
             <view class="u-font-24" style="color: #cfe2ff">待入账</view>
           </view>
           <view class="u-flex-1">
-            <view class="u-font-32 color-text-white u-line-1">
+            <view class="u-font-32 color-text-white u-line-1 u-font-weight-600">
               {{ unitMoney(totalData.total_amount, false, true) }}
             </view>
-            <view class="u-font-24" style="color: #cfe2ff">累计结算收益</view>
+            <view class="u-font-24" style="color: #cfe2ff">累计入账收益</view>
           </view>
         </view>
       </view>
       <view class="u-p-x-28 u-p-b-20 u-flex-row u-col-center u-row-between">
         <view class="color-text-black u-font-32">收益明细</view>
-        <view class="switch-bg">
-          <text
-            class="switch-item"
-            :class="{ 'switch-item-active': switchIndex === 1 }"
-            @click="changeStatus(1)"
-            >近三月</text
-          >
-          <text
-            class="switch-item"
-            :class="{ 'switch-item-active': switchIndex === 2 }"
-            @click="changeStatus(2)"
-            >近半年</text
-          >
-          <text
-            class="switch-item"
-            :class="{ 'switch-item-active': switchIndex === 3 }"
-            @click="changeStatus(3)"
-            >近一年</text
-          >
-          <text
-            class="switch-item"
-            :class="{ 'switch-item-active': switchIndex === 4 }"
-            @click="changeStatus(4)"
-            >全部</text
-          >
-        </view>
+        <DatePicker
+          ref="datePickerRef"
+          title="请选择查询时间段"
+          :type="['list']"
+          :baseBtn="false"
+          @submit="getDate"
+        >
+          <template #default="{ label, value }">
+            <view class="date-tabs">
+              <view
+                class="date-tabs--item"
+                :class="{
+                  'date-tabs--active': value == '3months',
+                  'date-tabs--default': value != '3months',
+                }"
+                @click="setDateValue('3months')"
+              >
+                <text class="u-font-24 u-line-h-40">近三月</text>
+              </view>
+              <view
+                class="date-tabs--item"
+                :class="{
+                  'date-tabs--active': value == '6months',
+                  'date-tabs--default': value != '6months',
+                }"
+                @click="setDateValue('6months')"
+              >
+                <text class="u-font-24 u-line-h-40">近半年</text>
+              </view>
+              <view
+                class="date-tabs--item"
+                :class="{
+                  'date-tabs--active': value == '12months',
+                  'date-tabs--default': value != '12months',
+                }"
+                @click="setDateValue('12months')"
+              >
+                <text class="u-font-24 u-line-h-40">近一年</text>
+              </view>
+              <view
+                class="date-tabs--item"
+                :class="{
+                  'date-tabs--active': value == null,
+                  'date-tabs--default': value != null,
+                }"
+                @click="setDateValue(null)"
+              >
+                <text class="u-font-24 u-line-h-40">全部</text>
+              </view>
+            </view>
+          </template>
+        </DatePicker>
       </view>
     </view>
     <view class="u-p-l-28 u-p-r-28">
@@ -78,10 +104,10 @@
             radius="24rpx"
             width="132rpx"
             height="132rpx"
-            style="border: 2rpx solid #eeeeee; border-radius: 24rpx"
+            style="border-radius: 24rpx"
           ></u-image>
           <view class="u-flex-1 u-m-r-64 u-m-l-24 u-flex-col u-row-between">
-            <view class="u-font-28 u-text-main u-line-1">{{
+            <view class="u-font-28 u-font-bold u-text-main u-line-1 u-font-weight">{{
               item.advertiser_name
             }}</view>
             <view class="u-flex-row u-col-center">
@@ -92,7 +118,7 @@
                 length="16rpx"
                 color="#C6C6C6"
               ></u-line>
-              <view class="u-font-24 color-text-orange">{{
+              <view class="u-font-24 color-text-orange u-font-bold">{{
                 unitMoney(item.be_credited_amount, false, true)
               }}</view>
             </view>
@@ -113,15 +139,16 @@
             <u-icon
               label="查看明细"
               name="arrow-right"
-              size="24rpx"
+			  labelSize="24rpx"
+              size="28rpx"
               color="#989898"
               labelColor="#989898"
               labelPos="left"
             ></u-icon>
-            <view class="u-text-main u-font-32">{{
+            <view class="u-text-main u-font-32 u-font-weight-600">{{
               unitMoney(item.total_amount, false, true)
             }}</view>
-            <view class="u-font-22 color-text-less-grey">累计收益</view>
+            <view class="u-font-22 color-text-less-grey">已入账</view>
           </view>
         </view>
       </view>
@@ -145,13 +172,14 @@ import MyNavbar from "@/components/my-navbar/index.vue";
 import { mapGetters } from "vuex";
 import { unitMoney } from "@/utils/tools.js";
 import { getIncomeTotal, getIncomeList } from "../api/demand/home.js";
-
+import DatePicker from "@/components/base-datepicker/index.vue";
 export default {
   options: {
     styleIsolation: "shared",
   },
   components: {
     MyNavbar,
+    DatePicker,
   },
   data() {
     return {
@@ -167,7 +195,7 @@ export default {
       endDate: "",
       loading: false,
 
-      switchIndex: 1,
+      date: [],
       listData: [],
     };
   },
@@ -178,8 +206,13 @@ export default {
   methods: {
     unitMoney,
 
+    setDateValue(value) {
+      this.$refs.datePickerRef.setDate(value, true);
+    },
+
     init() {
       this.isEnd = false;
+			this.fetchDTotalData();
       this.getListData(true);
     },
 
@@ -187,7 +220,6 @@ export default {
       let params = {
         type: 2,
       };
-      this.toastMsg("加载中", "loading", -1);
       getIncomeTotal(params)
         .then((res) => {
           if (res.code === 0) {
@@ -198,34 +230,9 @@ export default {
           let message = String(err.message || err || "数据获取失败");
           this.toastMsg(message, "error");
         })
-        .finally(() => {
-          this.$refs.toastRef?.close();
-        });
     },
-    changeStatus(index) {
-      this.switchIndex = index;
-      const format = "yyyy-mm-dd";
-      const today = new Date(); // 获取当前日期
-      let agoDate = new Date(today);
-      agoDate.setDate(today.getDate());
-      if (index == 4) {
-        this.startDate = "";
-        this.endDate = "";
-        this.init();
-        return;
-      }
-      if (index == 1) {
-        agoDate.setMonth(today.getMonth() - 3);
-      } else if (index == 2) {
-        agoDate.setMonth(today.getMonth() - 6);
-      } else if (index == 3) {
-        agoDate.setFullYear(today.getFullYear() - 1);
-      }
-      if (agoDate > today) {
-        agoDate.setMonth(agoDate.getMonth() - 12);
-      }
-      this.startDate = uni.$u.timeFormat(agoDate, format);
-      this.endDate = uni.$u.timeFormat(today, format);
+    getDate(date) {
+      this.date = date;
       this.init();
     },
     goDetail(item) {
@@ -258,11 +265,10 @@ export default {
       let params = {
         type: 2,
         pagesize: this.pagesize,
-        start_date: this.startDate,
-        end_date: this.endDate,
+        start_date: this.date[0],
+        end_date: this.date[1],
       };
       params.page = this.page;
-      this.toastMsg("加载中", "loading", -1);
       getIncomeList(params)
         .then((res) => {
           const list = res.data;
@@ -278,6 +284,7 @@ export default {
             this.loadmoreText = `下拉加载更多`;
             this.status = "loadmore";
           }
+          this.$refs.toastRef.close()
         })
         .catch((err) => {
           let message = String(err.message || err || "数据获取失败");
@@ -289,24 +296,17 @@ export default {
         });
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration,
       });
     },
     onLoad() {
-      const format = "yyyy-mm-dd";
-      const today = new Date(); // 获取当前日期
-      let agoDate = new Date(today);
-      agoDate.setDate(today.getDate());
-      agoDate.setMonth(today.getMonth() - 3);
-      this.startDate = uni.$u.timeFormat(agoDate, format);
-      this.endDate = uni.$u.timeFormat(today, format);
-      this.fetchDTotalData();
       this.init();
     },
-		
+
     onPullDownRefresh() {
       this.init();
     },
@@ -328,7 +328,7 @@ export default {
     /* #endif */
     z-index: 999;
     width: 750rpx;
-		top: 0;
+    top: 0;
     position: sticky;
     background: linear-gradient(180deg, #d3edff, #f6f7fb);
 
@@ -348,34 +348,31 @@ export default {
     }
   }
 
-  .switch-bg {
-    width: 456rpx;
-    height: 56rpx;
-    background: #ffffff;
-    border-radius: 100rpx;
+  .date-tabs {
     display: flex;
-    font-size: 24rpx;
-    text-align: center;
+    background: #fff;
+    border-radius: 100rpx;
 
-    %switch-base {
-      flex: 1;
+    .date-tabs--item {
       display: flex;
-      height: 100%;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      padding-left: 24rpx;
+      padding-right: 24rpx;
+      height: 56rpx;
+	 
     }
 
-    .switch-item {
-      @extend %switch-base;
-      color: #989898;
-      background: transparent;
+    &--default {
+      color: $u-grey-7;
+      background: #fff;
+	   border-radius: 100rpx;
     }
 
-    .switch-item-active {
-      @extend %switch-base;
-      color: #ffffff;
-      background: #408cff;
-      border-radius: 100rpx;
+    &--active {
+      color: #fff;
+      background: $u-primary;
+    border-radius: 100rpx;
     }
   }
 

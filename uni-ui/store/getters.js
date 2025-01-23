@@ -28,7 +28,6 @@ const getters = {
   auth_scope: (state) => state.userInfo.auth_scope, //授权权限
   applet_id: (state) => state.applet_id, //applet_id
   userInfo: (state) => state.userInfo, //用户信息
-  duolai_account_id: (state) => state.duolai_account_id,
   user_name: (state) => state.user_name,
   user_avatar: (state) => state.user_avatar,
   system: (state) => state.system,

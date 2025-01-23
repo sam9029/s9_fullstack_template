@@ -13,11 +13,18 @@
 		:confirmText="confirmText"
 		:cancelColor="cancelColor"
 		:confirmColor="confirmColor"
+		:round="round"
 		@close="close"
 		@cancel="cancel"
 		@confirm="confirm"
 		@change="change"
 	>
+		<template v-if="!showToolbar" #header>
+			<slot name="header"></slot>
+		</template>
+		<template #footer>
+			<slot name="footer"></slot>
+		</template>
 	</u-picker>
 </template>
 

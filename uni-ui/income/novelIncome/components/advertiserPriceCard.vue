@@ -35,7 +35,7 @@
         <view class="u-flex-col u-row-center">
           <template v-if="account_type == 1">
             <text class="u-font-bold u-font-32 u-line-h-48">{{
-              unitMoney(detailObj.pre_commission, false, true)
+              unitMoney(detailObj.new_income_publish_amount, false, true)
             }}</text>
             <text class="color-text-less-grey u-font-22 u-line-h-40"
             >新增发布收益</text>
@@ -72,7 +72,7 @@
         <view class="u-flex-col u-row-center">
           <template v-if="account_type == 1">
             <text class="u-font-bold u-font-32 u-line-h-48">{{
-              unitMoney(detailObj.income, false, true)
+              unitMoney(detailObj.publish_amount, false, true)
             }}</text>
             <text class="color-text-less-grey u-font-22 u-line-h-40"
               >累计发布收益</text

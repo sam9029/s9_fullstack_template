@@ -4,7 +4,7 @@
       <view class="u-p-28">
         <view class="popup-top u-flex-row u-row-between u-col-center u-m-b-32">
           <text class="u-font-32 u-line-h-48 color-text-black u-font-bold"
-            >请选择抖音账号</text
+            >请选择平台账号</text
           >
           <u-icon
             @click="onClose"
@@ -22,7 +22,7 @@
               :name="`${static_path}cash_out_add_icon.png`"
               size="24"
             ></u-icon>
-            <text class="u-font-28 u-line-h-48 u-m-l-16">添加抖音账号</text>
+            <text class="u-font-28 u-line-h-48 u-m-l-16">添加账号</text>
           </view>
           <u-icon name="arrow-right" size="16" color="#2C2C2C"></u-icon>
         </view>
@@ -38,14 +38,18 @@
             style="background: #f6f6f6"
             @click="chooseAccount(item)"
           >
+          <view class="u-flex-row u-flex-1 u-col-center">
+            <u-image :src="item.platform_icon" width="28rpx" height="28rpx"></u-image>
             <text
-              class="u-font-28 u-line-h-44"
+              class="u-m-l-8 u-font-28 u-line-h-44"
               :class="{
                 'color-text-black': !item.selected,
                 'color-text-primary': item.selected,
               }"
               >{{ item.label }}</text
             >
+          </view>
+            
             <u-icon
               v-if="item.selected"
               :name="`${static_path}radio_seleted.png`"
@@ -79,6 +83,7 @@
 import { mapGetters } from "vuex";
 import { getPlatformAcc } from "@/api/public.js";
 import BottomBtn from "@/components/bottom-button/index.vue";
+import eventBus from '@/utils/eventBus.js'
 export default {
   components: {
     BottomBtn,
@@ -93,13 +98,32 @@ export default {
       show: false,
     };
   },
+  mounted() {
+
+    eventBus.$on('updatePlatformAccountInfo', () => {
+      let feedback = this.selected?.id || null;
+      this.queryAcc().then(() => {
+        if (feedback) {
+          this.accountList.forEach((el) => {
+            if (el.id == feedback) {
+              this.chooseAccount(el);
+            }
+          });
+        }
+      });
+    })
+  },
+  beforeDestroy() {
+    // 移除监听，避免内存泄漏
+    eventBus.$off('updatePlatformAccountInfo');
+  },
   computed: {
-    ...mapGetters(['static_path', 'image']),
+    ...mapGetters(["static_path", "image"]),
     popup_button_list() {
       return [
         [
           {
-            text: this.accountList.length ? "确认" : "去添加抖音账号",
+            text: this.accountList.length ? "确认" : "去添加账号",
             shape: "square",
             onClick: "submitSingUp",
             btnType: "button",
@@ -115,14 +139,22 @@ export default {
       this.popupBtnHeight = height * 2 + 30 + "rpx";
     },
 
-    open(task_id) {
+    open(task_id, feedback) {
       this.id = task_id || "";
       this.show = true;
-      this.queryAcc();
+      this.queryAcc().then(() => {
+        if (feedback) {
+          this.accountList.forEach((el) => {
+            if (el.id == feedback) {
+              this.chooseAccount(el);
+            }
+          });
+        }
+      });
     },
 
     onClose() {
-      this.$emit('onClose');
+      this.$emit("onClose");
       this.show = false;
       this.id = null;
       this.selected = null;
@@ -130,8 +162,8 @@ export default {
 
     submitSingUp() {
       if (this.accountList.length) {
-        if(!this.selected) {
-          return this.toastMsg('请选择抖音账号', 'error')
+        if (!this.selected) {
+          return this.toastMsg("请选择平台账号", "error");
         }
         this.$emit("next", {
           ...this.selected,
@@ -149,7 +181,7 @@ export default {
 
     jumpAddAcc() {
       uni.navigateTo({
-        url: "/pagesUser/account/addAccount?platform_id=1",
+        url: "/pagesUser/account/addAccount",
       });
     },
 
@@ -159,33 +191,36 @@ export default {
           acc.selected = false;
         }
       });
-      item.selected = !item.selected;
+      item.selected = true;
       this.selected = {
         id: item.id,
         platform_account_id: item.platform_account_id,
         label: item.label,
+        platform_icon: item.platform_icon,
       };
     },
 
     queryAcc() {
-      this.toastMsg("加载中", "loading", -1);
-      getPlatformAcc({ platform_id: 1 })
-        .then((res) => {
-          if (res.code == 0) {
-            this.accountList = res.data.map((el) => {
-              return {
-                ...el,
-                selected: false,
-              };
-            });
-          }
-        })
-        .catch((error) => {
-          this.toastMsg(error, "error");
-        })
-        .finally(() => {
-          this.$refs.toastRef.close();
-        });
+      return new Promise((resolve, reject) => {
+        this.toastMsg("加载中", "loading", -1);
+        getPlatformAcc()
+          .then((res) => {
+            if (res.code == 0) {
+              this.accountList = res.data.map((el) => {
+                return {
+                  ...el,
+                  selected: false,
+                };
+              });
+              this.$refs.toastRef.close();
+            }
+            resolve();
+          })
+          .catch((error) => {
+            this.toastMsg(error.message || error, "error");
+            reject(error);
+          });
+      });
     },
 
     toastMsg(message, type = "default", duration = 2000) {

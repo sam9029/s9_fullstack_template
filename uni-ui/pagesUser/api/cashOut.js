@@ -8,7 +8,14 @@ export function getBankList(data) {
 		data
 	})
 }
-
+// 查询签约详情
+export function getBankDef(data) {
+  return request({
+		url: '/public/bank/def',
+		method: 'GET',
+		data
+	})
+}
 // 支付平台签约
 export function postBankSign(data) {
 	return request({

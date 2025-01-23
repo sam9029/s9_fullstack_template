@@ -2,8 +2,9 @@
   <view class="advertiser-table">
     <ZbTable
       :columns="columns"
-      :highlight="true"
       :data="data"
+      highlight
+      :stripe="false"
       fit
       :isLoading="loading"
     >
@@ -127,10 +128,11 @@ export default {
       this.myIncomePopup = true;
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },

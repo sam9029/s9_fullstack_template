@@ -8,7 +8,7 @@
       :style="{
         'border-bottom':
           index != listData.length - 1 && !noBorderBottom
-            ? '2rpx solid #eee'
+            ? '1rpx solid #eee'
             : 'none',
       }"
       @click="goDetail(item)"
@@ -24,7 +24,7 @@
             height="104rpx"
           ></u--image>
           <text
-            class="u-font-24 u-font-bold u-line-h-40 color-text-black u-m-t-8"
+            class="u-font-24 u-font-bold u-line-h-40 color-text-black u-m-t-8 u-text-center"
             >发布收益</text
           >
         </view>
@@ -38,7 +38,7 @@
             height="104rpx"
           ></u--image>
           <text
-            class="u-font-24 u-font-bold u-line-h-40 color-text-black u-m-t-8"
+            class="u-font-24 u-font-bold u-line-h-40 color-text-black u-m-t-8 u-text-center"
             >发布佣金</text
           >
         </view>

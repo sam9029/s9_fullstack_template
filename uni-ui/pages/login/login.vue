@@ -107,7 +107,7 @@
 
       <!-- 滑动验证码 -->
       <SlideCode
-        :style="{ zIndex: 99999 }"
+        :style="{ zIndex: 99991 }"
         v-if="showSlideCode"
         ref="sider"
         @slide_end="confirmReceive"
@@ -245,7 +245,6 @@ export default {
           }
         })
         .catch((err) => {
-          this.$refs.toastRef.close();
           // 错误处理
           if (err.message?.indexOf("验证码错误") != -1) {
             // 判断是否是验证码错误
@@ -270,8 +269,8 @@ export default {
      */
     confirmReceive(val) {
       if (!val) return this.toastMsg("请滑动拼图！", "error"); // 验证滑动拼图是否成功
-      (this.model.operation_type = "ACCOUNT_LOGIN"),
-        (this.model.captcha_code = val); // 将滑动拼图的结果加进参数
+      this.model.operation_type = "ACCOUNT_LOGIN";
+      this.model.captcha_code = val;
       this.onSubmit(); // 调用登录方法
     },
 
@@ -295,7 +294,7 @@ export default {
      */
     goForgetPassword() {
       uni.redirectTo({
-        url: "/pages/login/forget?type=forget", // 忘记密码页面的URL
+        url: "/pages/login/forget", // 忘记密码页面的URL
       });
     },
 
@@ -333,10 +332,11 @@ export default {
       this.beforeLogin();
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },

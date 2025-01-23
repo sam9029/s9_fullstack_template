@@ -4,14 +4,14 @@
 			<view class="u-p-28">
 				<view class="popup-top u-flex-row u-row-between u-col-center u-m-b-32">
 					<text
-						class="u-font-32 u-line-h-48 color-text-black u-font-bold">{{`请选择到账${accountType=='BANK'?'银行卡':'支付宝'}`}}</text>
-					<u-icon @click="onClose" :name="`${static_path}close_circle.png`" size="24"></u-icon>
+						class="u-font-32 u-line-h-48 color-text-black u-font-bold">{{`请选择到账${accountType=='ALIPAY'?'支付宝':'银行卡'}`}}</text>
+					<u-icon @click="onClose" :name="`${static_path}close_circle_grey.png`" size="24"></u-icon>
 				</view>
 				<view class="u-bg-f u-flex-row u-row-between u-col-center u-p-24 u-m-b-28 u-border-radius"
-					style="border: 2rpx solid #eeeeee" @click="jumpAddAcc">
+					style="border: 1rpx solid #eeeeee" @click="jumpAddAcc">
 					<view class="u-flex-row u-col-center">
-						<u-icon :name="`${static_path}cash_out_add_icon.png`" size="24"></u-icon>
-						<text class="u-font-28 u-line-h-48 u-m-l-16">{{`添加${accountType=='BANK'?'银行卡':'支付宝'}`}}</text>
+						<u-icon :name="`${static_path}cash_out_add_icon.png`" width="48rpx" height="48rpx"></u-icon>
+						<text class="u-font-28 u-line-h-48 u-m-l-16">{{`添加${accountType=='ALIPAY'?'支付宝':'银行卡'}`}}</text>
 					</view>
 					<u-icon name="arrow-right" size="16" color="#2C2C2C"></u-icon>
 				</view>
@@ -45,7 +45,9 @@
 	import {
 		getBankList
 	} from "@/api/public.js";
-	import { mapGetters } from "vuex";
+	import {
+		mapGetters
+	} from "vuex";
 	import BottomBtn from "@/components/bottom-button/index.vue";
 
 	export default {
@@ -60,7 +62,7 @@
 		},
 		data() {
 			return {
-				id: 0,
+				id: -1,
 				submitLoading: false,
 				accountList: [],
 				popupBtnHeight: "",
@@ -89,24 +91,26 @@
 			},
 
 			open(account_id) {
-				this.id = account_id || "";
+				this.id = account_id || -1;
 				this.show = true;
 				this.queryAcc();
 			},
 
 			onClose() {
 				this.show = false;
-				this.id = null;
+				this.id = -1;
 				this.selected = null;
 			},
 
 			submitSingUp() {
-				if (!this.selected) {
-					return this.toastMsg(`请选择${this.accountType=='BANK'?'银行卡':'支付宝'}账号`, 'error')
+				if (this.id == -1) {
+					if (!this.selected) {
+						return this.toastMsg(`请选择${this.accountType=='ALIPAY'?'支付宝':'银行卡'}账号`, 'error')
+					}
+					this.$emit("next", {
+						...this.selected
+					});
 				}
-				this.$emit("next", {
-					...this.selected
-				});
 				this.onClose();
 			},
 
@@ -123,12 +127,17 @@
 						acc.selected = false;
 					}
 				});
+				if (item.selected) {
+					this.selected = null
+					this.id = -1
+				} else {
+					this.selected = {
+						id: item.id,
+						pay_account: item.pay_account,
+						name: item.people_name,
+					};
+				}
 				item.selected = !item.selected;
-				this.selected = {
-					id: item.id,
-					pay_account: item.pay_account,
-					name:item.people_name,
-				};
 			},
 
 			queryAcc() {
@@ -145,14 +154,12 @@
 									selected: this.id == el.id,
 								};
 							});
+							this.$refs.toastRef.close()
 						}
 					})
 					.catch((error) => {
-						this.toastMsg(error, "error");
+						this.toastMsg(error.message || error, "error");
 					})
-					.finally(() => {
-						this.$refs.toastRef.close();
-					});
 			},
 
 			toastMsg(message, type = "default", duration = 2000) {

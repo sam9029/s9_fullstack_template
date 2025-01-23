@@ -91,6 +91,16 @@
 			}
 		},
 		{
+			"path": "pages/login/reset",
+			"style": {
+				"app-plus": {
+					"navigationStyle": "custom",
+					"enablePullDownRefresh": false,
+					"bounce": "none"
+				}
+			}
+		},
+		{
 			"path": "pages/webView/index"
 		},
 		{
@@ -142,14 +152,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "用户协议",
 						"enablePullDownRefresh": false,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "用户协议",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "用户协议"
 							}
 						}
 					}
@@ -160,14 +169,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "隐私政策",
 						"enablePullDownRefresh": false,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "隐私政策",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "隐私政策"
 							}
 						}
 					}
@@ -178,14 +186,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "付费服务协议",
 						"enablePullDownRefresh": false,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "付费服务协议",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "付费服务协议"
 							}
 						}
 					}
@@ -203,14 +210,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "更多设置",
 						"enablePullDownRefresh": false,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "更多设置",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "更多设置"
 							}
 						}
 					}
@@ -251,14 +257,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "学习中心",
 						"enablePullDownRefresh": true,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "学习中心",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "学习中心"
 							}
 						}
 					}
@@ -269,14 +274,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "提现账户",
 						"enablePullDownRefresh": true,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "提现账户",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "提现账户"
 							}
 						}
 					}
@@ -327,14 +331,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "个人资料",
 						"enablePullDownRefresh": false,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "个人资料",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "个人资料"
 							}
 						}
 					}
@@ -345,14 +348,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "注销账号",
 						"enablePullDownRefresh": false,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"background": "#F6F7FB",
 							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "注销账号",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "注销账号"
 							}
 						}
 					}
@@ -361,14 +363,13 @@
 					"path": "account/addAccount",
 					"style": {
 						"navigationBarTitleText": "添加账号",
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"background": "#F6F7FB",
 							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "添加账号",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "添加账号"
 							}
 						}
 					}
@@ -377,10 +378,10 @@
 					"path": "account/index",
 					"style": {
 						"navigationBarTitleText": "我的账号",
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
 							"navigationStyle": "default",
 							"enablePullDownRefresh": true,
-							"backgroundColor": "#F6F7FB",
 							"bounce": "none",
 							"pullToRefresh": {
 								"support": true,
@@ -391,8 +392,7 @@
 						"enablePullDownRefresh": true,
 						"h5": {
 							"titleNView": {
-								"tileText": "我的账号",
-								"background": "#F6F7FB"
+								"tileText": "我的账号"
 							}
 						}
 					}
@@ -476,15 +476,10 @@
 					"style": {
 						"app-plus": {
 							"navigationStyle": "custom",
-							"enablePullDownRefresh": true,
-							"bounce": "none",
-							"pullToRefresh": {
-								"support": true,
-								"style": "circle",
-								"offset": "44px"
-							}
+							"enablePullDownRefresh": false,
+							"bounce": "none"
 						},
-						"enablePullDownRefresh": true
+						"enablePullDownRefresh": false
 					}
 				},
 				{
@@ -493,12 +488,7 @@
 						"app-plus": {
 							"navigationStyle": "custom",
 							"enablePullDownRefresh": false,
-							"bounce": "none",
-							"pullToRefresh": {
-								"support": true,
-								"style": "circle",
-								"offset": "44px"
-							}
+							"bounce": "none"
 						},
 						"enablePullDownRefresh": false
 					}
@@ -599,17 +589,16 @@
 					"path": "createIncome/detail",
 					"style": {
 						"navigationBarTitleText": "收益明细",
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
 							"navigationStyle": "default",
 							"enablePullDownRefresh": true,
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"enablePullDownRefresh": true,
 						"h5": {
 							"titleNView": {
-								"tileText": "收益明细",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "收益明细"
 							}
 						}
 					}
@@ -639,18 +628,17 @@
 				{
 					"path": "demandIncome/incomeTable",
 					"style": {
+						"navigationBarBackgroundColor": "#F6F7FB",
+						"navigationBarTitleText": "收益明细",
+						"enablePullDownRefresh": true,
 						"app-plus": {
 							"navigationStyle": "default",
 							"enablePullDownRefresh": true,
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
-						"navigationBarTitleText": "收益明细",
-						"enablePullDownRefresh": true,
 						"h5": {
 							"titleNView": {
-								"tileText": "收益明细",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "收益明细"
 							}
 						}
 					}
@@ -681,16 +669,15 @@
 					"path": "novelIncome/incomeDetail",
 					"style": {
 						"navigationBarTitleText": "收益明细",
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
 							"navigationStyle": "default",
 							"enablePullDownRefresh": true,
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "收益明细",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "收益明细"
 							}
 						},
 						"enablePullDownRefresh": true
@@ -723,14 +710,13 @@
 						"navigationStyle": "default",
 						"navigationBarTitleText": "充值订单明细",
 						"enablePullDownRefresh": true,
+						"navigationBarBackgroundColor": "#F6F7FB",
 						"app-plus": {
-							"bounce": "none",
-							"background": "#F6F7FB"
+							"bounce": "none"
 						},
 						"h5": {
 							"titleNView": {
-								"tileText": "充值订单明细",
-								"backgroundColor": "#F6F7FB"
+								"tileText": "充值订单明细"
 							}
 						}
 					}
@@ -756,6 +742,8 @@
 		}
 	},
 	"tabBar": {
+		"borderStyle":"white",
+		"backgroundColor":"#ffffff",
 		"list": [
 			{
 				"pagePath": "pages/novel/novel",

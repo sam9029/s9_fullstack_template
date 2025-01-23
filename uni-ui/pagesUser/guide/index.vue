@@ -16,10 +16,10 @@
 				<text class="u-font-24 color-text-primary">点此下载</text>
 			</view>
 		</view>
-		<view v-if="has_url && showTip" class="color-text-less-grey u-font-24 u-line-h-40 u-m-t-8">
+		<!-- <view v-if="has_url && showTip" class="color-text-less-grey u-font-24 u-line-h-40 u-m-t-8">
 			<view class="u-m-b-8">请进入系统 设置>已下载描述文件 安装!</view>
 			<view>或者进入系统 设置>通用>VPN与设备管理 安装!</view>
-		</view>
+		</view> -->
 		<base-toast ref="toastRef"></base-toast>
 		<openCover ref="openRef"></openCover>
 	</view>
@@ -70,10 +70,10 @@
 					});
 				}
 			},
-			async downLoadNow() {
+			downLoadNow() {
 				let type = uni.getSystemInfoSync()?.platform != "ios" ? 1 : 2;
 				this.toastMsg("加载中", "loading", -1);
-				await appInfo({
+				appInfo({
 						type
 					})
 					.then((res) => {
@@ -81,10 +81,12 @@
 							this.has_url = true;
 							this.download_url = res.data?.url;
 						}
+						this.$refs.toastRef?.close();
 						// console.log(res);
 					})
-					.catch((err) => {});
-				this.$refs.toastRef?.close();
+					.catch((error) => {
+						this.toastMsg(error.message || error, 'error')
+					});
 			},
 			downloadClick() {
 				if (isMiniProgramBrowser()) return this.$refs.openRef?.open();
@@ -92,9 +94,9 @@
 					platform,
 					uniPlatform
 				} = uni.getSystemInfoSync();
-				if (uniPlatform == 'web' && platform == 'ios') {
-					this.showTip = true;
-				}
+				// if (uniPlatform == 'web' && platform == 'ios') {
+				// 	this.showTip = true;
+				// }
 				window.open(this.download_url, "_self");
 			},
 			toastMsg(message, type = "default") {

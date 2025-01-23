@@ -19,10 +19,10 @@
         <video
           :src="currentVideo"
           :poster="currentVideoPoster"
+          :autoplay="true"
           object-fit="contain"
-          enable-danmu
-          danmu-btn
           controls
+          controlslist="nodownload noremoteplayback"
           class="u-border-radius"
           :style="{
             width: '100%',
@@ -67,7 +67,7 @@ export default {
   computed: {
     ...mapGetters(['static_path']),
     videoSource() {
-      return `<video src="${this.currentVideo}" poster="${this.currentVideoPoster}" object-fit="cover" enable-danmu  danmu-btn controls class="u-border-radius app-video" style="width: 100%; height: 200px;"></video>`;
+      return `<video src="${this.currentVideo}" poster="${this.currentVideoPoster}" object-fit="cover"  controls controlslist="nodownload noremoteplayback" class="u-border-radius app-video" style="width: 100%; height: 200px;"></video>`;
     },
   },
   watch: {},

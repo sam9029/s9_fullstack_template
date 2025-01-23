@@ -10,7 +10,7 @@
       </template>
     </MyNavbar>
     <view class="card-bg u-m-x-28 u-m-y-28">
-      <view class="u-text-main u-font-48 u-line-h-64">请进行人脸识别认证</view>
+      <view class="u-text-main u-font-48 u-line-h-64 u-font-bold">请进行人脸识别认证</view>
       <view class="color-text-less-grey u-font-24 u-line-h-40 u-m-t-16"
         >我们需要人脸识别来验证您的本人身份。您的个人信息将得到绝对保护，仅限用于身份核验。
       </view>
@@ -43,11 +43,12 @@
           </u-input>
         </u-form-item>
       </u--form>
-      <!-- <view>{{ resData || "--" }}</view> -->
+
       <u-button
         class="u-m-t-56"
         color="#408CFF"
         :loading="isLoading"
+        customStyle="height: 88rpx;border-radius: 16rpx;"
         @click="onSubmit"
         >开始人脸认证</u-button
       >
@@ -295,17 +296,18 @@ export default {
         })
         .catch((error) => {
           this.isSuccess = false;
-          this.toastMsg(error, 'error')
+          this.toastMsg(error.message || error, 'error')
         })
         .finally(() => {
           this.showAuthResult = true;
         });
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
   },
@@ -357,10 +359,5 @@ export default {
   position: relative;
   left: 10rpx;
   margin-bottom: 16rpx !important;
-}
-
-::v-deep .u-button {
-  height: 88rpx;
-  border-radius: 16rpx;
 }
 </style>

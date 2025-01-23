@@ -24,7 +24,7 @@
       <slot :label="currentBtn.label" :value="currentBtn.value"></slot>
     </view>
     <u-popup :show="showSelect" round="24rpx">
-      <view class="u-p-28" style="display: grid; grid-gap: 32rpx">
+      <view class="u-p-x-28 u-p-t-28" :class="{ 'u-p-b-28': !showBottomBtns }">
         <view class="select-top u-flex-row u-row-between u-col-center">
           <text class="u-font-bold u-font-32 u-line-h-48">{{ title }}</text>
           <u-icon
@@ -33,7 +33,7 @@
             @click="closeComps"
           ></u-icon>
         </view>
-        <view v-if="type.includes('quick')" class="date-btns">
+        <view v-if="type.includes('quick')" class="date-btns u-m-t-32">
           <view
             v-for="item in dateList"
             :key="item.value"
@@ -44,7 +44,7 @@
             <text class="u-font-24 u-line-h-40">{{ item.label }}</text>
           </view>
         </view>
-        <view v-if="type.includes('custom')">
+        <view v-if="type.includes('custom')" class="u-m-t-32">
           <view class="color-text-less-black u-font-28 u-line-h-44 u-m-y-28"
             >自定义查询</view
           >
@@ -66,8 +66,9 @@
               >{{ store_date[1] || "结束时间" }}</text
             >
           </view>
+          <text v-if="error_tip" class="error-tip">{{ error_tip }}</text>
         </view>
-        <view v-if="type.every((t) => t === 'list')" class="list-btn">
+        <view v-if="type.every((t) => t === 'list')" class="list-btn u-m-t-32">
           <view
             v-for="item in listBtns"
             :key="item.value"
@@ -81,24 +82,28 @@
             <text class="u-font-24 u-line-h-40">{{ item.label }}</text>
           </view>
         </view>
-        <view v-if="showBottomBtns" class="bottom-btns u-m-t-64">
+        <view v-if="showBottomBtns" class="bottom-btns">
+          <view
+            class="u-flex-row u-row-center u-col-center cancel-btn"
+            style="width: 346rpx; height: 108rpx"
+            @click="cancelComps"
+          >
+            <text class="u-font-28 color-text-less-grey">{{ type.includes('custom') ? '重置' : '取消' }}</text>
+          </view>
           <view
             class="u-flex-row u-row-center u-col-center"
-            style="border-right: 2rpx solid #eeeeee; width: 346rpx"
+            style="height: 108rpx"
+            @click="beforeSubmit"
           >
-            <text class="u-font-28 color-text-less-grey" @click="cancelComps"
-              >取消</text
-            >
+            <text class="u-font-28 color-text-primary">确定</text>
           </view>
-          <text class="u-font-28 color-text-primary" @click="beforeSubmit"
-            >确定</text
-          >
         </view>
       </view>
     </u-popup>
     <u-datetime-picker
       :show="showStartDatePicker"
       v-model="startDate"
+      :minDate="startMinDate"
       mode="date"
       @cancel="closeStart"
       @confirm="confirmStart"
@@ -106,6 +111,7 @@
     <u-datetime-picker
       :show="showEndDatePicker"
       v-model="endDate"
+      :minDate="startDate"
       mode="date"
       @cancel="closeEnd"
       @confirm="confirmEnd"
@@ -121,7 +127,7 @@ export default {
   props: {
     title: {
       type: String,
-      default: "标题",
+      default: "自定义展示数据",
     },
     btnHeight: {
       type: String,
@@ -134,7 +140,7 @@ export default {
     },
     type: {
       type: Array,
-      default: ["quick", "custom"], // custom-展示便捷按钮/自定义筛选 quick-展示便捷按钮 list-只展示列表按钮
+      default: () => ["quick", "custom"], // custom-展示便捷按钮/自定义筛选 quick-展示便捷按钮 list-只展示列表按钮
     },
     // 是否展示底部按钮
     showBottomBtns: {
@@ -153,8 +159,8 @@ export default {
         label: "近三月",
         value: "3months",
       },
-      startDate: "",
-      endDate: "",
+      startDate: 0,
+      endDate: 0,
       startValid: true,
       endValid: true,
       store_date: [],
@@ -215,16 +221,22 @@ export default {
           value: "3months",
         },
       ],
+      error_tip: "",
+      current_type: "",
     };
   },
   computed: {
-    ...mapGetters(['static_path']),
+    ...mapGetters(["static_path"]),
     arrowDownColor() {
       if (this.store_date.length == 2 || this.currentBtn.value == null) {
         return "#408CFF";
       } else {
         return "#3c3c3c";
       }
+    },
+    startMinDate() {
+      const year = new Date().getFullYear();
+      return +new Date(year, 0, 1).getTime();
     },
   },
   methods: {
@@ -250,6 +262,13 @@ export default {
      */
     switchComps() {
       this.showSelect = !this.showSelect; // 反转组件显示状态
+      if (this.type.every((el) => el == "custom")) {
+        this.current_type = "custom";
+      } else if (this.type.every((el) => el == "list")) {
+        this.current_type = "list";
+      } else if (this.type.every((el) => el == "quick")) {
+        this.current_type = "quick";
+      }
     },
 
     /**
@@ -266,6 +285,7 @@ export default {
      * @return {*}
      */
     openDatePicker(index) {
+      this.current_type = "custom";
       this.showSelect = false; // 关闭选择组件
       if (index === 0) {
         this.showEndDatePicker = false; // 关闭结束日期选择器
@@ -310,8 +330,8 @@ export default {
      * @return {*}
      */
     resetCustomDate() {
-      this.startDate = ""; // 清空开始日期
-      this.endDate = ""; // 清空结束日期
+      this.startDate = 0; // 清空开始日期
+      this.endDate = 0; // 清空结束日期
       this.startValid = true; // 重置开始日期有效标志
       this.endValid = true; // 重置结束日期有效标志
       this.date = []; // 清空日期数组
@@ -449,6 +469,7 @@ export default {
      * @return {*}
      */
     chooseDate(item) {
+      this.current_type = "quick";
       this.resetCustomDate(); // 重置自定义日期
       this.currentBtn = item; // 设置当前选择的按钮
       this.formatDate(item.value);
@@ -473,9 +494,20 @@ export default {
      * @return {*}
      */
     confirmEnd({ value }) {
+      if (this.startDate) {
+        this.startValid = true;
+      }
       this.endValid = true; // 设置结束日期有效
       this.clearDateBtn(); // 清空当前按钮
       this.store_date[1] = uni.$u.timeFormat(new Date(value), "yyyy.mm.dd"); // 保存选择的结束日期
+      if (
+        this.startDate &&
+        new Date(value).getTime() - this.startDate > 90 * 24 * 60 * 60 * 1000
+      ) {
+        this.error_tip = "仅可选择90天内数据"; // 提示信息
+      } else {
+        this.error_tip = ""; // 重置提示信息
+      }
       this.showEndDatePicker = false; // 关闭结束日期选择器
       this.showSelect = true; // 显示选择组件
     },
@@ -489,19 +521,23 @@ export default {
         if (!this.startDate && !this.endDate) {
           this.startValid = false; // 开始日期无效
           this.endValid = false; // 结束日期无效
-          return this.toastMsg("请选择查询时间段", "error"); // 提示信息
+          this.toastMsg("请选择查询时间段", "error"); // 提示信息
+          return false; // 返回false以指示验证失败
         }
         if (!this.startDate) {
           this.startValid = false; // 开始日期无效
-          return this.toastMsg("请选择开始时间", "error"); // 提示信息
+          this.toastMsg("请选择开始时间", "error"); // 提示信息
+          return false; // 返回false以指示验证失败
         }
         if (!this.endDate) {
           this.endValid = false; // 结束日期无效
-          return this.toastMsg("请选择结束时间", "error"); // 提示信息
+          this.toastMsg("请选择结束时间", "error"); // 提示信息
+          return false; // 返回false以指示验证失败
         }
         this.currentBtn.label = "自定义"; // 标记为自定义按钮
         this.currentBtn.value = "custom"; // 设置按钮值
       }
+      return true; // 返回true以指示验证成功
     },
 
     /**
@@ -512,8 +548,12 @@ export default {
       if (this.currentBtn.value) {
         this.submitComps(); // 如果按钮值存在，则直接提交
       } else {
-        this.submitValid(); // 验证日期有效性
-        this.submit_date = JSON.parse(JSON.stringify(this.store_date)).map((el) => el.replace(/\./g, "-")); // 复制存储的日期值
+        const isValid = this.submitValid(); // 验证日期有效性
+        if (!isValid) return; // 如果验证失败，停止执行
+
+        this.submit_date = JSON.parse(JSON.stringify(this.store_date)).map(
+          (el) => el.replace(/\./g, "-")
+        ); // 复制存储的日期值
         this.submitComps(); // 提交数据
       }
     },
@@ -523,14 +563,20 @@ export default {
      * @return {*}
      */
     submitComps() {
+      if (this.current_type == "custom" && !this.store_date.length) {
+        return this.toastMsg("请选择查询时间段", "error"); // 提示信息
+      }
       this.showSelect = false; // 关闭选择组件
       this.$emit("submit", this.submit_date, this.currentBtn);
     },
 
     cancelComps() {
+      this.currentBtn = this.$options.data().currentBtn;
       this.submit_date = [];
       this.store_date = [];
       this.showSelect = false; // 关闭选择组件
+      this.formatDate('3months')
+      this.$emit('submit', this.submit_date, this.currentBtn)
     },
 
     /**
@@ -539,6 +585,7 @@ export default {
      * @return {*} submit_date-输出时间, item-当前选中
      */
     chooseListItem(item) {
+      this.current_type = "list";
       this.resetCustomDate(); // 重置自定义日期
       this.currentBtn = item; // 设置当前选择的按钮
       this.formatDate(item.value);
@@ -548,16 +595,17 @@ export default {
       }
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration,
       });
     },
   },
-	mounted() {
-		this.setDate('3months', true)
-	}
+  mounted() {
+    this.setDate("3months", true);
+  },
 };
 </script>
 
@@ -620,6 +668,20 @@ export default {
   align-items: center;
 }
 
+.cancel-btn {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 1rpx;
+    height: 32rpx;
+    background: #eee;
+    transform: translateY(-50%);
+  }
+}
+
 .select-date .error-tip {
   color: #ff325b !important;
   animation: shake 0.8s ease-in-out;
@@ -638,6 +700,12 @@ export default {
     background: #ecf4ff;
     color: $u-primary;
   }
+}
+
+.error-tip {
+  color: $u-error;
+  font-size: 22rpx;
+  line-height: 40rpx;
 }
 
 @keyframes shake {

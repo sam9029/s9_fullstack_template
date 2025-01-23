@@ -1,5 +1,5 @@
 <template>
-  <view class="page-box u-bg-default">
+  <view class="page-box u-bg-default u-vh-100">
     <view class="top-area">
       <MyNavbar bgColor="transparent">
         <template #navbarData>
@@ -28,7 +28,7 @@
         </view>
       </view>
     </view>
-    <view class="u-bg-f u-p-y-28 u-m-l-28 u-m-r-28">
+    <view class="u-bg-f u-p-t-28 u-m-l-28 u-m-r-28" :style="{'min-height': list_height}">
       <view v-if="listData.length">
         <view
           v-for="(item, index) in listData"
@@ -59,7 +59,7 @@
                 length="16rpx"
                 color="#C6C6C6"
               ></u-line>
-              <view class="u-font-24 color-text-orange">{{ item.amount }}</view>
+              <view class="u-font-24 u-font-weight color-text-orange">{{ item.amount }}</view>
             </view>
             <view class="u-flex-row u-col-center">
               <view class="u-font-24 color-text-less-grey">结算日期</view>
@@ -76,18 +76,19 @@
           </view>
         </view>
       </view>
-      <view v-if="!listData.length" style="margin-top: 200rpx">
+      <view v-if="!listData.length" style="padding-top: 200rpx;">
         <u-empty text="暂无收益数据" :icon="image.no_data_list"></u-empty>
       </view>
 
-      <u-loadmore
-      v-if="!loading && listData.length > 0"
+
+    </view>
+    <u-loadmore
+      v-if="!loading && listData.length > pagesize"
         :status="status"
         :loading-text="loadingText"
         :loadmore-text="loadmoreText"
         :nomore-text="nomoreText"
       ></u-loadmore>
-    </view>
     <base-toast ref="toastRef"></base-toast>
   </view>
 </template>
@@ -104,6 +105,7 @@ export default {
   },
   data() {
     return {
+      list_height:'0rpx',
       advertiser_type: null,
       advertiser_name: "",
       isEnd: false,
@@ -191,6 +193,8 @@ export default {
             this.loadmoreText = `下拉加载更多`;
             this.status = "loadmore";
           }
+          this.$refs.toastRef?.close();
+
         })
         .catch((err) => {
           let message = String(err.message || err || "获取失败");
@@ -198,16 +202,25 @@ export default {
         })
         .finally(async () => {
           uni.stopPullDownRefresh();
-          this.$refs.toastRef?.close();
           this.loading = false;
         });
     },
 
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
+    },
+    async computedHeight() {
+
+      const containBoxRect = await this.$u.getRect(`.page-box`);
+      console.log(containBoxRect);
+      const topBoxRect = await this.$u.getRect(`.top-area`);
+      console.log(topBoxRect);
+      this.list_height = (containBoxRect.height - topBoxRect.height - 8) + "px";
+      console.log(this.list_height + '');
     },
   },
   onLoad() {
@@ -216,9 +229,14 @@ export default {
     );
     this.advertiser_name = advertiser_name || "项目名称";
     this.advertiser_type = advertiser_type || null;
-
+    
     this.safe_bottom = uni.$u.sys().safeAreaInsets?.bottom || 0;
+  },
+  onReady() {
     this.init();
+    this.$nextTick(() => {
+      this.computedHeight();
+    });
   },
   onPullDownRefresh() {
     this.init();

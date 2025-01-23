@@ -8,6 +8,14 @@ export function upload_file(data, path) {
   }, path)
 }
 
+// 获取可签约平台
+export const getBankConfig=(data)=> {
+  return request({
+    url: '/public/bank/config',
+    method: 'GET',
+    data
+  })
+}
 // 获取banner
 export function getBanner(data) {
   return request({
@@ -146,4 +154,13 @@ export function getBankList(data) {
 		method: 'GET',
 		data
 	})
+}
+
+// 人员下拉
+export function getAccount(data) {
+  return request({
+    url: '/public/user',
+    method: 'GET',
+		data
+  })
 }

@@ -224,7 +224,8 @@
 			@include flex;
 			align-items: center;
 			justify-content: center;
-			background-color: $u-image-error-background-color;
+			border: 1rpx solid #EEEEEE !important;
+			background-color: #F6F6F6 !important;
 			color: $u-image-error-color;
 			font-size: $u-image-error-font-size;
 		}

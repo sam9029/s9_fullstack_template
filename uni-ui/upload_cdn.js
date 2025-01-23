@@ -63,16 +63,45 @@ async function uploadCdn() {
     await uploadFiles(files)
     console.log('CDN文件上传完毕！');
 }
+
+/**
+ * Minio上传执行
+ * */ 
+async function ExecMinioClientUpload(_item) {
+    let bucketName = minioBucket.openBucketName
+    let objectName = minioBucket.public_path + _item.ossfilename
+    let filePath =  `${_item.path + _item.filename}`
+    // 使用Promise包裹原生回调接口
+    return await minioClient.fPutObject(bucketName, objectName, filePath)
+}
+
+/**
+ * 重试机制上传函数
+ * */ 
+const MAX_RETRY = 3 // 最大重试次数
+async function uploadWithRetry(_item, retryCount = 0){
+    try {
+        return await ExecMinioClientUpload(_item)
+    } catch (err) {
+        if (retryCount >= MAX_RETRY) {
+            console.error(`文件 ${_item.filename} 上传失败，已达最大重试次数`)
+            throw err
+        }
+        console.warn(`文件 ${_item.filename} 上传失败，开始第 ${retryCount+1} 次重试`)
+        return await uploadWithRetry(_item, retryCount + 1)
+    }
+}
+
 async function uploadFiles(files) {
     if (!files || !files.length) return
     const env = loadEnv('production');
-    const ConcurrentNum = 30 // 5个一组上传文件
+    const ConcurrentNum = 5 // 5个一组上传文件
     let len = Math.ceil(files.length / ConcurrentNum)
     for (let index = 0; index < len; index++) {
         console.log(`文件一共有${len}组，正在上传${env?.VUE_CDN_SITE == 'WANGSU' ? '网宿' : '阿里云'}第${index + 1}组`)
         let be_select = files.slice(index * ConcurrentNum, (index + 1) * ConcurrentNum)
         let all_array = be_select.map(async item => {
-            if (env?.VUE_CDN_SITE == 'WANGSU') return await minioClient.fPutObject(minioBucket.openBucketName, minioBucket.public_path + item.ossfilename, `${item.path + item.filename}`)
+            if (env?.VUE_CDN_SITE == 'WANGSU') return await uploadWithRetry(item)
             else return await store.putStream(item.ossfilename, fs.createReadStream(`${item.path + item.filename}`))
         })
         await Promise.all(all_array)

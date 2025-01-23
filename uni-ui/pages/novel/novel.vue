@@ -38,6 +38,17 @@
         </view>
       </view>
       <view class="u-p-l-28 u-p-r-28">
+        <view v-if="listLoading" class="skeleton-box">
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+          <BaseSkeleton height="300rpx" round="16rpx"></BaseSkeleton>
+        </view>
         <view v-if="!listLoading && listData.length" class="novel-list u-row-center">
           <view
             v-for="item in listData"
@@ -92,6 +103,7 @@
 <script>
 import { getNovelAppList } from "@/api/pages/novel.js";
 import TabPageJumpGateMixin from "@/mixins/tab_page_jump_gate.js";
+import BaseSkeleton from '@/components/base-skeleton/index.vue';
 import BannerComps from "@/components/base-banner/index.vue";
 import { getBanner } from "@/api/public.js";
 import { sleep, unitMoney } from '@/utils/tools.js';
@@ -101,7 +113,8 @@ export default {
     styleIsolation: "shared",
   },
   components: {
-    BannerComps
+    BannerComps,
+    BaseSkeleton
   },
   mixins: [TabPageJumpGateMixin],
   data() {
@@ -152,7 +165,6 @@ export default {
         pagesize: this.pagesize,
       };
       params.page = this.page;
-      this.toastMsg("加载中", "loading", -1);
       getNovelAppList(params)
         .then((res) => {
           const list = res.data.list;
@@ -168,13 +180,13 @@ export default {
             this.loadmoreText = `下拉加载更多`;
             this.status = "loadmore";
           }
+          uni.offNetworkStatusChange(this.handleNetworkChange);
         })
         .catch((err) => {
           let message = String(err.message || err || "项目详情获取失败");
           this.toastMsg(message, "error");
         })
         .finally(async () => {
-          this.$refs.toastRef?.close();
           uni.stopPullDownRefresh();
           await sleep(300);
           this.listLoading = false;
@@ -213,10 +225,9 @@ export default {
             platform_id: row.platform_id,
           })
         );
-        this.toastMsg('敬请期待')
-        // uni.navigateTo({
-        //   url: `/novel/detail/index`,
-        // });
+        uni.navigateTo({
+          url: `/novel/detail/index`
+        });
       }
     },
 
@@ -276,12 +287,20 @@ export default {
     },
 
     // 提示
-    toastMsg(message, type = "default") {
+    toastMsg(message, type = "default", duration = 2000) {
       this.$refs.toastRef?.show({
         type,
         message,
+        duration
       });
     },
+    handleNetworkChange(res) {
+			if (this.listData.length > 0 || this.listLoading || res.networkType === "none") {
+        return;
+      }
+
+			this.init();
+    }
   },
   onPullDownRefresh() {
     this.init();
@@ -290,10 +309,15 @@ export default {
   onReachBottom(e) {
     uni.$u.throttle(this.getListData(false), 500);
   },
-  
+
   onLoad() {
     this.init();
+
+    uni.onNetworkStatusChange(this.handleNetworkChange);
   },
+  onUnload() {
+    uni.offNetworkStatusChange(this.handleNetworkChange);
+  }
 };
 </script>
 
@@ -325,6 +349,12 @@ export default {
   padding: 16rpx;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-gap: 16rpx;
+}
+
+.skeleton-box {
+  display: grid;
+  grid-template-columns: repeat(3, 210rpx);
   grid-gap: 16rpx;
 }
 

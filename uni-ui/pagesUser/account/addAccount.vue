@@ -1,8 +1,8 @@
 <template>
 	<view class="u-vh-100 widthAll u-flex-col u-bg-default">
 		<view class="top-form-box u-bg-f  u-m-28 u-p-l-32 u-p-r-32 u-p-t-32 u-border-radius">
-			<u--form labelPosition="top" :model="accountInfo" :rules="rules" ref="uForm" labelWidth="150rpx"
-				labelAlign="left" :labelStyle="{ fontSize: '27rpx' }">
+			<u--form labelPosition="top" :model="accountInfo" :rules="rules" ref="uForm" labelWidth="150rpx" labelAlign="left"
+				:labelStyle="{ fontSize: '27rpx' }">
 				<view class="select-ipt">
 					<u-form-item label="媒体平台" prop="platform_name" :required="true" @click="openPlatformPopup">
 						<u--input v-model="accountInfo.platform_name" border="none" placeholder="请选择媒体平台"
@@ -12,16 +12,16 @@
 				</view>
 				<u-form-item label="账号昵称" prop="platform_account_name" :required="true">
 					<u--input v-model.trim="accountInfo.platform_account_name" border="none" placeholder="请输入账号昵称"
-						placeholderClass="u-font-27" :clearable="true"></u--input>
+						placeholderClass="u-font-27" :clearable="true" @change="onInputChange"></u--input>
 				</u-form-item>
 				<u-form-item label="账号ID" prop="platform_account_id" :required="true">
 					<u--input v-model.trim="accountInfo.platform_account_id" border="none" placeholder="请输入账号ID"
-						placeholderClass="u-font-27" :clearable="true"></u--input>
+						placeholderClass="u-font-27" :clearable="true"  @change="onInputChange"></u--input>
 				</u-form-item>
 
 				<u-form-item label="粉丝数量" prop="fan_counts" :required="true">
-					<u--input v-model.trim="accountInfo.fan_counts" border="none" type="number"
-						placeholder="请输入粉丝数量（纯数字）" placeholderClass="u-font-27" :clearable="true"></u--input>
+					<u--input v-model.trim="accountInfo.fan_counts" border="none" type="number" placeholder="请输入粉丝数量（纯数字）"
+						placeholderClass="u-font-27" :clearable="true"  @change="onInputChange"></u--input>
 				</u-form-item>
 				<view class="select-ipt">
 					<u-form-item label="账号类型" prop="category_name" :required="true" @click="openAccountTypePopup">
@@ -31,14 +31,13 @@
 					</u-form-item>
 				</view>
 				<u-form-item label="主页链接" prop="home_page_url" :required="true">
-					<u--textarea v-model.trim="accountInfo.home_page_url" border="none" autoHeight
-						placeholder="http://或https://开头，不允许空格与中文" :clearable="true"></u--textarea>
+					<u--textarea v-model.trim="accountInfo.home_page_url" border="none" autoHeight maxlength="-1"
+						placeholder="请输入http://或https://开头网页链接，不可输入空格与中文" :clearable="true"  @change="onInputChange"  @blur="onUrlBlur"></u--textarea>
 				</u-form-item>
 				<view class="upload">
 					<u-form-item label="主页截图" prop="screenshot_url" :required="true">
-						<u-upload :fileList="fileList" @afterRead="afterRead" @delete="deletePic" name="Back"
-							uploadIcon="photo" uploadText="点击上传图片附件" :maxCount="1" :previewImage="true"
-							:deletable="true" width="240rpx" height="240rpx">
+						<u-upload :fileList="fileList" @afterRead="afterRead" @delete="deletePic" name="Back" uploadIcon="photo"
+							uploadText="点击上传图片附件" :maxCount="1" :previewImage="true" :deletable="true" width="240rpx" height="240rpx">
 
 						</u-upload>
 					</u-form-item>
@@ -53,12 +52,24 @@
 		</BasePicker>
 		<BottomBtn :data="button_list" :buttonIndex="0" @save="saveAccount"></BottomBtn>
 		<base-toast ref="toastRef"></base-toast>
+		
+		<view>
+			<u-modal :show="showExitModal" :showCancelButton="true" title="温馨提示" :content="modal_content" :confirmText="modal_confirm" cancelText="退出"
+			:closeOnClickOverlay="true" @cancel="onExitCurrentPage" @close="showExitModal = false" @confirm="showExitModal = false">
+		</u-modal>
+
+		<u-modal :show="showHomeModal" :showCancelButton="false" title="温馨提示" :content="`已为您自动提取并填入主页链接：\n${homeUrl}`" confirmText="我知道了" cancelText="取消" :buttonFill="false"
+			:closeOnClickOverlay="true" @cancel="showHomeModal = false" @close="showHomeModal = false" @confirm="onSureHomePageUrl">
+		</u-modal>
+		</view>
+		
 	</view>
 </template>
 
 <script>
 	import BasePicker from '@/components/base-picker/index.vue';
 	import BottomBtn from "@/components/bottom-button/index.vue";
+	import eventBus from '@/utils/eventBus.js'
 	import {
 		upload_file,
 		platform,
@@ -80,7 +91,7 @@
 	export default {
 		computed: {
 			btnText() {
-				return this.accountInfo.id && this.accountInfo.id > 0 ? "修改" : "保存";
+				return this.accountInfo.id  ? "修改" : "保存";
 			},
 			button_list() {
 				return [
@@ -93,7 +104,13 @@
 						loading: this.submitLoading
 					}]
 				]
-			}
+			},
+			modal_content() {
+				return this.accountInfo.id  ? "退出将清空已修改信息" : "退出将清空已填写信息";
+			},
+			modal_confirm() {
+				return this.accountInfo.id  ? "继续修改" : "继续填写";
+			},
 		},
 		components: {
 			BasePicker,
@@ -101,6 +118,11 @@
 		},
 		data() {
 			return {
+				showHomeModal: false,
+				homeUrl: '',
+				showExitModal: false,
+				hasEdit: false,
+				platform_id: null,
 				submitLoading: false,
 				allowSelectPlatform: true,
 				platformList: [],
@@ -180,12 +202,13 @@
 						},
 						{
 							pattern: /^(https?:\/\/([a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,6})(:\d+)?(\/[^?\s]*)?(\??[^#\s\u4e00-\u9fa5]*)(#[^ \t]*)?$/,
+
 							// 正则检验前先将值转为字符串
 							transform(value) {
 								return String(value);
 							},
 							message: '请输入正确的主页链接!',
-							trigger: ['blur']
+							trigger: ['blur', 'change']
 						}
 					],
 					screenshot_url: {
@@ -198,6 +221,31 @@
 			};
 		},
 		methods: {
+			onUrlBlur() {
+				// 使用更严格的正则表达式匹配网址
+				let urlPattern = /(https?:\/\/([a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*\.)+[a-zA-Z]{2,6})(:\d+)?(\/[^?\s]*)?(\??[^#\s\u4e00-\u9fa5]*)(#[^ \t]*)?/;
+				const url = this.accountInfo.home_page_url.match(urlPattern);
+				let homeUrl = url ? url[0] : null;
+				if (homeUrl && homeUrl !== this.accountInfo.home_page_url) {
+					
+					this.homeUrl = homeUrl;
+					this.showHomeModal = true;
+				}
+			},
+			onSureHomePageUrl() {
+				this.accountInfo.home_page_url = this.homeUrl;
+				this.showHomeModal = false;
+				this.$refs.uForm.validateField('home_page_url');
+			},
+
+			onExitCurrentPage() {
+				this.showExitModal = false;
+				this.hasEdit = false;
+				uni.navigateBack();
+			},
+			onInputChange(value) {
+				this.hasEdit = true;
+			},
 			toastMsg(message, type = "default") {
 				this.$refs.toastRef?.show({
 					type,
@@ -235,19 +283,21 @@
 							...this.accountInfo
 						};
 
-						let func = this.accountInfo.id && this.accountInfo.id > 0 ? editMediaAccount : addMediaAccount;
-						let message = this.accountInfo.id && this.accountInfo.id > 0 ? "修改成功" : "添加成功";
+						let func = this.accountInfo.id  ? editMediaAccount : addMediaAccount;
+						let message = this.accountInfo.id  ? "修改成功" : "添加成功";
 						this.submitLoading = true;
 						func(data)
 							.then(async res => {
 								if (res.code == 0) {
 									this.toastMsg(message, "success");
 									await sleep(2000);
+									this.hasEdit = false;
+									eventBus.$emit("updatePlatformAccountInfo");
 									uni.navigateBack();
 								}
 							})
 							.catch(error => {
-								this.toastMsg(error, 'error')
+								this.toastMsg(error.message || error, 'error')
 							})
 							.finally(() => {
 								this.submitLoading = false;
@@ -259,6 +309,7 @@
 			deletePic(event) {
 				this.fileList = [];
 				this.accountInfo.screenshot_url = '';
+				this.hasEdit = true;
 			},
 			// 新增图片
 			async afterRead(event) {
@@ -270,17 +321,26 @@
 					status: 'uploading',
 					message: '上传中'
 				}]
-
-				const result = await this.uploadFilePromise(event.file);
-				if (result) {
-					this.fileList = [{
-						...event.file,
-						status: "success",
-						message: "",
-						url: result,
-					}]
+				try {
+					const result = await this.uploadFilePromise(event.file);
+					if (result) {
+						this.fileList = [{
+							...event.file,
+							status: "success",
+							message: "",
+							url: result,
+						}]
+						this.hasEdit = true;
+					}
+				} catch (error) {
+					this.fileList = [
+						{
+							...event.file,
+							status: "failed",
+							message: "上传失败",
+						}
+					]
 				}
-
 			},
 			async uploadFilePromise(file) {
 				if (file.size / 1024 / 1024 > 2) {
@@ -303,7 +363,7 @@
 					// 调用上传文件的API
 					upload_file({
 							path_type: "account_screenshot",
-							file_name: file.name
+							file_name: file.name 
 						}, file.url)
 						.then((res) => {
 							if (res.code !== 0) throw res.data;
@@ -320,7 +380,7 @@
 							resolve(res.data.url);
 						})
 						.catch((err) => {
-							this.toastMsg(err.message || "上传失败！", "error");
+							this.toastMsg(err?.message || err || "上传失败！", "error");
 							this.fileList = [];
 							reject(err);
 						});
@@ -361,13 +421,14 @@
 				// this.$refs.platformRef.close()
 				// 解决微信小程序选择数据后校验报错
 				this.$refs.uForm.validateField('platform_name');
+				this.hasEdit = true;
 			},
 			selectAccountType(index, item) {
-				console.log(item)
 				this.accountInfo.category_name = item.name;
 				this.accountInfo.category_id = item.value;
 				// 解决微信小程序选择数据后校验报错
 				this.$refs.uForm.validateField('category_name');
+				this.hasEdit = true;
 			},
 			// 获取平台信息
 			getPlatform(keyword = '') {
@@ -381,10 +442,11 @@
 						if (res && res.code === 0) {
 							this.platformList = res.data;
 						}
-						if (this.accountInfo.platform_id) {
+						if (this.platform_id) {
 							for (let item of res.data) {
-								if (item.value === parseInt(this.accountInfo.platform_id)) {
+								if (item.value === parseInt(this.platform_id)) {
 									this.accountInfo.platform_name = item.name;
+									this.accountInfo.platform_id = item.value;
 									this.allowSelectPlatform = false;
 									break
 								}
@@ -430,6 +492,8 @@
 									url: this.accountInfo.screenshot_url
 								})
 							);
+
+							this.initialFormData = JSON.stringify(this.accountInfo);
 						}
 					})
 					.catch((err) => {
@@ -441,9 +505,12 @@
 			if (options.id && options.id.length) {
 				this.accountInfo.id = parseInt(options.id);
 				this.getDef(options.id);
+			} else {
+
 			}
+
 			if (options.platform_id) {
-				this.accountInfo.platform_id = options.platform_id;
+				this.platform_id = options.platform_id;
 			}
 		},
 		async onReady() {
@@ -451,6 +518,14 @@
 			this.$refs.uForm.setRules(this.rules);
 			await this.getPlatform();
 			await this.getCategory();
+		},
+		onBackPress({ from }) {
+			if (this.hasEdit) {//不允许返回
+				this.showExitModal = true;
+				return true;
+			} 
+			//允许返回	
+			return false;
 		}
 	}
 </script>

@@ -178,6 +178,7 @@
 								this.status = "loadmore";
 							}
 							this.listLoading = false;
+							this.$refs.toastRef?.close();
 						}
 					})
 					.catch((err) => {
@@ -186,7 +187,6 @@
 						this.listLoading = false;
 					})
 					.finally(() => {
-						this.$refs.toastRef?.close();
 						uni.stopPullDownRefresh();
 					})
 			},

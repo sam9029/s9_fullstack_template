@@ -13,27 +13,7 @@
           ></u-icon>
         </view>
         <view class="popup-content">
-          <view class="u-m-b-24 u-flex-col">
-            <text class="color-text-black u-font-28 u-line-h-40 u-font-bold"
-              >推广方式:关键词推广</text
-            >
-            <text class="color-text-less-black u-font-24 u-line-h-40"
-            >达人在“抖音、快手、小红书等”媒体平台发布作品推厂知乎上面的任意一本小说，引导用户或粉丝注册知乎APP的推广方式。通过抓取搜索别名的相关数据来统计推广效果，每带来一个用户，即完成一个任务。</text>
-          </view>
-          <view class="u-m-b-24 u-flex-col">
-            <text class="color-text-black u-font-28 u-line-h-40 u-font-bold"
-              >结算方式</text
-            >
-            <text class="color-text-less-black u-font-24 u-line-h-40"
-            >按照拉新人数订单结算</text>
-          </view>
-          <view class="u-flex-col">
-            <text class="color-text-black u-font-28 u-line-h-40 u-font-bold"
-              >订单更新时间</text
-            >
-            <text class="color-text-less-black u-font-24 u-line-h-40"
-            >1-10个工作日</text>
-          </view>
+          <u-parse :content="describe" :selectable="true"></u-parse>
         </view>
       </view>
     </u-popup>
@@ -42,11 +22,18 @@
 
 <script>
 import { mapGetters } from "vuex";
+import {  getAdverDesc } from "../api/keyword.js";
 export default {
+  props: {
+    id: {
+      type: [String, Number],
+    }
+  },
   data() {
     return {
       show: false,
       list: [],
+      describe: ''
     };
   },
   computed: {
@@ -54,11 +41,22 @@ export default {
   },
   methods: {
     open() {
+      this.$emit("open")
       this.show = true;
+      getAdverDesc({ id: this.id })
+        .then(res => {
+          if(res.code == 0) {
+            this.describe = res.data.describe
+          }
+        })
+        .catch(error => {
+          this.toastMsg(error.message || error, "error");
+        })
     },
 
     close() {
       this.show = false;
+      this.$emit("close")
     },
   },
 };
@@ -70,5 +68,6 @@ export default {
   border-radius: 16rpx;
   padding: 24rpx;
   height: 716rpx;
+  overflow-y: auto;
 }
 </style>
