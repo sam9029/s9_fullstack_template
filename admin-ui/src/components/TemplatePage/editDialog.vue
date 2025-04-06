@@ -185,7 +185,7 @@ export default {
 
   ::v-deep .el-form-item__content {
     .el-input {
-      width: 300px;
+      width: 360px;
     }
   }
 }

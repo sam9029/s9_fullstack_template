@@ -88,7 +88,7 @@
  * @description:  promotion_type 1 关键词推广  2 小程序推广  表示默认是否全选
  */
 import { getMenu } from '@/api/public.js';
-import { advertiserCategroyList } from '@/api/business/public.js';
+import { advertiserCategroyList } from '@/api/public.js';
 import { STATUS_OPTIONS } from '@/utils/mappers/public.js';
 import { ADVERTISERPROMOTIONTYPE } from '@/utils/mappers/public';
 

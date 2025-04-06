@@ -40,6 +40,7 @@
     data() {
       return {
         pagination: { pagesize: 20, count: 900, page: 1 },
+        STATSU_MAPPER: [],
         columns: [
           {
             label: '序号',
@@ -74,6 +75,21 @@
             label: '比率',
             prop: 'rate',
             slots: { customRender: 'rate' }
+          },
+          {
+            label: '图片',
+            prop: 'image',
+            slots: { customRender: 'imageComps' }
+          },
+          {
+            label: '状态',
+            prop: 'status',
+            slots: { customRender: 'statusComps' },
+            status: {
+              mapper: STATUS_MAPPER,
+              className: (row) => STATUS_CALSS[row.status],
+              reason: '错误原因'
+            }
           },
           {
             label: '地址',

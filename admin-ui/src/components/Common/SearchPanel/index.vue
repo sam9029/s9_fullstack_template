@@ -476,7 +476,7 @@
         if (selectGenre.includes(item.genre)) {
           return this.checkSelect(item);
         }
-        const dateGenre = ['dateYear', 'daterange', 'day'];
+        const dateGenre = ['dateYear', 'daterange', 'day', 'datetimerange'];
         if (dateGenre.includes(item.genre)) {
           return this.checkDatePicker(item);
         }
@@ -818,6 +818,11 @@
         background-color: transparent;
         border: none;
       }
+    }
+  }
+  ::v-deep{
+    .el-range-input{
+      background-color: transparent;
     }
   }
 </style>

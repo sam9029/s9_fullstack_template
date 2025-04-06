@@ -387,7 +387,10 @@
       // 删除指定上传文件数据
       handleRemoveFile(fileinfo, event) {
         this.success_upload_file_list = this.success_upload_file_list.filter(
-          (file) => file.md5 != fileinfo.md5,
+          (file) => {
+            if(file.md5) return file.md5 != fileinfo.md5
+            if(file.url) return file.url != fileinfo.url
+          },
         );
         this.el_upload_inner_file_list = this.el_upload_inner_file_list.filter(
           (file) => file.raw.md5 != fileinfo.md5,

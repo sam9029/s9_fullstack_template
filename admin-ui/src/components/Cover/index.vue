@@ -21,6 +21,7 @@
       :visible.sync="open"
       :width="fixed ? '1000px' : '500px'"
       append-to-body
+      :close-on-click-modal="false"
       @opened="modalOpened"
       @close="closeDialog()"
     >
@@ -105,7 +106,7 @@ export default {
     },
     pathInfo: {
       type: String,
-      default: '',
+      default: 'joyful',
     },
     autoCropWidth: {
       type: Number,
@@ -235,11 +236,11 @@ export default {
               if (res && res.code == 0) {
                 this.open = false;
                 // this.options.img = res.data.url;
-                this.$emit('input', res.data.url);
-                this.$notify.success('修改成功！');
+                this.$emit('input', res.data.url, {file: this.file});
+                this.$notify.success('上传成功！');
                 this.visible = false;
               } else {
-                this.$notify.error('修改失败！');
+                this.$notify.error('上传失败！');
               }
             });
         });

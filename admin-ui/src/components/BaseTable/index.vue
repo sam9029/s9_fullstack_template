@@ -483,7 +483,7 @@ export default {
 
     isTableSlot(val) {
       if (
-        ['tag', 'link', 'infos', 'switch', 'dateTime', 'progress', 'money', 'rate', 'statusComps', 'imageComps'].includes(val)
+        ['tag', 'link', 'infos', 'switch', 'dateTime', 'progress', 'money', 'rate', 'count', 'statusComps', 'imageComps'].includes(val)
       ) {
         return true;
       } else if (typeof val == 'function') {

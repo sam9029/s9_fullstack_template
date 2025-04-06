@@ -5,6 +5,7 @@
       ref="CustomColumnPanel"
       title="请选择封面"
       width="600px"
+      :okLoading="okLoading"
       @visible-change="visibleChange"
     >
       <div
@@ -37,21 +38,85 @@ export default {
       checked: '',
       image_list: [],
       loading: false,
+      okLoading: false,
     };
   },
   methods: {
-    visibleChange(val, type) {
+    async visibleChange(val, type) {
       this.open_dia = val;
       //   console.log(val, type, this.checked);
       if (type == 'ok') {
-        this.open_dia = false;
         if (this.checked) {
           let item = this.image_list.find((i) => i.label == this.checked);
           if (!item) return;
-          item.file = this.dataURLToBlob(item.url);
-          this.$emit('submit', item);
+          this.okLoading = true;
+          
+          item.file = await this.compressImage(item.url).finally(() => {
+            this.okLoading = false;
+          });
+          // dataURLToBlob(item.url);
+          // if (item.file?.size > 500 * 1024)
+          if (item.file) this.$emit('submit', item);
+          else return this.$notify.error('封面处理失败！');
         }
+        this.open_dia = false;
       }
+    },
+    async compressImage(dataURL, times = 0) {
+      return await new Promise((resolve, reject) => {
+        try {
+          let blobFile = this.dataURLToBlob(dataURL);
+          if (blobFile?.size <= 500 * 1024) return resolve(blobFile);
+          if (times >= 3) return resolve(blobFile);
+          times++;
+          let img = new Image();
+          img.src = dataURL;
+
+          img.onload = () => {
+            // 创建 Canvas 元素
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            // 设置目标宽高（可根据需要调整）
+            let maxWidth = 1080; // 最大宽度
+            let maxHeight = 1080; // 最大高度
+            let width = img.width;
+            let height = img.height;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // 按比例缩放
+            if (width > maxWidth || height > maxHeight) {
+              if (width / height > maxWidth / maxHeight) {
+                height = Math.round((height * maxWidth) / width);
+                width = maxWidth;
+              } else {
+                width = Math.round((width * maxHeight) / height);
+                height = maxHeight;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            // 绘制图片到 Canvas
+            ctx.drawImage(img, 0, 0, width, height);
+            // 获取压缩后的 Data URL
+            let compressedDataURL = canvas.toDataURL('image/jpeg', 0.8);
+            img.onload = null;
+            img = null;
+            return resolve(this.compressImage(compressedDataURL, times)); // 递归调用
+            // 转换为 Blob 检查大小
+            // let compressedBlob = this.dataURLToBlob(compressedDataURL);
+            // // 清除 Image 实例
+            // if (compressedBlob.size <= 500 * 1024) return resolve(compressedBlob);
+            // console.warn('Compressed image still exceeds 500KB. Recompressing...');
+            // return resolve(this.compressImage(compressedDataURL)); // 递归调用
+          };
+
+          img.onerror = () => {
+            reject('图片渲染异常！');
+          };
+        } catch (error) {
+          reject(error?.message || error || '图片压缩失败！');
+        }
+      });
     },
     dataURLToBlob(dataUrl) {
       const [header, data] = dataUrl.split(',');

@@ -36,18 +36,18 @@
   export default {
     props: {
       // 接受类型 string[] || number[] || {}[]
-      source_data: { type: Array, default: () => [] },
+      source_data: { type: [Array,null], default: () => [] },
       max_show_num: { type: [String, Number], default: MAX },
     },
 
     computed: {
       local_source_data() {
-        if (this.source_data.length) return this.preDealItem(this.source_data);
+        if (this.source_data && this.source_data.length) return this.preDealItem(this.source_data);
         else return [];
       },
 
       render_data() {
-        if (this.source_data.length) return this.dealItem(this.local_source_data);
+        if (this.source_data && this.source_data.length) return this.dealItem(this.local_source_data);
         else return [];
       },
     },

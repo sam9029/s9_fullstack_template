@@ -85,7 +85,7 @@
       },
       pathInfo: {
         type: String,
-        default: '',
+        default: 'joyful',
       },
       autoCropWidth: {
         type: Number,

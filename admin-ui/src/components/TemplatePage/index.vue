@@ -44,30 +44,14 @@
       </template>
 
       <template #header_right>
-        <!-- 需使用 DescButton 解决 样式问题--（全局注册过）直接用DescButton即可 -->
-        <!-- <DescButton
-            icon="el-icon-download"
-            circle
-            plain
-            desc="导出数据"
-            v-hasPermi="AUTHCONFIG.export"
-            @click="exportExcel"
-          /> -->
-      </template>
-
-      <!-- 状态 组件 -->
-      <template #status="{ row }">
-        <BaseStatus :status="row.status"></BaseStatus>
-      </template>
-
-      <!-- 审核状态 组件 -->
-      <template #verify_status="{ row }">
-        <BaseStatus
-          :mapper="VERIFY_MAPPER"
-          :status="row.verify_status"
-          :icon-class="rowVerifyStatusClass(row.verify_status)"
-          :reason="row.verify_status == 4 ? row.verify_suggest : ''"
-        ></BaseStatus>
+        <DescButton
+          icon="el-icon-download"
+          circle
+          plain
+          desc="导出数据"
+          v-hasPermi="AUTHCONFIG.export"
+          @click="openExportExcel"
+        />
       </template>
 
       <!-- 审批流 -->
@@ -79,25 +63,39 @@
     </BaseTable>
 
     <!-- 新增 -->
-    <!-- <AddDialog ref="AddDialogRef" @success="queryTableData"></AddDialog> -->
+    <!-- <EddDialog ref="editDialogRef" @success="queryTableData"></EddDialog> -->
+
+    <!-- 导出 -->
+    <ExportExcel
+      :exportVisible.sync="exportVisible"
+      :tableItem="exportItem"
+      @exportCol="handleExport"
+      title="导出选择列"
+      width="800px"
+    ></ExportExcel>
   </div>
 </template>
 
 <script>
-  // 组件
+  // 依赖&组件
   import SearchPanel from '@/components/Common/SearchPanel';
   import BaseTable from '@/components/BaseTable';
   import ApprovalProcess from '@/components/ApprovalProcess/index.vue';
 
-  // 配置
-  /* prettier-ignore */
-  import { setSearchItemOpts, mapperToOptions} from "@/utils/tools.js";
-  /* prettier-ignore */
-  import { AUTHCONFIG, AuthDropDownItem, VERIFY_MAPPER, initSearchConfig, columns, checkAction} from "./config.js";
+  // 工具
+  import RightTipEmitter from '@/components/RightTip/evbus.js';
+  import { setSearchItemOpts, exportColumns } from '@/utils/tools.js';
+  import {
+    AUTHCONFIG,
+    AuthDropDownItem,
+    initSearchConfig,
+    columns,
+    checkAction,
+  } from './config.js';
 
   // API
-  // import { list } from '@/api/';
-  import { advertiserCategroyList } from '@/api/business/public.js';
+  // import { list, update, approval, exportData } from '@/api/';
+  import { advertiserCategroyList } from '@/api/public.js';
 
   export default {
     // name: 'XXXX',
@@ -108,19 +106,20 @@
       ApprovalProcess,
       BaseStatus: () => import('@/components/BaseCopy/status'),
       AuthDropDown: () => import('@/components/Common/AuthDropDown.vue'),
-      // AddDialog: () => import('./addDialog.vue'),
+      ExportExcel: () => import('@/components/Common/ExportExcel.vue'),
+      // EddDialog: () => import('./editDialog.vue'),
     },
 
     computed: {},
 
     data() {
       return {
-        VERIFY_MAPPER,
         AUTHCONFIG,
         AuthDropDownItem,
-        columns,
-        tableColumnsKey: 'KHSA089-skahui-SAHK9889-sakh9sa', // 每个页tablekey要不一致，记得每次都要更新
+        tableColumnsKey: 'KHSA089-SKAHUI-SAHK9889-SAKH9SA', // 每个页tablekey要不一致，记得每次都要更新
+
         searchConfig: initSearchConfig(this),
+        columns,
         // 页码
         pagination: { pagesize: 20, count: 0, page: 1, next: false, site: 0 },
         // 表数据
@@ -129,11 +128,15 @@
         selections: [],
         // 表加载
         tableLoading: false,
+
+        /** 导出 */
+        exportVisible: false,
+        exportItem: exportColumns(columns),
       };
     },
 
     methods: {
-      //#region 基础页面函数
+      //#region 基础页面函数模块
       // 检索条件重置
       searchReset() {
         this.searchConfig.model = initSearchConfig(this).model;
@@ -199,13 +202,13 @@
             this.tableLoading = false;
           });
 
-        //#region =====  模拟 MOCKMOCK
+        //#region =====  模拟 MOCKMOCK，记得删除
         this.tableData = [
-          { id: 10, status: 1, verify_status: 1 },
-          { id: 10, status: 1, verify_status: 2 },
-          { id: 10, status: 1, verify_status: 3 },
-          { id: 10, status: 1, verify_status: 4 },
-          { id: 10, status: 3, verify_status: 4 },
+          { id: 1, name: '测试数据1', status: 1, verify_status: 1 },
+          { id: 2, name: '测试数据2', status: 1, verify_status: 2 },
+          { id: 3, name: '测试数据3', status: 1, verify_status: 3 },
+          { id: 4, name: '测试数据4', status: 1, verify_status: 4 },
+          { id: 5, name: '测试数据5', status: 3, verify_status: 4 },
         ];
         setTimeout(() => {
           this.tableLoading = false;
@@ -214,21 +217,24 @@
       },
 
       formatItem(item) {
+        item.curr_account_id = this.$store.getters.currentAccountId;
         return item;
       },
       //#endregion
 
-      //#region 数据处理
+      //#region 数据处理模块
 
+      //#region =====  页面操作函数模块
       // 新增事件
       handleAdd() {
-        this.$refs.AddDialogRef?.open();
+        this.$refs.editDialogRef?.open();
       },
 
       // 操作 修改 事件
       handleRowEdit(row, column, $index) {
-        this.$refs.AddDialogRef?.open(row);
+        this.$refs.editDialogRef?.open(row);
       },
+      //#endregion
 
       //#region ===== 批量操作模块
       batchOperate(command) {
@@ -398,21 +404,40 @@
       },
       //#endregion
 
-      // 状态判断
-      rowVerifyStatusClass(status) {
-        if (status == 1) {
-          return 'text-info';
-        } else if (status == 2) {
-          return 'text-warning';
-        } else if (status == 3) {
-          return 'text-success';
-        } else if (status == 4) {
-          return 'text-danger';
-        }
+      //#region ===== 导出模块
+      // 打开导出
+      openExportExcel() {
+        this.exportVisible = true;
+      },
+
+      // 导出
+      handleExport(cols, _epxort_params) {
+        this.pageLoading = true;
+        let params = {
+          cols,
+          ...this.searchConfig.model,
+          ..._epxort_params,
+        };
+        exportData(params)
+          .then((res) => {
+            if (res && res.code == 0) {
+              this.$notify.success('导出任务创建成功，请注意查看进度!');
+              RightTipEmitter.emit('export-log');
+            } else {
+              throw res;
+            }
+            this.pageLoading = false;
+          })
+          .catch((err) => {
+            this.pageLoading = false;
+            this.$notify.error(`导出失败：${err}`);
+          });
       },
       //#endregion
 
-      //#region API请求
+      //#endregion
+
+      //#region API请求模块
       // 获取业务类型
       async queryAdvertiseType() {
         try {

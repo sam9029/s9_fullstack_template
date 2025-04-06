@@ -37,10 +37,18 @@
               fit="contain"
             ></el-image>
             <div class="video-play-card" v-else>
+              <!-- 暂时固定处理 网宿的 视频链接，方式显示错误 -->
+              <template v-if="item.cover_url.includes('wangsu')">
+                <video :controls="false" controlslist="nodownload" height="90">
+                  <source :src="item.cover_url.split('?')[0]" />
+                </video>
+              </template>
+              <template v-else>
+                <img fit="contain" height="90" :src="item.cover_url" />
+              </template>
               <div class="video-fixable">
                 <i @click="playVideo(item)" class="el-icon-video-play play-icon"></i>
               </div>
-              <img fit="contain" height="90" :src="item.cover_url" />
             </div>
           </div>
         </SwiperSlide>
@@ -236,6 +244,9 @@
   .video-play-card {
     position: relative;
     text-align: center;
+    video{
+      border-radius: 3px;
+    }
     .video-fixable {
       position: absolute;
       width: 160px;

@@ -21,7 +21,8 @@
 
 
 <script>
-import { userSelect } from '@/api/business/public';
+// import { userSelect } from '@/api/public';
+import { downUser as userSelect } from '@/api/account/personnel/user.js';
 
 export default {
   props: {
@@ -48,11 +49,10 @@ export default {
     }
   },
   methods: {
-    // queryUserOpts:_.throttle(function func(keyword = '') {
     queryUserOpts(keyword = '') {
       const payload = {
         ...this.params,
-        keyword,
+        keyword:keyword || undefined,
       }
       userSelect(payload).then((data) => {
         this.options = data.data.map(v => {
@@ -68,7 +68,6 @@ export default {
         });
       });
     }
-    // }, 1000),
   },
 };
 </script>

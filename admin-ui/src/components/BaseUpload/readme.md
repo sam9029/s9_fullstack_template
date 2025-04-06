@@ -1,16 +1,30 @@
 ### baseupload 基础使用
 
+> 使用注意：若 accept 为 \*，drag 拖拽将无效；accept 必须设定为 '.jpg' 之类的文件后缀才可（官方遗留 Bug）
+
 ```html
 <template>
-  <BaseUpload
-    accept=".pdf,.jpg,.jpeg,.png"
-    :limit="1"
-    :file_list="uploadFileList"
-    :uploadConfig="{ site:'WANGSU',bucket:'duolai-img', folder: 'joyful/public/' }"
-    :onSuccess="onSuccess"
-    @onRemove="handleRemove"
-  >
-  </BaseUpload>
+  <div>
+    <!-- 单个 -->
+    <BaseUpload
+      accept=".pdf,.jpg,.jpeg,.png"
+      :limit="1"
+      :file_list.sync="uploadFileList"
+      :uploadConfig="{ site:'WANGSU',bucket:'duolai-img', folder: 'joyful/public/' }"
+      :onSuccess="onSuccess"
+      @onRemove="handleRemove"
+    >
+    </BaseUpload>
+
+    <!-- 多个  记得file_list.sync 加.sync -->
+    <BaseUpload
+      accept=".pdf,.jpg,.jpeg,.png"
+      :file_list.sync="uploadFileList"
+      :uploadConfig="{ site:'WANGSU',bucket:'duolai-img', folder: 'joyful/public/' }"
+      @onRemove="handleRemove"
+    >
+    </BaseUpload>
+  </div>
 </template>
 
 <script>
@@ -51,7 +65,7 @@
 | 参数 | 说明 | 类型 | 可选值 | 默认值 |
 | --- | --- | --- | --- | --- |
 | drag | 拖拽模式 | Boolean | — | true |
-| file_list | 上传的文件列表, 例如: [{name: 'food.jpg', url: 'https://xxx.cdn.com/xxx.jpg'}] | array | — | [] |
+| file_list | 上传的文件列表, 例如: [{name: 'food.jpg', url: 'https://xxx.cdn.com/xxx.jpg', progress:100, type: 'image'}] | array | — | []; type可选值:['image','video','audio'] |
 | limit | 最大允许上传个数 | number | — | — |
 | accept | 接受上传的[文件类型](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-accept) | string | — | — |
 | disabled | 是否禁用 | boolean | — | false |
@@ -143,3 +157,39 @@
 
     - 并发管理
     - 切片上传
+
+```js
+{
+    "source_type": 1,
+    "menu_id": 2,
+    "platform_id": null,
+    "pay_type": 0,
+    "collection_id": null,
+    "sources": [
+        {
+            "name": "1MB (2)",
+            "url": "https://koc-material.lizhibj.cn/koc_task_dev/ded31ca1d28c4284abe8a50438acec00.mp4",
+            "cover_url": "https://koc-material.lizhibj.cn/koc_task_dev/229ec8edec784332b5ad61b4ba30150b.png",
+            "preview_duration": null,
+            "order": 0,
+            "describe": "测试",
+            "tag_ids": [],
+            "source_info": {
+                "width": 1280,
+                "height": 720,
+                "size": 1056816,
+                "duration": 3,
+                "type": 2,
+                "blobUrl": "blob:http://localhost/32e8950d-4140-432d-9dd7-6fddcc55235c",
+                "code": 0,
+                "mimetype": "video/mp4",
+                "bucket": "koc-material",
+                "original_oss_key": "koc_task_dev/ded31ca1d28c4284abe8a50438acec00.mp4",
+                "md5": "8e8e76eccd5b46c0a347ae4300954c46"
+            }
+        }
+    ]
+}
+
+{"md5": "fb81459378b9bcfd3d04e0385b020569", "code": 0, "size": 48225375, "type": 2, "width": 856, "bucket": "koc-material", "height": 482, "blobUrl": "blob:https://xiaoguofanxing.lizhibj.cn/cd5224f5-05cc-4718-bf01-53bd389ca45b", "duration": 252, "mimetype": "video/mp4", "original_oss_key": "koc_task_course/3bb9f33b40f346018f17a00a9221bfb0.mp4"}
+```

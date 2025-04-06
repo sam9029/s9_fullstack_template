@@ -102,8 +102,8 @@ export default {
     },
     async getUser() {
       await getInfo()
-        .then(({ user }) => {
-          this.$set(this, 'user', user);
+        .then(({ data }) => {
+          this.$set(this, 'user', data);
         })
         .catch((error) => {
           console.log(error);

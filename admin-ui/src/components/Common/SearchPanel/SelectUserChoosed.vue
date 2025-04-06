@@ -18,7 +18,9 @@
 </template>
 
 <script>
-  import { userSelect } from '@/api/business/public';
+  // import { userSelect } from '@/api/public';
+  import { downUser as userSelect } from '@/api/account/personnel/user.js';
+  
   export default {
     props: {
       value: {},

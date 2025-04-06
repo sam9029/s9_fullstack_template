@@ -14,8 +14,11 @@
             >{{ tag }}</el-tag
           >
         </template>
-        <template v-else>
-          <el-tag>{{ row[column.property] }}</el-tag>
+        <template
+          v-else
+        >
+          <span v-if="!row[column.property]">--</span>
+          <el-tag v-else>{{ row[column.property] }}</el-tag>
         </template>
       </div>
     </template>
@@ -45,6 +48,10 @@
       {{ getRate(row[column.property]) }}
     </template>
 
+    <template v-else-if="item.slots.customRender == 'count'">
+      {{ getCountTransform(row[column.property]) }}
+    </template>
+
     <el-progress
       v-else-if="item.slots.customRender == 'progress'"
       :percentage="row[column.property]"
@@ -67,6 +74,7 @@
 <script>
   import moment from 'moment';
   import { isEmpty } from 'lodash';
+  import { renderCount } from '@/utils/tools'
 
   export default {
     props: {
@@ -135,6 +143,9 @@
           return (rate / 100).toFixed(2) + '%';
         }
       },
+      getCountTransform(val){
+        return renderCount(val)
+      },
       setStatusReason(item, row) {
         const { status } = item;
         if (status?.reason) {
@@ -148,7 +159,7 @@
         if (status?.mapper) {
           return status.mapper;
         }
-        return {};
+        return null;
       },
 
       setStatusClass(item, row, field) {

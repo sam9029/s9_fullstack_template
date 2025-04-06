@@ -15,7 +15,7 @@
         @click="onSubmit(searchItem.model)"
       ></i>
     </el-input>
-    
+
     <div
       v-if="searchItem.genre == 'select-range'"
       :style="searchItem.style"
@@ -38,7 +38,7 @@
               placeholder="请输入最大值"
             ></el-input-number>
           </template>
-          <div class="triangle" :class="{ 'show': rangeSelectValid }"></div>
+          <div class="triangle" :class="{ show: rangeSelectValid }"></div>
         </div>
         <div class="right-box">
           <span class="mr10 ml10 base-font">小于</span>
@@ -143,7 +143,7 @@
         </div>
       </el-option>
     </el-select>
-    
+
     <!-- select 下拉过多优化 -->
     <SelectRangeNumber
       v-if="searchItem.genre == 'select-rangeNumber'"
@@ -184,6 +184,7 @@
       filterable
     >
     </el-cascader>
+
     <!-- 账户级联选择器 -->
     <AccountCascader
       v-if="searchItem.genre == 'userCascader'"
@@ -212,6 +213,7 @@
       placeholder="请选择年份"
       style="width: 150px"
     ></el-date-picker>
+
     <el-date-picker
       size="small"
       :style="searchItem.style"
@@ -227,6 +229,23 @@
       start-placeholder="开始日期"
       end-placeholder="结束日期"
       :picker-options="searchItem.pickerOptions || pickerOptions"
+    ></el-date-picker>
+
+    <el-date-picker
+      size="small"
+      :style="searchItem.style"
+      v-if="searchItem.genre == 'datetimerange'"
+      @change="changeSelect(searchItem.change, searchItem.model, $event)"
+      v-model="subValue"
+      value-format="yyyy-MM-dd HH:mm:ss"
+      type="datetimerange"
+      align="bottom"
+      unlink-panels
+      :clearable="!!searchItem.clearable"
+      range-separator="-"
+      start-placeholder="开始日期"
+      end-placeholder="结束日期"
+      :picker-options="searchItem.pickerOptions || timePickerOptions"
     ></el-date-picker>
 
     <el-date-picker
@@ -265,7 +284,7 @@
 </template>
 
 <script>
-  import { defaultPickerOptions } from '@/utils/common/formatDate';
+  import { defaultPickerOptions, defaultTimePickerOptions } from '@/utils/common/formatDate';
 
   export default {
     props: {
@@ -279,7 +298,7 @@
       SelectRangeNumber: () => import('./Components/SelectRangeNumber.vue'),
       AccountCascader: () => import('./Components/AccountCascader.vue'),
       UserRemoteSelect: () => import('./Components/UserSelect.vue'),
-      QuarterPicker: () => import('@/components/QuarterPicker/index.vue')
+      QuarterPicker: () => import('@/components/QuarterPicker/index.vue'),
     },
     data() {
       return {
@@ -293,6 +312,7 @@
           value: 'category_id',
         },
         pickerOptions: defaultPickerOptions(),
+        timePickerOptions: defaultTimePickerOptions(),
         rangeSelectValid: false,
       };
     },
@@ -312,11 +332,11 @@
     watch: {
       subValue: {
         handler(newVal) {
-          if(this.searchItem.genre == 'select-range') {
-            this.vaildRange(newVal)
+          if (this.searchItem.genre == 'select-range') {
+            this.vaildRange(newVal);
           }
         },
-      }
+      },
     },
     methods: {
       onSubmit(itemKey) {
@@ -340,25 +360,25 @@
       // 区间校验
       vaildRange(params) {
         if (params[0] || params[1]) {
-          this.$notify.closeAll()
+          this.$notify.closeAll();
           if (params[0] >= params[1]) {
             this.$notify.error('区间最小值不能大于等于最大值');
-            this.rangeSelectValid = true
+            this.rangeSelectValid = true;
           } else {
-            this.rangeSelectValid = false
+            this.rangeSelectValid = false;
           }
         }
-        this.$emit('rangeValid', this.rangeSelectValid)
+        this.$emit('rangeValid', this.rangeSelectValid);
       },
 
       // 季度选择
       changeQuarter(val) {
-        this.$emit('quarter', val)
+        this.$emit('quarter', val);
       },
 
       resetSelect() {
-        this.$refs.userSelectRef?.queryUserOpts(null)
-      }
+        this.$refs.userSelectRef?.queryUserOpts(null);
+      },
     },
   };
 </script>
@@ -408,10 +428,10 @@
         border-left: 8px solid transparent;
         border-right: 8px solid transparent;
         border-top: 8px solid #ed5565;
-        content: "";
+        content: '';
         opacity: 0;
         transition: opacity 0.3s;
-      } 
+      }
       .triangle.show {
         opacity: 1;
       }

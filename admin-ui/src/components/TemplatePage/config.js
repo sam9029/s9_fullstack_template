@@ -1,21 +1,30 @@
+/** 依赖 */
 import moment from 'moment';
+/** 工具&数据 */
 import { mapperToOptions } from '@/utils/tools.js';
+import { VERIFY_MAPPER } from '@/utils/mapper.js';
 
-import { VERIFY_MAPPER as V_M } from '@/utils/mapper.js';
-export const VERIFY_MAPPER = V_M;
-
-// 权限
-export const AUTHCONFIG = {
-  edit: ['project:report:edit'], // 新增/编辑
-  operation: ['project:report:operation'], //开启/终止
-  del: ['project:report:delete'], //删除
-  // submit: ["project:report:submit"], //提交
-  // verify: ["project:report:verify"], //通过/拒绝
-  // stop: ["project:report:stop"], //终止
-  // restore: ["project:report:restore"], //恢复
+const VERIFY_MAPPER_STATUS_ICON = {
+  1: 'text-warning',
+  2: 'text-process',
+  3: 'text-success',
+  4: 'text-danger',
+  5: 'text-info',
 };
 
-// 批量操作按钮
+/** 权限配置  */
+export const AUTHCONFIG = {
+  edit: ['admin:department:add'], // 新增/编辑    admin:department:edit
+  operation: ['admin:department:add'], //开启/终止    admin:department:operation
+  del: ['admin:department:add'], //删除    admin:department:delete
+  export: ['admin:department:add'], //导出    admin:department:export
+  submit: ["admin:department:add"], //提交    admin:department:submit
+  verify: ["admin:department:add"], //通过/拒绝    admin:department:verify
+  stop: ["admin:department:add"], //终止    admin:department:stop
+  restore: ["admin:department:add"], //恢复    admin:department:restore
+};
+
+/** 批量操作按钮  */
 export const AuthDropDownItem = [
   {
     command: 'open',
@@ -35,8 +44,8 @@ export const AuthDropDownItem = [
   },
 ];
 
-// 检索配置
 /**
+ * 检索配置
  * @param {*} vm 环境变量
  */
 export function initSearchConfig(vm) {
@@ -101,19 +110,37 @@ export function initSearchConfig(vm) {
   };
 }
 
-// 列配置
+/** 列配置 */
 export const columns = [
   {
     show: true,
     label: 'ID',
     prop: 'id',
     minWidth: 120,
+    slots: { customRender: 'infos' },
+    infos: [
+      { label: '名称：', prop: 'name' },
+      { label: 'ID：', prop: 'id', event: 'copy', zeroNoshow: true },
+    ],
   },
   {
     show: true,
-    label: '测试',
-    prop: 'name',
+    label: '状态',
+    prop: 'status',
     minWidth: 120,
+    slots: { customRender: 'statusComps' },
+  },
+  {
+    show: true,
+    label: '审批状态',
+    prop: 'verify_status',
+    minWidth: 120,
+    slots: { customRender: 'statusComps' },
+    status: {
+      mapper: VERIFY_MAPPER,
+      className: (row) => VERIFY_MAPPER_STATUS_ICON[row.verify_status],
+      reason: (row) => (row.verify_status === 4 ? row.verify_suggest : ''),
+    },
   },
   // {
   //   label: "审批流",
@@ -208,8 +235,8 @@ export const columns = [
   },
 ];
 
-//#region =====  操作权限检测枚举
-//  * verify_status* 审核状态：1：未提交 2：审核中，3：审核通过，4：审核拒绝
+// // #region =====  操作权限检测枚举
+//  /* verify_status* 审核状态：1：未提交 2：审核中，3：审核通过，4：审核拒绝
 //  * status* 状态：1：启用 2：停用，3：删除，
 //  */
 // const actionCondition = {
@@ -224,7 +251,7 @@ export const columns = [
 //   reject: { verify_status: [2], status: [1, 2] },
 //   pass: { verify_status: [2], status: [1, 2] },
 // };
-//#endregion
+// // #endregion
 
 //#region =====  /* 操作权限检测函数 */
 // export function checkAction(action, row) {
@@ -240,12 +267,15 @@ export const columns = [
 //   return true;
 // }
 
+/** 是否未创建者本人 */
 // function isCreateUser(row) {
 //   return row.create_user_id == row.curr_account_id || row.curr_account_id == 10000001;
 // }
 
+/** 是否未审批人 */
 // function isApprovalUser(row) {
-//   return row.next_account_id == row.curr_account_id || row.curr_account_id == 10000001;
+//   const next_account_id = JSON.parse(row.next_account_id || '[]')
+// return next_account_id.includes(row.curr_account_id)  || row.curr_account_id == 10000001;
 // }
 
 // export function checkActionDisabled(action, row) {
@@ -258,4 +288,3 @@ export const columns = [
 //   return false;
 // }
 //#endregion
-

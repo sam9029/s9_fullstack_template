@@ -3,7 +3,7 @@
   <RichText :value.sync="form.describe"></RichText>
  -->
 
-<template>
+ <template>
   <div class="editor-wrapper">
     <Toolbar
       class="editor-toolbar"
@@ -104,8 +104,17 @@
     },
 
     watch: {
-      curValue(n, o) {
-        this.handleUpdate(n);
+      value(newVal, oldVal) {
+        // 只有当新的 value 不等于 curValue 时才更新，避免死循环
+        if (newVal !== this.curValue) {
+          this.curValue = newVal;
+        }
+      },
+      curValue(newVal, oldVal) {
+        // 只有当新的 curValue 不等于 value 时才 emit，避免死循环
+        if (newVal !== this.value) {
+          this.handleUpdate(newVal);
+        }
       },
     },
 
@@ -139,6 +148,13 @@
       preview() {
         this.preShow = true;
         this.describe = this.curValue;
+      },
+
+      // 手动设置数据
+      handleSet(_val) {
+        if (_val && this.curValue != _val) {
+          this.curValue = _val;
+        }
       },
 
       // 更新数据
