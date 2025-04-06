@@ -1,6 +1,6 @@
 // let MainUrl = "http://192.168.108:3020/api";
-let MainUrl = "http://192.168.50.104:3020/api";
-//let MainUrl = "http://192.168.50.5:3020/api";
+// let MainUrl = "http://192.168.50.104:3020/api";
+let MainUrl = "http://192.168.50.5:3020/api";
 // let MainUrl = 'https://joyful.tuixiaoguo.com/api'
 // #ifdef  APP-PLUS|H5
 // MainUrl = 'http://192.168.110.2:3020/api'

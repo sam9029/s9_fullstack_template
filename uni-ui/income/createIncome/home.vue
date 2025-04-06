@@ -6,58 +6,16 @@
 				<view class="color-text-black u-font-32 u-line-h-48 u-position-center">承制收益</view>
 			</view>
 		</view>
-		<view class="create-price-card u-p-x-28 u-m-t-28">
-			<view class="u-bg-f u-border-radius u-p-24">
-				<view class="color-text-less-grey u-font-24 u-line-h-40 u-m-b-8">待入帐</view>
-				<view class="un-posted u-border-radius u-p-x-24 u-p-y-16">
-					<view class="u-flex-col u-row-center">
-						<text class="u-font-bold u-font-32 u-line-h-48">{{
-              unitMoney(detailObj.will_income.order_amount, false, true)
-            }}</text>
-						<text class="color-text-less-grey u-font-22 u-line-h-40">充值金额</text>
-					</view>
-					<view class="u-flex-col u-row-center">
-						<text class="u-font-bold u-font-32 u-line-h-48">{{
-              detailObj.will_income.order_num
-            }}</text>
-						<text class="color-text-less-grey u-font-22 u-line-h-40">支付订单</text>
-					</view>
-					<view class="u-flex-col u-row-center">
-						<text class="u-font-bold u-font-32 u-line-h-48">{{
-              unitMoney(detailObj.will_income.account_amount, false, true)
-            }}</text>
-						<text class="color-text-less-grey u-font-22 u-line-h-40">预估收益</text>
-					</view>
-				</view>
-				<view
-					class="u-flex-row u-row-between u-col-center color-text-less-grey u-font-24 u-line-h-40 u-m-t-24 u-m-b-8">
-					<text>已入账</text>
-					<text
-						v-if="detailObj.settled_income && detailObj.settled_income.settle_date">{{ detailObj.settled_income.settle_date }}</text>
-				</view>
-				<view class="un-posted u-border-radius u-p-x-24 u-p-y-16">
-					<view class="u-flex-col u-row-center">
-						<text class="u-font-bold u-font-32 u-line-h-48">{{
-              unitMoney(detailObj.settled_income.order_amount, false, true)
-            }}</text>
-						<text class="color-text-less-grey u-font-22 u-line-h-40">充值金额</text>
-					</view>
-					<view class="u-flex-col u-row-center">
-						<text class="u-font-bold u-font-32 u-line-h-48">{{
-              detailObj.settled_income.order_num
-            }}</text>
-						<text class="color-text-less-grey u-font-22 u-line-h-40">支付订单</text>
-					</view>
-					<view class="u-flex-col u-row-center">
-						<text class="u-font-bold u-font-32 u-line-h-48">{{
-              unitMoney(detailObj.settled_income.account_amount, false, true)
-            }}</text>
-						<text class="color-text-less-grey u-font-22 u-line-h-40">累计收益</text>
-					</view>
-				</view>
+		<!-- Tab切换 -->
+		<view class="tab-wrapper u-flex-row u-font-32" :style="{'top': tabWrapperTop}">
+			<view v-for="(item, index) in tabs" :key="index" :class="['tab-item', currentTab === index ? 'active' : '']"
+				@click="switchTab(index)">
+				{{ item }}
 			</view>
 		</view>
-		<view class="list-top u-p-28 u-flex-row u-row-between u-col-center" style="background: #f6f7fb">
+		<PriceCard v-if="true" :currentTab="currentTab" :detailObj="detailObj" />
+	
+		<view class="list-top u-p-28 u-flex-row u-row-between u-col-center" style="background: #f6f7fb" :style="{'top': listTop}">
 			<text class="u-font-bold u-font-32 u-line-h-48">收益明细</text>
 			<DatePicker ref="datePickerRef" title="请选择查询时间段" :type="['list']" :baseBtn="false" @submit="getDate">
 				<template #default="{ label, value }">
@@ -106,15 +64,15 @@
 						<view class="list-item-price-card u-border-radius">
 							<view class="u-flex-col u-col-center">
 								<text class="color-text-black u-font-28 u-line-h-44">{{
-                  item.order_num || "--"
+				  (currentTab == 0 ? item.order_num : item.integral_num) || "--"
                 }}</text>
-								<text class="color-text-less-grey u-font-22 u-line-h-40">支付订单</text>
+								<text class="color-text-less-grey u-font-22 u-line-h-40">{{currentTab == 0 ? '支付订单' : '支付看点'}}</text>
 							</view>
 							<view class="u-flex-col u-col-center price-border">
 								<text class="color-text-black u-font-28 u-line-h-44">{{
-                  unitMoney(item.order_amount, false, true)
+                  unitMoney(currentTab == 0 ? item.order_amount : item.exchange_amount, false, true)
                 }}</text>
-								<text class="color-text-less-grey u-font-22 u-line-h-40">充值金额</text>
+								<text class="color-text-less-grey u-font-22 u-line-h-40">{{currentTab == 0 ? '充值金额' : '兑换金额'}}</text>
 							</view>
 							<view class="u-flex-col u-col-center">
 								<text class="color-text-black u-font-28 u-line-h-44">{{
@@ -149,7 +107,7 @@
 			:showCancelButton="false"
 			:showConfirmButton="true"
 			title="我的收益"
-			content="我的收益=待入账预估收益+累计入账收益"
+			:content="modalContent"
 			confirmText="我知道了"
 			:buttonFill="false"
 			:closeOnClickOverlay="false"
@@ -166,9 +124,12 @@
 	} from "@/utils/tools.js";
 	import {
 		getCreateList,
-		getCreateTotal
+		getCreateTotal,
+		getkdCreateList,
+		getkdCreateTotal,
 	} from "../api/create/index.js";
 	import DatePicker from "@/components/base-datepicker/index.vue";
+	import PriceCard from "./components/advertiserPriceCard.vue";
 	import {
 		mapGetters
 	} from "vuex";
@@ -176,9 +137,16 @@
 		props: {},
 		components: {
 			DatePicker,
+			PriceCard,
 		},
 		data() {
 			return {
+				tabs: ['剧集充值收益', '看点支付收益'],
+				currentTab: 0,
+				listTop: 0,
+				tabWrapperTop: 0,
+
+
 				showModal:false,
 				detailObj: {
 					will_income: {
@@ -194,7 +162,6 @@
 				nomoreText: "没有更多了～",
 				page: 1,
 				pagesize: 20,
-				site: null,
 				loading: false,
 				isEnd: false,
 				listData: [],
@@ -203,9 +170,21 @@
 		},
 		computed: {
 			...mapGetters(['static_path', 'image']),
+			modalContent() {
+				let typeContent = this.currentTab == 0? '剧集充值' : '看点支付';
+				return  '我的收益即' + typeContent + '分成收益，包含待入账预估收益和累计入账收益'
+			},
 		},
 		methods: {
 			unitMoney,
+			async computedHeight() {
+
+				const navBoxRect = await this.$u.getRect(`.navbar-box`);
+				this.tabWrapperTop = navBoxRect.top + navBoxRect.height + "px";
+
+				const tabBoxRect = await this.$u.getRect(`.tab-wrapper`);
+				this.listTop = tabBoxRect.top + tabBoxRect.height  + "px";
+			},
 			setDateValue(value) {
 				this.$refs.datePickerRef.setDate(value, true);
 			},
@@ -228,10 +207,21 @@
 				this.getListData();
 				uni.stopPullDownRefresh();
 			},
-
+			switchTab(index) {
+				this.currentTab = index;
+				this.detailObj = {
+					will_income: {
+					},
+					settled_income: {
+					}
+				};
+				this.listData = [];
+				this.init();
+			},
 			getTopCard() {
 				this.cardLoading = true;
-				getCreateTotal()
+				let totalFun = this.currentTab == 0 ? getCreateTotal : getkdCreateTotal;
+				totalFun()
 					.then(res => {
 						if (res.code == 0) {
 							this.detailObj = res.data;
@@ -267,13 +257,15 @@
 					end_date: this.date[1],
 				};
 				params.page = this.page;
-				getCreateList(params)
+				let listFun = this.currentTab == 0 ? getCreateList : getkdCreateList;
+				listFun(params)
 					.then((res) => {
-						const list = res.data.list;
+						
+						const list = this.currentTab == 0 ? res.data.list : res.data;
+						
 						if (reset) this.listData = list;
 						else this.listData.push(...list);
-						this.site = res.data.site;
-						let bool = !(res.data.list.length < this.pagesize);
+						let bool = !(list.length < this.pagesize);
 						this.isEnd = !bool;
 						if (!bool) {
 							this.nomoreText = `没有更多了～`;
@@ -295,10 +287,16 @@
 			},
 
 			goDetail(item) {
+				if (this.currentTab == 0) {
+					uni.navigateTo({
+						url: `/income/createIncome/detail?collection_id=${item.collection_id}`
+					})
+				} else {
+					uni.navigateTo({
+						url: `/income/createIncome/kddetail?collection_id=${item.collection_id}`
+					})
+				}
 
-				uni.navigateTo({
-					url: `/income/createIncome/detail?collection_id=${item.collection_id}`
-				})
 			},
 			openModal(event){
 				this.showModal = true;
@@ -310,6 +308,9 @@
 					duration
 				});
 			},
+		},
+		mounted() {
+			this.computedHeight();
 		},
 		onLoad() {
 			this.init();
@@ -349,15 +350,43 @@
 			}
 		}
 
-		.list-top {
+		
+		.tab-wrapper {
+			background: linear-gradient(180deg, #d8eefe, #d8eefe);
 			position: sticky;
 			z-index: 99;
-			/* #ifdef APP || MP */
-			top: 168rpx;
-			/* #endif */
-			/* #ifdef H5 */
-			top: 86rpx;
-			/* #endif */
+
+
+			.tab-item {
+				padding-bottom: 36rpx;
+				line-height: 48rpx;
+				flex: 1;
+				text-align: center;
+				color: #6a6a6a;
+
+				&.active {
+					color: #1a1a1a;
+					position: relative;
+					font-weight: 700;
+
+					&::after {
+						content: '';
+						position: absolute;
+						bottom: 24rpx;
+						left: 50%;
+						transform: translateX(-50%);
+						width: 32rpx;
+						height: 8rpx;
+						background: #408cff;
+						border-radius: 8rpx;
+					}
+				}
+			}
+		}
+
+		.list-top {
+			position: sticky;
+			z-index: 98;
 		}
 
 		.list-content--item {

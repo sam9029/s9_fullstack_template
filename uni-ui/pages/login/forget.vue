@@ -18,7 +18,7 @@
       </view>
       <u-form :model="model" ref="formRef" :rules="rules">
         <template v-if="type != 'confirm'">
-          <u-form-item prop="telephone" borderBottom>
+          <u-form-item :prop="type != 'confirm'?model.telephone:''" borderBottom>
             <u-input
               :placeholder="input_placeholder"
               clearable
@@ -28,7 +28,7 @@
             >
             </u-input>
           </u-form-item>
-          <u-form-item prop="code" borderBottom>
+          <u-form-item :prop="type != 'confirm'?model.code:''" borderBottom>
             <u-input
               placeholder="请输入短信验证码"
               clearable
@@ -54,7 +54,7 @@
           </u-form-item>
         </template>
         <template v-if="type == 'confirm'">
-          <u-form-item prop="password" borderBottom>
+          <u-form-item :prop="type == 'confirm'?model.password:''" borderBottom>
             <u-input
               placeholder="请输入新密码"
               v-model.trim="model.password"
@@ -71,7 +71,7 @@
               </template>
             </u-input>
           </u-form-item>
-          <u-form-item prop="check_psd" borderBottom>
+          <u-form-item :prop="type == 'confirm'?model.check_psd:''" borderBottom>
             <u-input
               placeholder="请再次输入新密码"
               v-model.trim="model.check_psd"

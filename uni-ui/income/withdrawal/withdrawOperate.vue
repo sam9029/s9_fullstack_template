@@ -227,7 +227,7 @@
 						}
 					})
 					.catch((error) => {
-						let message = String(err.message || err);
+						let message = String(error.message || error);
 						this.toastMsg(message, "error");
 					})
 				getBankConfig().then((res) => {

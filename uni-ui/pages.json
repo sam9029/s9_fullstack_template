@@ -181,6 +181,23 @@
 					}
 				},
 				{
+					"path": "service/agreement/other",
+					"style": {
+						"navigationStyle": "default",
+						"navigationBarTitleText": "电签协议",
+						"enablePullDownRefresh": false,
+						"navigationBarBackgroundColor": "#F6F7FB",
+						"app-plus": {
+							"bounce": "none"
+						},
+						"h5": {
+							"titleNView": {
+								"tileText": "电签协议"
+							}
+						}
+					}
+				},
+				{
 					"path": "service/agreement/pay",
 					"style": {
 						"navigationStyle": "default",
@@ -587,6 +604,24 @@
 				},
 				{
 					"path": "createIncome/detail",
+					"style": {
+						"navigationBarTitleText": "收益明细",
+						"navigationBarBackgroundColor": "#F6F7FB",
+						"app-plus": {
+							"navigationStyle": "default",
+							"enablePullDownRefresh": true,
+							"bounce": "none"
+						},
+						"enablePullDownRefresh": true,
+						"h5": {
+							"titleNView": {
+								"tileText": "收益明细"
+							}
+						}
+					}
+				},
+				{
+					"path": "createIncome/kddetail",
 					"style": {
 						"navigationBarTitleText": "收益明细",
 						"navigationBarBackgroundColor": "#F6F7FB",

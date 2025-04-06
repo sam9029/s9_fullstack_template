@@ -497,6 +497,7 @@ $u-upload-disabled-opacity: 0.5 !default;
     &__preview {
       border-radius: $u-upload-preview-border-radius;
       margin: $u-upload-preview-margin;
+	  flex: 1;
       position: relative;
       overflow: hidden;
       @include flex;
